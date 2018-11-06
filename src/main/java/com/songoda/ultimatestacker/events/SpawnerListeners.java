@@ -1,9 +1,14 @@
 package com.songoda.ultimatestacker.events;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.utils.Methods;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
+
+import java.util.List;
 
 public class SpawnerListeners implements Listener {
 
@@ -15,7 +20,7 @@ public class SpawnerListeners implements Listener {
 
     @EventHandler
     public void onSpawner(SpawnerSpawnEvent event) {
-/*
+        /*
         Entity initalEntity = event.getEntity();
 
         if (!instance.getConfig().getBoolean("Main.Stack Entities")) return;
@@ -25,6 +30,8 @@ public class SpawnerListeners implements Listener {
         if (entityList.size() == 0) return;
 
         int maxEntityStackSize = instance.getConfig().getInt("Entity.Max Stack Size");
+        if (instance.getConfig().getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
+            maxEntityStackSize = instance.getConfig().getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
         for (Entity entity : entityList) {
             EntityStack stack = instance.getEntityStackManager().getStack(entity);

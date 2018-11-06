@@ -98,7 +98,7 @@ public class Methods {
     }
 
     public static ItemStack getSpawnerItem(EntityType entityType, int amount) {
-        ItemStack item = new ItemStack(Material.SPAWNER, 1);
+        ItemStack item = new ItemStack(Material.MOB_SPAWNER, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Methods.compileSpawnerName(entityType, amount));
         CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta)meta).getBlockState();

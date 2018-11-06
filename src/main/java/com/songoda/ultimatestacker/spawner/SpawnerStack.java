@@ -1,7 +1,14 @@
 package com.songoda.ultimatestacker.spawner;
 
+import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.Reflection;
+import com.songoda.ultimatestacker.utils.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.CreatureSpawner;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 public class SpawnerStack {
 
@@ -25,7 +32,11 @@ public class SpawnerStack {
         this.amount = amount;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner)location.getBlock().getState();
-        creatureSpawner.setSpawnCount(4 * amount);
+        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) {
+            creatureSpawner.setSpawnCount(4 * amount);
+        } else {
+            Reflection.setRange(creatureSpawner, 4 * amount);
+        }
         creatureSpawner.update();
     }
 

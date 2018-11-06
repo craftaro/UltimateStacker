@@ -33,9 +33,9 @@ public class BlockListeners implements Listener {
     public void onSpawnerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
-        ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+        ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
-        if (block == null || item == null || block.getType() != Material.SPAWNER || item.getType() != Material.SPAWNER || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+        if (block == null || item == null || block.getType() != Material.MOB_SPAWNER || item.getType() != Material.MOB_SPAWNER || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         if (!instance.getConfig().getBoolean("Main.Stack Spawners")) return;
 
@@ -85,7 +85,7 @@ public class BlockListeners implements Listener {
     public void onSpawnerPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
 
-        if (block == null || block.getType() != Material.SPAWNER) return;
+        if (block == null || block.getType() != Material.MOB_SPAWNER) return;
 
         if (!instance.getConfig().getBoolean("Main.Stack Spawners")) return;
 
@@ -98,7 +98,7 @@ public class BlockListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() != Material.SPAWNER) return;
+        if (block.getType() != Material.MOB_SPAWNER) return;
 
         if (!instance.getConfig().getBoolean("Main.Stack Spawners")) return;
 
@@ -107,7 +107,7 @@ public class BlockListeners implements Listener {
         EntityType blockType = cs.getSpawnedType();
 
         Player player = event.getPlayer();
-        ItemStack item = player.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInHand();
 
         SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(block);
 

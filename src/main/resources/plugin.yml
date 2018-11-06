@@ -4,7 +4,6 @@ version: 1
 depend: [Arconix]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
-api-version: 1.13
 commands:
   UltimateStacker:
     description: I have no idea.

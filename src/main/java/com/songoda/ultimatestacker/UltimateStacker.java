@@ -81,7 +81,7 @@ public class UltimateStacker extends JavaPlugin {
         settingsManager.updateSettings();
 
         for (EntityType value : EntityType.values()) {
-            if (value.isSpawnable() && value.isAlive() && !value.toString().toLowerCase().contains("armor")) {
+            if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Enabled", true);
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Max Stack Size", -1);
             }
@@ -100,7 +100,7 @@ public class UltimateStacker extends JavaPlugin {
         itemFile.saveConfig();
 
         for (EntityType value : EntityType.values()) {
-            if (value.isSpawnable() && value.isAlive() && !value.toString().toLowerCase().contains("armor")) {
+            if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
                 spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Max Stack Size", -1);
                 spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Display Name", TextComponent.formatText(value.name().toLowerCase().replace("_", " "), true));
             }
@@ -318,6 +318,10 @@ public class UltimateStacker extends JavaPlugin {
 
     public ConfigWrapper getItemFile() {
         return itemFile;
+    }
+
+    public ConfigWrapper getSpawnerFile() {
+        return spawnerFile;
     }
 
     public static UltimateStacker getInstance() {

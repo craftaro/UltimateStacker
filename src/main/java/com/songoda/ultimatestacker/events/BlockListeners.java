@@ -45,7 +45,7 @@ public class BlockListeners implements Listener {
         EntityType itemType = cs.getSpawnedType();
 
         int itemAmount = getSpawnerAmount(item);
-        int specific = instance.getItemFile().getConfig().getInt("Spawners." + itemType.name() + ".Max Stack Size");
+        int specific = instance.getSpawnerFile().getConfig().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
         int maxStackSize = specific == -1 ? instance.getConfig().getInt("Spawners.Max Stack Size") : specific;
 
         cs = (CreatureSpawner)block.getState();
@@ -72,10 +72,10 @@ public class BlockListeners implements Listener {
 
                 stack.setAmount(stack.getAmount() + itemAmount);
                 instance.getHologramHandler().updateHologram(stack);
+                Methods.takeItem(player, itemAmount);
             }
         }
 
-        Methods.takeItem(player, itemAmount);
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologramHandler().processChange(block), 10L);
 
@@ -135,10 +135,11 @@ public class BlockListeners implements Listener {
     }
 
 
-    public int getSpawnerAmount(ItemStack item) {
+    private int getSpawnerAmount(ItemStack item) {
         if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return 1;
         if (item.getItemMeta().getDisplayName().contains(":")) {
-            return NumberUtils.toInt(item.getItemMeta().getDisplayName().replace("\u00A7", "").split(":")[0], 0);
+            int amt = NumberUtils.toInt(item.getItemMeta().getDisplayName().replace("\u00A7", "").split(":")[0], 1);
+            return amt == 0 ? 1 : amt;
         }
         return 1;
     }

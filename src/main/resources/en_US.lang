@@ -1,0 +1,11 @@
+#General Messages
+
+general.nametag.prefix = "&8[&6UltimateStacker&8]"
+
+#Command Messages
+
+command.give.success = "&7You have been given a &6%type%7."
+
+#Event Messages
+
+event.general.nopermission = "&cYou do not have permission to do that."

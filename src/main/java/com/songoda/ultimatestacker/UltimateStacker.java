@@ -5,6 +5,7 @@ import com.songoda.arconix.api.methods.serialize.Serialize;
 import com.songoda.arconix.api.utils.ConfigWrapper;
 import com.songoda.ultimatestacker.command.CommandManager;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.events.*;
 import com.songoda.ultimatestacker.handlers.HologramHandler;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
@@ -14,7 +15,6 @@ import com.songoda.ultimatestacker.storage.StorageItem;
 import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.SettingsManager;
@@ -56,6 +56,10 @@ public class UltimateStacker extends JavaPlugin {
 
     private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
     private Storage storage;
+
+    public static UltimateStacker getInstance() {
+        return INSTANCE;
+    }
 
     public void onDisable() {
         this.saveToFile();
@@ -322,9 +326,5 @@ public class UltimateStacker extends JavaPlugin {
 
     public ConfigWrapper getSpawnerFile() {
         return spawnerFile;
-    }
-
-    public static UltimateStacker getInstance() {
-        return INSTANCE;
     }
 }

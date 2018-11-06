@@ -12,7 +12,7 @@ public class EntityStackManager {
     // These are all stacked mobs loaded into memory.
     private static final Map<UUID, EntityStack> stacks = new HashMap<>();
 
-    public EntityStack addStack (EntityStack stack) {
+    public EntityStack addStack(EntityStack stack) {
         stacks.put(stack.getEntity().getUniqueId(), stack);
         return stack;
     }
@@ -44,7 +44,6 @@ public class EntityStackManager {
         stacks.put(newEntity.getUniqueId(), stack);
         return stack;
     }
-
 
 
 }

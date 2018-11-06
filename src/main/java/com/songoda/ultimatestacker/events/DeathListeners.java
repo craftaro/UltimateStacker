@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.events;
 
-import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -30,7 +30,7 @@ public class DeathListeners implements Listener {
         EntityStack stack = stackManager.getStack(killed);
 
         if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death")) {
-            for (int i = 1; i < stack.getAmount(); i ++) {
+            for (int i = 1; i < stack.getAmount(); i++) {
                 LivingEntity newEntity = newEntity(killed);
                 newEntity.damage(99999);
             }
@@ -48,7 +48,7 @@ public class DeathListeners implements Listener {
     }
 
     private LivingEntity newEntity(LivingEntity killed) {
-        LivingEntity newEntity = (LivingEntity)killed.getWorld().spawnEntity(killed.getLocation(), killed.getType());
+        LivingEntity newEntity = (LivingEntity) killed.getWorld().spawnEntity(killed.getLocation(), killed.getType());
         newEntity.setVelocity(killed.getVelocity());
         if (killed instanceof Ageable && !((Ageable) killed).isAdult()) {
             ((Ageable) newEntity).setBaby();
@@ -59,7 +59,7 @@ public class DeathListeners implements Listener {
         }
 
         if (killed instanceof Villager) {
-            ((Villager)newEntity).setProfession(((Villager)killed).getProfession());
+            ((Villager) newEntity).setProfession(((Villager) killed).getProfession());
         }
         return newEntity;
     }

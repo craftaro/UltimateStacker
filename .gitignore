@@ -140,3 +140,7 @@ target/classes/plugin\.yml
 target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles\.lst
 
 target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles\.lst
+
+\.idea/vcs\.xml
+
+UltimateStacker\.iml

@@ -42,7 +42,7 @@ public class Methods {
         }
 
         if (initalEntity instanceof Villager) {
-            Villager villager = ((Villager)initalEntity);
+            Villager villager = ((Villager) initalEntity);
             entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
         }
 
@@ -101,7 +101,7 @@ public class Methods {
         ItemStack item = new ItemStack(Material.MOB_SPAWNER, 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Methods.compileSpawnerName(entityType, amount));
-        CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta)meta).getBlockState();
+        CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta) meta).getBlockState();
         cs.setSpawnedType(entityType);
         ((BlockStateMeta) meta).setBlockState(cs);
         item.setItemMeta(meta);

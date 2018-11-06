@@ -28,7 +28,7 @@ public class CommandGive extends AbstractCommand {
         EntityType type = null;
         for (EntityType types : EntityType.values()) {
             String input = args[2].toUpperCase().replace("_", "").replace(" ", "");
-            String compare =  types.name().toUpperCase().replace("_", "").replace(" ", "");
+            String compare = types.name().toUpperCase().replace("_", "").replace(" ", "");
             if (input.equals(compare))
                 type = types;
         }

@@ -8,7 +8,10 @@ import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -54,10 +57,11 @@ public class StackingTask extends BukkitRunnable {
 
             nextEntity:
             for (Entity entityO : world.getEntities()) {
-                if (entityO instanceof Item && instance.getConfig().getBoolean( "Main.Stack Items")) {
+                if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
                     ItemStack item = ((Item) entityO).getItemStack();
 
-                    if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName()) continue;
+                    if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+                        continue;
 
                     if (item.getMaxStackSize() != maxItemStackSize && item.getMaxStackSize() != 1)
                         setMax(item, false);
@@ -130,7 +134,7 @@ public class StackingTask extends BukkitRunnable {
             int maxItemStackSize = specific == -1 ? instance.getConfig().getInt("Item.Max Stack Size") : specific;
             Object objItemStack = methodGetItem.invoke(methodAsNMSCopy.invoke(null, item));
             fieldMaxStackSize.set(objItemStack, reset ? new ItemStack(item.getType()).getMaxStackSize() : maxItemStackSize);
-        } catch(ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
         return item;

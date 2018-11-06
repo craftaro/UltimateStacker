@@ -7,7 +7,6 @@ import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 
@@ -36,13 +35,13 @@ public class HologramHandler {
     }
 
     public void updateHologram(SpawnerStack spawner) {
-            if (spawner == null) return;
+        if (spawner == null) return;
 
-            Location location = spawner.getLocation().add(0.5, 1, 0.5);
+        Location location = spawner.getLocation().add(0.5, 1, 0.5);
 
-            if (!instance.getConfig().getBoolean("Spawners.Holograms Enabled")) return;
+        if (!instance.getConfig().getBoolean("Spawners.Holograms Enabled")) return;
 
-            addHologram(location, spawner);
+        addHologram(location, spawner);
     }
 
     public void despawn(Block b) {
@@ -51,19 +50,19 @@ public class HologramHandler {
     }
 
     private void addHologram(Location location, SpawnerStack spawner) {
-            int amount = spawner.getAmount();
+        int amount = spawner.getAmount();
 
-            CreatureSpawner creatureSpawner = (CreatureSpawner)spawner.getLocation().getBlock().getState();
-            String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
+        CreatureSpawner creatureSpawner = (CreatureSpawner) spawner.getLocation().getBlock().getState();
+        String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
 
-            HologramObject hologram = new HologramObject(null, location, name);
+        HologramObject hologram = new HologramObject(null, location, name);
 
-            Arconix.pl().getApi().packetLibrary.getHologramManager().addHologram(hologram);
+        Arconix.pl().getApi().packetLibrary.getHologramManager().addHologram(hologram);
     }
 
     public void processChange(Block block) {
         if (!block.getType().name().contains("SPAWNER")) return;
-            SpawnerStack spawner = instance.getSpawnerStackManager().getSpawner(block);
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> updateHologram(spawner), 1L);
+        SpawnerStack spawner = instance.getSpawnerStackManager().getSpawner(block);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> updateHologram(spawner), 1L);
     }
 }

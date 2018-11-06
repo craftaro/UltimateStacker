@@ -48,7 +48,7 @@ public class BlockListeners implements Listener {
         int specific = instance.getSpawnerFile().getConfig().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
         int maxStackSize = specific == -1 ? instance.getConfig().getInt("Spawners.Max Stack Size") : specific;
 
-        cs = (CreatureSpawner)block.getState();
+        cs = (CreatureSpawner) block.getState();
 
         EntityType blockType = cs.getSpawnedType();
 
@@ -102,7 +102,7 @@ public class BlockListeners implements Listener {
 
         if (!instance.getConfig().getBoolean("Main.Stack Spawners")) return;
 
-        CreatureSpawner cs = (CreatureSpawner)block.getState();
+        CreatureSpawner cs = (CreatureSpawner) block.getState();
 
         EntityType blockType = cs.getSpawnedType();
 

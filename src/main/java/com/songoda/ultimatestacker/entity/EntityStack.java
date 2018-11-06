@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.entity;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.entity.Entity;
 

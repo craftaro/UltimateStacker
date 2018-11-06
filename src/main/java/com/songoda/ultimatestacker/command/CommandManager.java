@@ -2,8 +2,9 @@ package com.songoda.ultimatestacker.command;
 
 import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.AbstractCommand;
-import com.songoda.ultimatestacker.command.commands.*;
+import com.songoda.ultimatestacker.command.commands.CommandGive;
+import com.songoda.ultimatestacker.command.commands.CommandReload;
+import com.songoda.ultimatestacker.command.commands.CommandUltimateStacker;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,9 +16,8 @@ import java.util.List;
 
 public class CommandManager implements CommandExecutor {
 
-    private UltimateStacker instance;
-
     private static final List<AbstractCommand> commands = new ArrayList<>();
+    private UltimateStacker instance;
 
     public CommandManager(UltimateStacker instance) {
         this.instance = instance;

@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.events;
 
-import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;

@@ -170,7 +170,6 @@ public class UltimateStacker extends JavaPlugin {
                 }
             }
 
-
             for (SpawnerStack stack : spawnerStackManager.getStacks()) {
                 storage.prepareSaveItem("spawners", new StorageItem("location", Serialize.getInstance().serializeLocation(stack.getLocation())),
                         new StorageItem("amount", stack.getAmount()));
@@ -185,7 +184,7 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new DeathListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShearListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new DropListeners(this), this);
+        Bukkit.getPluginManager().registerEvents(new InteractListeners(this), this);
 
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
@@ -270,6 +269,11 @@ public class UltimateStacker extends JavaPlugin {
             }
         }
         return null;
+    }
+
+    public boolean spawnersEnabled() {
+        if (this.getServer().getPluginManager().isPluginEnabled("EpicSpawners")) return false;
+        return this.getConfig().getBoolean("Main.Stack Spawners");
     }
 
     public ServerVersion getServerVersion() {

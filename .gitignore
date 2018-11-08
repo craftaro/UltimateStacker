@@ -144,3 +144,11 @@ target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles\.ls
 \.idea/vcs\.xml
 
 UltimateStacker\.iml
+
+\.idea/libraries/Maven__org_spigotmc_spigot_1_12_2\.xml
+
+target/classes/com/songoda/ultimatestacker/events/InteractListeners\.class
+
+target/classes/com/songoda/ultimatestacker/utils/Reflection\.class
+
+target/classes/com/songoda/ultimatestacker/utils/ServerVersion\.class

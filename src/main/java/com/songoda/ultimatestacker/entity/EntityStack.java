@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.entity;
 
+import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.entity.Entity;
 
@@ -36,6 +37,12 @@ public class EntityStack {
     }
 
     public void setAmount(int amount) {
+        if (amount == 1) {
+            UltimateStacker.getInstance().getEntityStackManager().removeStack(entity);
+            entity.setCustomName(null);
+            entity.setCustomNameVisible(false);
+            return;
+        }
         this.amount = amount;
         updateStack();
     }

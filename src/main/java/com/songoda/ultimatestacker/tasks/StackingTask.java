@@ -8,15 +8,13 @@ import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 public class StackingTask extends BukkitRunnable {
@@ -57,6 +55,8 @@ public class StackingTask extends BukkitRunnable {
 
             nextEntity:
             for (Entity entityO : world.getEntities()) {
+                if (entityO instanceof Player) continue;
+
                 if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
                     ItemStack item = ((Item) entityO).getItemStack();
 
@@ -85,8 +85,11 @@ public class StackingTask extends BukkitRunnable {
 
                 if (initalEntity.isDead()
                         || !initalEntity.isValid()
-                        || initalEntity instanceof ArmorStand
-                        || stackManager.isStacked(initalEntity)) continue;
+                        || initalEntity instanceof ArmorStand) continue;
+
+                EntityStack initialStack = stackManager.getStack(initalEntity);
+                if (initialStack == null && initalEntity.getCustomName() != null) continue;
+                int amtToStack = initialStack != null ? initialStack.getAmount() : 1;
 
                 ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
 
@@ -98,18 +101,23 @@ public class StackingTask extends BukkitRunnable {
 
                 List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
 
-                for (Entity entity : entityList) {
-
+                for (Entity entity : new ArrayList<>(entityList)) {
                     EntityStack stack = stackManager.getStack(entity);
+                    if (stack == null && entity.getCustomName() != null) {
+                        entityList.remove(entity);
+                        continue;
+                    }
 
                     //If a stack was found add 1 to this stack.
-                    if (stack != null && stack.getAmount() < maxEntityStackSize) {
-                        stack.addAmount(1);
+                    if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
+                        stack.addAmount(amtToStack);
                         stack.updateStack();
                         initalEntity.remove();
                         continue nextEntity;
                     }
                 }
+
+                if (initialStack != null) continue;
 
                 entityList.removeIf(stackManager::isStacked);
 

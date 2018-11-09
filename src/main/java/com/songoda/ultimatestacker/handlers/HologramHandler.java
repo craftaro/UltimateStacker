@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 
@@ -61,7 +62,7 @@ public class HologramHandler {
     }
 
     public void processChange(Block block) {
-        if (!block.getType().name().contains("SPAWNER")) return;
+        if (block.getType() != Material.MOB_SPAWNER) return;
         SpawnerStack spawner = instance.getSpawnerStackManager().getSpawner(block);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> updateHologram(spawner), 1L);
     }

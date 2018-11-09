@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.utils;
 
 import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
@@ -51,13 +52,12 @@ public class Methods {
 
     public static String compileSpawnerName(EntityType entityType, int amount) {
         String nameFormat = UltimateStacker.getInstance().getConfig().getString("Spawners.Name Format");
-        String displayName = TextComponent.formatText(UltimateStacker.getInstance().getItemFile().getConfig().getString("Spawners." + entityType.name() + ".Display Name"));
+        String displayName = TextComponent.formatText(UltimateStacker.getInstance().getSpawnerFile().getConfig().getString("Spawners." + entityType.name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
         String info = TextComponent.convertToInvisibleString(amount + ":");
-
         return info + TextComponent.formatText(nameFormat).trim();
     }
 

@@ -91,6 +91,7 @@ public class UltimateStacker extends JavaPlugin {
 
         // Check to make sure the Bukkit version is compatible.
         if (!checkVersion()) return;
+
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         console.sendMessage(TextComponent.formatText("&a============================="));
         console.sendMessage(TextComponent.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3&7!"));

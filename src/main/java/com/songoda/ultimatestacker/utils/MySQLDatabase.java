@@ -31,12 +31,12 @@ public class MySQLDatabase {
         try {
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS `" + instance.getConfig().getString("Database.Prefix") + "entities` (\n" +
                     "\t`uuid` TEXT NULL,\n" +
-                    "\t`amount` INT NULL,\n" +
+                    "\t`amount` INT NULL\n" +
                     ")");
 
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS `" + instance.getConfig().getString("Database.Prefix") + "spawners` (\n" +
                     "\t`location` TEXT NULL,\n" +
-                    "\t`amount` INT NULL,\n" +
+                    "\t`amount` INT NULL\n" +
                     ")");
 
         } catch (SQLException e) {

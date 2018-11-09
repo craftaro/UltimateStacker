@@ -19,10 +19,7 @@ import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.SettingsManager;
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -72,8 +69,28 @@ public class UltimateStacker extends JavaPlugin {
         console.sendMessage(TextComponent.formatText("&a============================="));
     }
 
+    private boolean checkVersion() {
+        int maxVersion = 12; // also supports 1.8 and higher
+        int currentVersion = Integer.parseInt(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].split("_")[1]);
+
+        if (currentVersion > maxVersion) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+                Bukkit.getConsoleSender().sendMessage("");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "You installed the legacy (1.8 - 1.12) only version of " + this.getDescription().getName() + " on a 1." + currentVersion + " server. Since you are on the wrong version we disabled the plugin for you. Please install correct version to continue using " + this.getDescription().getName() + ".");
+                Bukkit.getConsoleSender().sendMessage("");
+            }, 20L);
+            return false;
+        }
+        return true;
+    }
+
+
+    @Override
     public void onEnable() {
         INSTANCE = this;
+
+        // Check to make sure the Bukkit version is compatible.
+        if (!checkVersion()) return;
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         console.sendMessage(TextComponent.formatText("&a============================="));
         console.sendMessage(TextComponent.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3&7!"));

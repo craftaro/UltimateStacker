@@ -338,6 +338,10 @@ public class UltimateStacker extends JavaPlugin {
         return stackingTask;
     }
 
+    public SettingsManager getSettingsManager() {
+        return settingsManager;
+    }
+
     public ConfigWrapper getMobFile() {
         return mobFile;
     }

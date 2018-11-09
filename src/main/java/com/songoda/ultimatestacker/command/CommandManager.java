@@ -4,6 +4,7 @@ import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.command.commands.CommandGive;
 import com.songoda.ultimatestacker.command.commands.CommandReload;
+import com.songoda.ultimatestacker.command.commands.CommandSettings;
 import com.songoda.ultimatestacker.command.commands.CommandUltimateStacker;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,6 +27,7 @@ public class CommandManager implements CommandExecutor {
 
         AbstractCommand commandUltimateStacker = addCommand(new CommandUltimateStacker());
 
+        addCommand(new CommandSettings(commandUltimateStacker));
         addCommand(new CommandReload(commandUltimateStacker));
         addCommand(new CommandGive(commandUltimateStacker));
     }

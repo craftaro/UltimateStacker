@@ -121,7 +121,7 @@ public class SettingsManager implements Listener {
 
         int slot = 10;
         for (String key : instance.getConfig().getDefaultSection().getKeys(false)) {
-            ItemStack item = new ItemStack(Material.WHITE_WOOL, 1, (byte) (slot - 9)); //ToDo: Make this function as it was meant to.
+            ItemStack item = new ItemStack(Material.WOOL, 1, (byte) (slot - 9)); //ToDo: Make this function as it was meant to.
             ItemMeta meta = item.getItemMeta();
             meta.setLore(Collections.singletonList(TextComponent.formatText("&6Click To Edit This Category.")));
             meta.setDisplayName(TextComponent.formatText("&f&l" + key));
@@ -152,7 +152,7 @@ public class SettingsManager implements Listener {
                 item.setType(Material.PAPER);
                 lore.add(TextComponent.formatText("&9" + config.getString(fKey)));
             } else if (config.isInt(fKey)) {
-                item.setType(Material.CLOCK);
+                item.setType(Material.WATCH);
                 lore.add(TextComponent.formatText("&5" + config.getInt(fKey)));
             }
 

@@ -190,7 +190,7 @@ public class SettingsManager implements Listener {
         oo("Entity.Min Stack Amount", 5),
         o5("Entity.Kill Whole Stack On Death", false),
         NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x"),
-        o6("Item.Max Stack Size", 250),
+        o6("Item.Max Stack Size", 120),
         NAME_FORMAT_ITEM("Item.Name Format", "&f{TYPE} &6{AMT}x"),
         o7("Spawners.Holograms Enabled", true),
         o8("Spawners.Max Stack Size", 5),

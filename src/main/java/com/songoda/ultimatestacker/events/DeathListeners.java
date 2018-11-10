@@ -52,15 +52,15 @@ public class DeathListeners implements Listener {
         newEntity.setVelocity(killed.getVelocity());
         if (killed instanceof Ageable && !((Ageable) killed).isAdult()) {
             ((Ageable) newEntity).setBaby();
-        }
-
-        if (killed instanceof Sheep) {
+        } else if (killed instanceof Sheep) {
             ((Sheep) newEntity).setColor(((Sheep) killed).getColor());
-        }
-
-        if (killed instanceof Villager) {
+        } else if (killed instanceof Villager) {
             ((Villager) newEntity).setProfession(((Villager) killed).getProfession());
         }
+
+        newEntity.setFireTicks(killed.getFireTicks());
+        newEntity.addPotionEffects(killed.getActivePotionEffects());
+
         return newEntity;
     }
 }

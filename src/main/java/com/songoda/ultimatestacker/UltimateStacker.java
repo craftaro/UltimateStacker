@@ -112,11 +112,9 @@ public class UltimateStacker extends JavaPlugin {
         mobFile.saveConfig();
 
         for (Material value : Material.values()) {
-            if (!value.isBlock()) {
                 itemFile.getConfig().addDefault("Items." + value.name() + ".Has Hologram", true);
                 itemFile.getConfig().addDefault("Items." + value.name() + ".Max Stack Size", -1);
                 itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", TextComponent.formatText(value.name().toLowerCase().replace("_", " "), true));
-            }
         }
         itemFile.getConfig().options().copyDefaults(true);
         itemFile.saveConfig();

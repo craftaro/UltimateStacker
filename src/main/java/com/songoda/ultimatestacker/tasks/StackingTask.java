@@ -63,8 +63,11 @@ public class StackingTask extends BukkitRunnable {
                     if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
 
-                    if (item.getMaxStackSize() != maxItemStackSize && item.getMaxStackSize() != 1 && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()))
-                        setMax(item, false);
+                    int specific = instance.getItemFile().getConfig().getInt("Items." + item.getType().name() + ".Max Stack Size");
+                    int max = specific == -1 ? maxItemStackSize : specific;
+
+                    if (item.getMaxStackSize() != max && item.getMaxStackSize() != 1 && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()))
+                        setMax(item, max, false);
 
                     int size = item.getAmount();
 
@@ -136,12 +139,10 @@ public class StackingTask extends BukkitRunnable {
         }
     }
 
-    public ItemStack setMax(ItemStack item, boolean reset) {
+    public ItemStack setMax(ItemStack item, int max, boolean reset) {
         try {
-            int specific = instance.getItemFile().getConfig().getInt("Items." + item.getType().name() + ".Max Stack Size");
-            int maxItemStackSize = specific == -1 ? instance.getConfig().getInt("Item.Max Stack Size") : specific;
             Object objItemStack = methodGetItem.invoke(methodAsNMSCopy.invoke(null, item));
-            fieldMaxStackSize.set(objItemStack, reset ? new ItemStack(item.getType()).getMaxStackSize() : maxItemStackSize);
+            fieldMaxStackSize.set(objItemStack, reset ? new ItemStack(item.getType()).getMaxStackSize() : max);
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }

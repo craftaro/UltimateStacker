@@ -63,7 +63,7 @@ public class StackingTask extends BukkitRunnable {
                     if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
 
-                    if (item.getMaxStackSize() != maxItemStackSize && item.getMaxStackSize() != 1)
+                    if (item.getMaxStackSize() != maxItemStackSize && item.getMaxStackSize() != 1 && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()))
                         setMax(item, false);
 
                     int size = item.getAmount();

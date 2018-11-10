@@ -64,7 +64,9 @@ public class StackingTask extends BukkitRunnable {
                         continue;
 
                     int specific = instance.getItemFile().getConfig().getInt("Items." + item.getType().name() + ".Max Stack Size");
-                    int max = specific == -1 ? maxItemStackSize : specific;
+                    int max = specific == -1 && new ItemStack(item.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
+
+                    if (max == -1) max = 1;
 
                     if (item.getMaxStackSize() != max && item.getMaxStackSize() != 1 && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()))
                         setMax(item, max, false);

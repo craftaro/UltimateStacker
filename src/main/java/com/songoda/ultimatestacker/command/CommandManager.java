@@ -2,10 +2,7 @@ package com.songoda.ultimatestacker.command;
 
 import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.commands.CommandGive;
-import com.songoda.ultimatestacker.command.commands.CommandReload;
-import com.songoda.ultimatestacker.command.commands.CommandSettings;
-import com.songoda.ultimatestacker.command.commands.CommandUltimateStacker;
+import com.songoda.ultimatestacker.command.commands.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -28,6 +25,7 @@ public class CommandManager implements CommandExecutor {
         AbstractCommand commandUltimateStacker = addCommand(new CommandUltimateStacker());
 
         addCommand(new CommandSettings(commandUltimateStacker));
+        addCommand(new CommandRemoveAll(commandUltimateStacker));
         addCommand(new CommandReload(commandUltimateStacker));
         addCommand(new CommandGive(commandUltimateStacker));
     }

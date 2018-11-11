@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -19,6 +20,32 @@ public class InteractListeners implements Listener {
 
     public InteractListeners(UltimateStacker instance) {
         this.instance = instance;
+    }
+
+    @EventHandler
+    public void onAccept(InventoryPickupItemEvent event) {
+        ItemStack item = event.getItem().getItemStack();
+        instance.getStackingTask().setMax(item, 0, true);
+        int amt = item.getAmount();
+        int max = item.getMaxStackSize();
+
+        if (amt <= max) return;
+
+        item.setAmount(max);
+        amt = amt - max;
+
+        while (amt > max) {
+            ItemStack newItem = new ItemStack(item);
+            newItem.setAmount(max);
+
+            event.getInventory().addItem(newItem);
+            amt = amt - max;
+        }
+
+        ItemStack newItem = new ItemStack(item);
+        newItem.setAmount(amt);
+
+        event.getInventory().addItem(newItem);
     }
 
     @EventHandler

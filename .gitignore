@@ -152,3 +152,9 @@ target/classes/com/songoda/ultimatestacker/events/InteractListeners\.class
 target/classes/com/songoda/ultimatestacker/utils/Reflection\.class
 
 target/classes/com/songoda/ultimatestacker/utils/ServerVersion\.class
+
+target/classes/com/songoda/ultimatestacker/command/commands/CommandRemoveAll\.class
+
+target/classes/com/songoda/ultimatestacker/command/commands/CommandSettings\.class
+
+target/classes/SettingDefinitions\.yml

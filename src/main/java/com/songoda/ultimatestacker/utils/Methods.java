@@ -2,7 +2,6 @@ package com.songoda.ultimatestacker.utils;
 
 import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
@@ -35,9 +34,9 @@ public class Methods {
         if (initalEntity instanceof Sheep) {
             Sheep sheep = ((Sheep) initalEntity);
             if (sheep.isSheared()) {
-                entityList.removeIf(entity -> !sheep.isSheared());
+                entityList.removeIf(entity -> !((Sheep) entity).isSheared());
             } else {
-                entityList.removeIf(entity -> sheep.isSheared());
+                entityList.removeIf(entity -> ((Sheep) entity).isSheared());
             }
             entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
         }

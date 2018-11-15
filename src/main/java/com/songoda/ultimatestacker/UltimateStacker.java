@@ -192,9 +192,8 @@ public class UltimateStacker extends JavaPlugin {
             }
             // Save data initially so that if the person reloads again fast they don't lose all their data.
             this.saveToFile();
+            this.hologramHandler = new HologramHandler(this);
         }, 10);
-
-        this.hologramHandler = new HologramHandler(this);
 
         Bukkit.getPluginManager().registerEvents(new SpawnerListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockListeners(this), this);

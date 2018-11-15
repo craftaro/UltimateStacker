@@ -1,6 +1,6 @@
 name: UltimateStacker
 description: UltimateStacker
-version: 1.0.2
+version: 1.0.3
 depend: [Arconix]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda

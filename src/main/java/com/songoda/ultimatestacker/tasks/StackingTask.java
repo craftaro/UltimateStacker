@@ -143,6 +143,7 @@ public class StackingTask extends BukkitRunnable {
 
     public ItemStack setMax(ItemStack item, int max, boolean reset) {
         try {
+            Bukkit.broadcastMessage("Alter Amount");
             Object objItemStack = methodGetItem.invoke(methodAsNMSCopy.invoke(null, item));
             fieldMaxStackSize.set(objItemStack, reset ? new ItemStack(item.getType()).getMaxStackSize() : max);
         } catch (ReflectiveOperationException e) {

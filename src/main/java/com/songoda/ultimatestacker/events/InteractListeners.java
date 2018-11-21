@@ -25,7 +25,6 @@ public class InteractListeners implements Listener {
 
     @EventHandler
     public void onAccept(InventoryPickupItemEvent event) {
-        Bukkit.broadcastMessage("pickup");
         ItemStack item = event.getItem().getItemStack();
         instance.getStackingTask().setMax(item, 0, true);
         int amt = item.getAmount();
@@ -54,7 +53,33 @@ public class InteractListeners implements Listener {
     @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
+
         event.getItem().setItemStack(instance.getStackingTask().setMax(event.getItem().getItemStack(), 0, true));
+
+        ItemStack item = event.getItem().getItemStack();
+
+        int amt = item.getAmount();
+        int max = item.getMaxStackSize();
+
+        if (amt <= max) return;
+
+        event.setCancelled(true);
+
+        item.setAmount(max);
+        amt = amt - max;
+
+        while (amt > max) {
+            ItemStack newItem = new ItemStack(item);
+            newItem.setAmount(max);
+
+            event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem);
+            amt = amt - max;
+        }
+
+        ItemStack newItem = new ItemStack(item);
+        newItem.setAmount(amt);
+
+        event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem);
 
     }
 

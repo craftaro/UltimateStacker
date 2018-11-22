@@ -32,11 +32,7 @@ public class SpawnerStack {
         this.amount = amount;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner)location.getBlock().getState();
-        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) {
-            creatureSpawner.setSpawnCount(4 * amount);
-        } else {
-            Reflection.setRange(creatureSpawner, 4 * amount);
-        }
+        Reflection.setRange(creatureSpawner, 4 * amount);
         creatureSpawner.update();
     }
 

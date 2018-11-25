@@ -26,6 +26,8 @@ public class InteractListeners implements Listener {
     @EventHandler
     public void onAccept(InventoryPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
+        if (new ItemStack(item.getType()).getMaxStackSize() == item.getMaxStackSize()) return;
+        
         instance.getStackingTask().setMax(item, 0, true);
         int amt = item.getAmount();
         int max = item.getMaxStackSize();

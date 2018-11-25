@@ -60,6 +60,8 @@ public class StackingTask extends BukkitRunnable {
                 if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
                     ItemStack item = ((Item) entityO).getItemStack();
 
+                    if (entityO.hasMetadata("grabbed")) continue;
+
                     if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
 

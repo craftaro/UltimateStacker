@@ -10,6 +10,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -53,9 +54,7 @@ public class InteractListeners implements Listener {
 
 
     @EventHandler
-    public void onPickup(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-
+    public void onPickup(PlayerPickupItemEvent event) {
         event.getItem().setItemStack(instance.getStackingTask().setMax(event.getItem().getItemStack(), 0, true));
 
         ItemStack item = event.getItem().getItemStack();

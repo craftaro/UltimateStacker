@@ -25,66 +25,6 @@ public class InteractListeners implements Listener {
     }
 
     @EventHandler
-    public void onAccept(InventoryPickupItemEvent event) {
-        ItemStack item = event.getItem().getItemStack();
-        if (new ItemStack(item.getType()).getMaxStackSize() == item.getMaxStackSize()) return;
-        
-        instance.getStackingTask().setMax(item, 0, true);
-        int amt = item.getAmount();
-        int max = item.getMaxStackSize();
-
-        if (amt <= max) return;
-
-        item.setAmount(max);
-        amt = amt - max;
-
-        while (amt > max) {
-            ItemStack newItem = new ItemStack(item);
-            newItem.setAmount(max);
-
-            event.getInventory().addItem(newItem);
-            amt = amt - max;
-        }
-
-        ItemStack newItem = new ItemStack(item);
-        newItem.setAmount(amt);
-
-        event.getInventory().addItem(newItem);
-    }
-
-
-    @EventHandler
-    public void onPickup(PlayerPickupItemEvent event) {
-        event.getItem().setItemStack(instance.getStackingTask().setMax(event.getItem().getItemStack(), 0, true));
-
-        ItemStack item = event.getItem().getItemStack();
-
-        int amt = item.getAmount();
-        int max = item.getMaxStackSize();
-
-        if (amt <= max) return;
-
-        event.setCancelled(true);
-
-        item.setAmount(max);
-        amt = amt - max;
-
-        while (amt > max) {
-            ItemStack newItem = new ItemStack(item);
-            newItem.setAmount(max);
-
-            event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem);
-            amt = amt - max;
-        }
-
-        ItemStack newItem = new ItemStack(item);
-        newItem.setAmount(amt);
-
-        event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem);
-
-    }
-
-    @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();

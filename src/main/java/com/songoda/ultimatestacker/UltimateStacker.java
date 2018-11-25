@@ -200,6 +200,8 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new DeathListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShearListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new InteractListeners(this), this);
+        Bukkit.getPluginManager().registerEvents(new InventoryListeners(this), this);
+        Bukkit.getPluginManager().registerEvents(new EntityListeners(this), this);
 
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);

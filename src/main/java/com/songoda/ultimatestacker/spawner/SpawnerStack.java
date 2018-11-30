@@ -3,12 +3,8 @@ package com.songoda.ultimatestacker.spawner;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Reflection;
 import com.songoda.ultimatestacker.utils.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.CreatureSpawner;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 public class SpawnerStack {
 
@@ -31,8 +27,15 @@ public class SpawnerStack {
     public void setAmount(int amount) {
         this.amount = amount;
 
+        int count = 4 * amount;
+        int maxNearby = amount > 6 ? amount + 3 : 6;
         CreatureSpawner creatureSpawner = (CreatureSpawner)location.getBlock().getState();
-        Reflection.setRange(creatureSpawner, 4 * amount, amount > 6 ? amount + 3 : 6);
+        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) {
+            creatureSpawner.setMaxNearbyEntities(maxNearby);
+            creatureSpawner.setSpawnCount(count);
+        } else {
+            Reflection.updateSpawner(creatureSpawner, count, maxNearby);
+        }
         creatureSpawner.update();
     }
 

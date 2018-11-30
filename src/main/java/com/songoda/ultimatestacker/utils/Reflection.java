@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 public class Reflection {
     private static Class<?> clazzCraftCreatureSpawner, clazzTileEntityMobSpawner = null;
     private static Method methodGetTileEntity, methodGetSpawner;
-    private static Field fieldSpawnRange, fieldMaxNearbyEntities;
+    private static Field fieldSpawnount, fieldMaxNearbyEntities;
 
-    public static CreatureSpawner setRange(CreatureSpawner creatureSpawner, int amount, int max) {
+    public static CreatureSpawner updateSpawner(CreatureSpawner creatureSpawner, int count, int max) {
         try {
             if (creatureSpawner == null) return creatureSpawner;
             if (clazzCraftCreatureSpawner == null) {
@@ -21,16 +21,16 @@ public class Reflection {
                 Class<?> clazzMobSpawnerAbstract = Class.forName("net.minecraft.server." + ver + ".MobSpawnerAbstract");
                 methodGetTileEntity = clazzCraftCreatureSpawner.getDeclaredMethod("getTileEntity");
                 methodGetSpawner = clazzTileEntityMobSpawner.getDeclaredMethod("getSpawner");
-                fieldSpawnRange = clazzMobSpawnerAbstract.getDeclaredField("spawnRange");
-                fieldSpawnRange.setAccessible(true);
-                fieldMaxNearbyEntities = clazzMobSpawnerAbstract.getDeclaredField("maxNearbyEntities");
-                fieldSpawnRange.setAccessible(true);
+                fieldSpawnount = clazzMobSpawnerAbstract.getDeclaredField("spawnRange");
+                fieldSpawnount.setAccessible(true);
+                fieldMaxNearbyEntities = clazzMobSpawnerAbstract.getDeclaredField("spawnCount");
+                fieldSpawnount.setAccessible(true);
             }
 
             Object objCraftCreatureSpawner = clazzCraftCreatureSpawner.cast(creatureSpawner);
             Object objTileEntityMobSpawner = clazzTileEntityMobSpawner.cast(methodGetTileEntity.invoke(objCraftCreatureSpawner));
             Object objMobSpawnerAbstract = methodGetSpawner.invoke(objTileEntityMobSpawner);
-            fieldSpawnRange.set(objMobSpawnerAbstract, amount);
+            fieldSpawnount.set(objMobSpawnerAbstract, count);
             fieldMaxNearbyEntities.set(objMobSpawnerAbstract, max);
 
         } catch (ReflectiveOperationException e) {

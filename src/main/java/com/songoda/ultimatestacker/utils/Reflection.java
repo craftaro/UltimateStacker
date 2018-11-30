@@ -21,10 +21,10 @@ public class Reflection {
                 Class<?> clazzMobSpawnerAbstract = Class.forName("net.minecraft.server." + ver + ".MobSpawnerAbstract");
                 methodGetTileEntity = clazzCraftCreatureSpawner.getDeclaredMethod("getTileEntity");
                 methodGetSpawner = clazzTileEntityMobSpawner.getDeclaredMethod("getSpawner");
-                fieldSpawnount = clazzMobSpawnerAbstract.getDeclaredField("spawnRange");
+                fieldSpawnount = clazzMobSpawnerAbstract.getDeclaredField("spawnCount");
                 fieldSpawnount.setAccessible(true);
-                fieldMaxNearbyEntities = clazzMobSpawnerAbstract.getDeclaredField("spawnCount");
-                fieldSpawnount.setAccessible(true);
+                fieldMaxNearbyEntities = clazzMobSpawnerAbstract.getDeclaredField("maxNearbyEntities");
+                fieldMaxNearbyEntities.setAccessible(true);
             }
 
             Object objCraftCreatureSpawner = clazzCraftCreatureSpawner.cast(creatureSpawner);

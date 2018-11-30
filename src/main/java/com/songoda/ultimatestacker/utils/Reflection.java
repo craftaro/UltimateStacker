@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 public class Reflection {
     private static Class<?> clazzCraftCreatureSpawner, clazzTileEntityMobSpawner = null;
     private static Method methodGetTileEntity, methodGetSpawner;
-    private static Field fieldSpawnRange;
+    private static Field fieldSpawnRange, fieldMaxNearbyEntities;
 
-    public static CreatureSpawner setRange(CreatureSpawner creatureSpawner, int amount) {
+    public static CreatureSpawner setRange(CreatureSpawner creatureSpawner, int amount, int max) {
         try {
             if (clazzCraftCreatureSpawner == null) {
                 String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
@@ -22,12 +22,15 @@ public class Reflection {
                 methodGetSpawner = clazzTileEntityMobSpawner.getDeclaredMethod("getSpawner");
                 fieldSpawnRange = clazzMobSpawnerAbstract.getDeclaredField("spawnRange");
                 fieldSpawnRange.setAccessible(true);
+                fieldMaxNearbyEntities = clazzMobSpawnerAbstract.getDeclaredField("maxNearbyEntities");
+                fieldSpawnRange.setAccessible(true);
             }
 
             Object objCraftCreatureSpawner = clazzCraftCreatureSpawner.cast(creatureSpawner);
             Object objTileEntityMobSpawner = clazzTileEntityMobSpawner.cast(methodGetTileEntity.invoke(objCraftCreatureSpawner));
             Object objMobSpawnerAbstract = methodGetSpawner.invoke(objTileEntityMobSpawner);
             fieldSpawnRange.set(objMobSpawnerAbstract, amount);
+            fieldMaxNearbyEntities.set(objMobSpawnerAbstract, max);
 
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();

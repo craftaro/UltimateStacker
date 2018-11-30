@@ -32,7 +32,7 @@ public class SpawnerStack {
         this.amount = amount;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner)location.getBlock().getState();
-        Reflection.setRange(creatureSpawner, 4 * amount);
+        Reflection.setRange(creatureSpawner, 4 * amount, amount > 6 ? amount + 3 : 6);
         creatureSpawner.update();
     }
 

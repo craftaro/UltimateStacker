@@ -29,7 +29,7 @@ public class InteractListeners implements Listener {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();
 
-        ItemStack item = player.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInHand();
 
         if (item.getType() != Material.NAME_TAG
                 || !instance.getEntityStackManager().isStacked(entity)) return;

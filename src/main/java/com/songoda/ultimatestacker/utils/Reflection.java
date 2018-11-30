@@ -13,6 +13,7 @@ public class Reflection {
 
     public static CreatureSpawner setRange(CreatureSpawner creatureSpawner, int amount, int max) {
         try {
+            if (creatureSpawner == null) return creatureSpawner;
             if (clazzCraftCreatureSpawner == null) {
                 String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
                 clazzCraftCreatureSpawner = Class.forName("org.bukkit.craftbukkit." + ver + ".block.CraftCreatureSpawner");

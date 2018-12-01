@@ -268,6 +268,7 @@ public class UltimateStacker extends JavaPlugin {
     }
 
     public void reload() {
+        settingsManager.updateSettings();
         String langMode = getConfig().getString("System.Language Mode");
         this.locale = Locale.getLocale(getConfig().getString("System.Language Mode", langMode));
         this.locale.reloadMessages();

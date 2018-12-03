@@ -55,14 +55,15 @@ public class StackingTask extends BukkitRunnable {
 
             nextEntity:
             for (Entity entityO : world.getEntities()) {
-                if (entityO instanceof Player) continue;
+                if (entityO == null || entityO instanceof Player) continue;
 
                 if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
                     ItemStack item = ((Item) entityO).getItemStack();
 
-                    if (entityO.hasMetadata("grabbed")) continue;
-
-                    if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+                    if (entityO.hasMetadata("grabbed")
+                            || item == null
+                            || entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS"))
+                            || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
 
                     int specific = instance.getItemFile().getConfig().getInt("Items." + item.getType().name() + ".Max Stack Size");

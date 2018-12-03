@@ -1,10 +1,22 @@
 package com.songoda.ultimatestacker.events;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.utils.Methods;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class EntityListeners implements Listener {
 
@@ -12,6 +24,25 @@ public class EntityListeners implements Listener {
 
     public EntityListeners(UltimateStacker instance) {
         this.instance = instance;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onBlow(EntityExplodeEvent event) {
+        if (!(event.getEntity() instanceof Creeper) && !(event.getEntity() instanceof TNTPrimed)) return;
+
+            List<Block> destroyed = event.blockList();
+        for (Block block : destroyed) {
+
+            if (block.getType() != Material.MOB_SPAWNER) continue;
+            Location spawnerLocation = block.getLocation();
+
+            SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(spawnerLocation);
+
+            ItemStack item = Methods.getSpawnerItem(((CreatureSpawner) block.getState()).getSpawnedType(), stack.getAmount());
+            spawnerLocation.getWorld().dropItemNaturally(spawnerLocation.clone().add(.5, 0, .5), item);
+
+            instance.getHologramHandler().despawn(spawnerLocation.getBlock());
+        }
     }
 
     @EventHandler

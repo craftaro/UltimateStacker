@@ -7,6 +7,8 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class DeathListeners implements Listener {
 
@@ -29,10 +31,12 @@ public class DeathListeners implements Listener {
 
         EntityStack stack = stackManager.getStack(killed);
 
-        if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death")) {
+        if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death") && stack.getAmount() != 1) {
             for (int i = 1; i < stack.getAmount(); i++) {
-                LivingEntity newEntity = newEntity(killed);
-                newEntity.damage(99999);
+                for (ItemStack item : event.getDrops()) {
+                    killed.getWorld().dropItemNaturally(killed.getLocation(), item);
+                }
+                killed.getWorld().spawn(killed.getLocation(), ExperienceOrb.class).setExperience(event.getDroppedExp());
             }
         } else {
             Entity newEntity = newEntity(killed);

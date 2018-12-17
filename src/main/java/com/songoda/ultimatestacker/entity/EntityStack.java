@@ -11,7 +11,7 @@ public class EntityStack {
 
     public EntityStack(Entity entity, int amount) {
         this.entity = entity;
-        this.amount = amount;
+        this.setAmount(amount);
     }
 
     public void updateStack() {

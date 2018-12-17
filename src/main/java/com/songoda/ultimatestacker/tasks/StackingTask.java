@@ -93,7 +93,8 @@ public class StackingTask extends BukkitRunnable {
 
                 if (initalEntity.isDead()
                         || !initalEntity.isValid()
-                        || initalEntity instanceof ArmorStand) continue;
+                        || initalEntity instanceof ArmorStand
+                        || initalEntity.hasMetadata("inLove")) continue;
 
                 EntityStack initialStack = stackManager.getStack(initalEntity);
                 if (initialStack == null && initalEntity.getCustomName() != null) continue;

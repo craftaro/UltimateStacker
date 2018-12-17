@@ -105,38 +105,31 @@ public class InteractListeners implements Listener {
             case PIG:
                 return (type == Material.CARROT || type == Material.BEETROOT || type == Material.POTATO);
             case CHICKEN:
-                return type == Material.WHEAT_SEEDS
+                return type == Material.SEEDS
                         || type == Material.MELON_SEEDS
                         || type == Material.BEETROOT_SEEDS
                         || type == Material.PUMPKIN_SEEDS;
             case HORSE:
                 return type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT;
             case WOLF:
-                return type == Material.BEEF
-                        || type == Material.CHICKEN
-                        || type == Material.COD
+                return type == Material.RAW_BEEF
+                        || type == Material.RAW_CHICKEN
                         || type == Material.MUTTON
-                        || type == Material.PORKCHOP
+                        || type == Material.PORK
                         || type == Material.RABBIT
-                        || type == Material.SALMON
+                        || type == Material.RAW_FISH
                         || type == Material.COOKED_BEEF
                         || type == Material.COOKED_CHICKEN
-                        || type == Material.COOKED_COD
                         || type == Material.COOKED_MUTTON
-                        || type == Material.COOKED_PORKCHOP
+                        || type == Material.GRILLED_PORK
                         || type == Material.COOKED_RABBIT
-                        || type == Material.COOKED_SALMON;
+                        || type == Material.COOKED_FISH;
             case OCELOT:
-                return type == Material.SALMON
-                        || type == Material.COD
-                        || type == Material.PUFFERFISH
-                        || type == Material.TROPICAL_FISH;
+                return type == Material.RAW_FISH;
             case RABBIT:
-                return type == Material.CARROT || type == Material.GOLDEN_CARROT || type == Material.DANDELION;
+                return type == Material.CARROT || type == Material.GOLDEN_CARROT || type == Material.YELLOW_FLOWER;
             case LLAMA:
                 return type == Material.HAY_BLOCK;
-            case TURTLE:
-                return type == Material.SEAGRASS;
         }
         return false;
     }

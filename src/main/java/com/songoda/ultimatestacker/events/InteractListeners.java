@@ -110,9 +110,9 @@ public class InteractListeners implements Listener {
                         || type == Material.BEETROOT_SEEDS
                         || type == Material.PUMPKIN_SEEDS;
             case HORSE:
-                return type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT;
+                return (type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT) && ((Horse)entity).isTamed();
             case WOLF:
-                return type == Material.RAW_BEEF
+                return (type == Material.RAW_BEEF
                         || type == Material.RAW_CHICKEN
                         || type == Material.MUTTON
                         || type == Material.PORK
@@ -123,9 +123,11 @@ public class InteractListeners implements Listener {
                         || type == Material.COOKED_MUTTON
                         || type == Material.GRILLED_PORK
                         || type == Material.COOKED_RABBIT
-                        || type == Material.COOKED_FISH;
+                        || type == Material.COOKED_FISH)
+                        && ((Wolf) entity).isTamed();
             case OCELOT:
-                return type == Material.RAW_FISH;
+                return (type == Material.RAW_FISH)
+                        && ((Ocelot) entity).isTamed();
             case RABBIT:
                 return type == Material.CARROT || type == Material.GOLDEN_CARROT || type == Material.YELLOW_FLOWER;
             case LLAMA:

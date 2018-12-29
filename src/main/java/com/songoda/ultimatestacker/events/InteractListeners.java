@@ -48,7 +48,7 @@ public class InteractListeners implements Listener {
 
         EntityStack stack = instance.getEntityStackManager().getStack(entity);
 
-        if (stack.getAmount() == 1) return;
+        if (stack.getAmount() <= 1) return;
 
         if (item.getType() == Material.NAME_TAG)
             event.setCancelled(true);

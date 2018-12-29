@@ -130,7 +130,7 @@ public class BlockListeners implements Listener {
                 instance.getHologramHandler().updateHologram(stack);
             }
         }
-        if (item != null && (item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch") || player.hasPermission("ultimatestacker.spawner.nosilkdrop")))
+        if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))
             block.getWorld().dropItemNaturally(block.getLocation(), Methods.getSpawnerItem(blockType, amt));
     }
 

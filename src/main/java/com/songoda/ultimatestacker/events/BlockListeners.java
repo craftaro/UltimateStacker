@@ -85,12 +85,14 @@ public class BlockListeners implements Listener {
     public void onSpawnerPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
 
-        if (block == null || block.getType() != Material.MOB_SPAWNER) return;
+        if (!event.isCancelled()) {
+            if (block == null || block.getType() != Material.MOB_SPAWNER) return;
 
-        if (!instance.spawnersEnabled()) return;
+            if (!instance.spawnersEnabled()) return;
 
-        SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), getSpawnerAmount(event.getItemInHand())));
-        instance.getHologramHandler().updateHologram(stack);
+            SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), getSpawnerAmount(event.getItemInHand())));
+            instance.getHologramHandler().updateHologram(stack);
+        }
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologramHandler().processChange(block), 1L);
     }

@@ -71,7 +71,8 @@ public class BlockListeners implements Listener {
                 }
 
                 stack.setAmount(stack.getAmount() + itemAmount);
-                instance.getHologramHandler().updateHologram(stack);
+                if (instance.getHologramHandler() != null)
+                    instance.getHologramHandler().updateHologram(stack);
                 Methods.takeItem(player, itemAmount);
             }
         }
@@ -125,11 +126,13 @@ public class BlockListeners implements Listener {
         } else {
             if (stack.getAmount() <= 1) {
                 event.setCancelled(false);
+                if (instance.getHologramHandler() != null)
                 instance.getHologramHandler().despawn(block);
                 instance.getSpawnerStackManager().removeSpawner(block.getLocation());
             } else {
                 stack.setAmount(stack.getAmount() - 1);
-                instance.getHologramHandler().updateHologram(stack);
+                if (instance.getHologramHandler() != null)
+                    instance.getHologramHandler().updateHologram(stack);
             }
         }
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))

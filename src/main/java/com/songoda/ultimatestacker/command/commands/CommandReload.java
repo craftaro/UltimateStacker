@@ -1,8 +1,8 @@
 package com.songoda.ultimatestacker.command.commands;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.command.AbstractCommand;
+import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.command.CommandSender;
 
 public class CommandReload extends AbstractCommand {
@@ -14,7 +14,7 @@ public class CommandReload extends AbstractCommand {
     @Override
     protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
         instance.reload();
-        sender.sendMessage(TextComponent.formatText(instance.getReferences().getPrefix() + "&7Configuration and Language files reloaded."));
+        sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7Configuration and Language files reloaded."));
         return ReturnType.SUCCESS;
     }
 

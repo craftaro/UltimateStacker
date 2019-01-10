@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.storage;
 
-import com.songoda.arconix.api.utils.ConfigWrapper;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.ConfigWrapper;
 
 import java.util.List;
 

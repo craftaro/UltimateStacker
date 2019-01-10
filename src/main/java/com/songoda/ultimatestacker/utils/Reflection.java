@@ -1,7 +1,5 @@
 package com.songoda.ultimatestacker.utils;
 
-import com.songoda.arconix.api.ArconixAPI;
-import com.songoda.arconix.plugin.Arconix;
 import org.bukkit.Bukkit;
 import org.bukkit.block.CreatureSpawner;
 

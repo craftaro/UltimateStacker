@@ -1,9 +1,9 @@
 package com.songoda.ultimatestacker.command.commands;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.command.AbstractCommand;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
+import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -42,7 +42,7 @@ public class CommandRemoveAll extends AbstractCommand {
                         amountRemoved ++;
                     } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
                         ItemStack item = ((Item) entityO).getItemStack();
-                        if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+                        if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(Methods.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
                         entityO.remove();
                         amountRemoved ++;
@@ -55,9 +55,9 @@ public class CommandRemoveAll extends AbstractCommand {
         if (type.equalsIgnoreCase("items") && amountRemoved == 1) type = "Item";
 
         if (amountRemoved == 0) {
-            sender.sendMessage(TextComponent.formatText(instance.getReferences().getPrefix() + "&7No stacked " + type + " exist that could be removed."));
+            sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7No stacked " + type + " exist that could be removed."));
         } else {
-            sender.sendMessage(TextComponent.formatText(instance.getReferences().getPrefix() + "&7Removed &6" + amountRemoved + " stacked " + TextComponent.formatText(type.toLowerCase(), true) + " &7Successfully."));
+            sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7Removed &6" + amountRemoved + " stacked " + Methods.formatText(type.toLowerCase(), true) + " &7Successfully."));
         }
         return ReturnType.SUCCESS;
     }

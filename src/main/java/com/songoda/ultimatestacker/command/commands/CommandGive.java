@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.command.commands;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.command.AbstractCommand;
 import com.songoda.ultimatestacker.utils.Methods;
@@ -34,13 +33,13 @@ public class CommandGive extends AbstractCommand {
         }
 
         if (type == null) {
-            sender.sendMessage(instance.getReferences().getPrefix() + TextComponent.formatText(instance.getReferences().getPrefix() + "&7The entity Type &6" + args[2] + " &7does not exist. Try one of these:"));
+            sender.sendMessage(instance.getReferences().getPrefix() + Methods.formatText(instance.getReferences().getPrefix() + "&7The entity Type &6" + args[2] + " &7does not exist. Try one of these:"));
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {
                 list.append(types.name().toUpperCase().replace(" ", "_")).append("&7, &6");
             }
-            sender.sendMessage(TextComponent.formatText("&6" + list));
+            sender.sendMessage(Methods.formatText("&6" + list));
         } else {
 
             int amt = Integer.parseInt(args[3]);
@@ -48,11 +47,11 @@ public class CommandGive extends AbstractCommand {
             if (!args[1].trim().toLowerCase().equals("all")) {
                 Player player = Bukkit.getOfflinePlayer(args[1]).getPlayer();
                 player.getInventory().addItem(itemStack);
-                player.sendMessage(TextComponent.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
+                player.sendMessage(Methods.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
             } else {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.getInventory().addItem(itemStack);
-                    player.sendMessage(TextComponent.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
+                    player.sendMessage(Methods.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
                 }
             }
         }

@@ -1,7 +1,7 @@
 name: UltimateStacker
 description: UltimateStacker
 version: maven-version-number
-depend: [Arconix]
+soft-depend: [Arconix]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
 commands:

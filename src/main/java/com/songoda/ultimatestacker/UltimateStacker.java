@@ -1,8 +1,5 @@
 package com.songoda.ultimatestacker;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
-import com.songoda.arconix.api.methods.serialize.Serialize;
-import com.songoda.arconix.api.utils.ConfigWrapper;
 import com.songoda.ultimatestacker.command.CommandManager;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
@@ -16,6 +13,8 @@ import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
+import com.songoda.ultimatestacker.utils.ConfigWrapper;
+import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.SettingsManager;
 import org.apache.commons.lang.ArrayUtils;
@@ -63,10 +62,10 @@ public class UltimateStacker extends JavaPlugin {
         this.storage.closeConnection();
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
-        console.sendMessage(TextComponent.formatText("&a============================="));
-        console.sendMessage(TextComponent.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3!"));
-        console.sendMessage(TextComponent.formatText("&7Action: &cDisabling&7..."));
-        console.sendMessage(TextComponent.formatText("&a============================="));
+        console.sendMessage(Methods.formatText("&a============================="));
+        console.sendMessage(Methods.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3!"));
+        console.sendMessage(Methods.formatText("&7Action: &cDisabling&7..."));
+        console.sendMessage(Methods.formatText("&a============================="));
     }
 
     private boolean checkVersion() {
@@ -93,9 +92,9 @@ public class UltimateStacker extends JavaPlugin {
         if (!checkVersion()) return;
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
-        console.sendMessage(TextComponent.formatText("&a============================="));
-        console.sendMessage(TextComponent.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3&7!"));
-        console.sendMessage(TextComponent.formatText("&7Action: &aEnabling&7..."));
+        console.sendMessage(Methods.formatText("&a============================="));
+        console.sendMessage(Methods.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Brianna <3&7!"));
+        console.sendMessage(Methods.formatText("&7Action: &aEnabling&7..."));
 
         this.settingsManager = new SettingsManager(this);
         this.commandManager = new CommandManager(this);
@@ -114,7 +113,7 @@ public class UltimateStacker extends JavaPlugin {
         for (Material value : Material.values()) {
                 itemFile.getConfig().addDefault("Items." + value.name() + ".Has Hologram", true);
                 itemFile.getConfig().addDefault("Items." + value.name() + ".Max Stack Size", -1);
-                itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", TextComponent.formatText(value.name().toLowerCase().replace("_", " "), true));
+                itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
         }
         itemFile.getConfig().options().copyDefaults(true);
         itemFile.saveConfig();
@@ -122,7 +121,7 @@ public class UltimateStacker extends JavaPlugin {
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
                 spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Max Stack Size", -1);
-                spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Display Name", TextComponent.formatText(value.name().toLowerCase().replace("_", " "), true));
+                spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
             }
         }
         spawnerFile.getConfig().options().copyDefaults(true);
@@ -166,7 +165,7 @@ public class UltimateStacker extends JavaPlugin {
             if (storage.containsGroup("spawners")) {
                 for (StorageRow row : storage.getRowsByGroup("spawners")) {
                     try {
-                        Location location = Serialize.getInstance().unserializeLocation(row.getKey());
+                        Location location = Methods.unserializeLocation(row.getKey());
 
                         if (location.getWorld() == null || !location.getBlock().getType().name().contains("SPAWNER")) {
                             if (location.getWorld() != null && !location.getBlock().getType().name().contains("SPAWNER")) {
@@ -187,12 +186,14 @@ public class UltimateStacker extends JavaPlugin {
             }
 
             for (SpawnerStack stack : spawnerStackManager.getStacks()) {
-                storage.prepareSaveItem("spawners", new StorageItem("location", Serialize.getInstance().serializeLocation(stack.getLocation())),
+                storage.prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
                         new StorageItem("amount", stack.getAmount()));
             }
             // Save data initially so that if the person reloads again fast they don't lose all their data.
             this.saveToFile();
-            this.hologramHandler = new HologramHandler(this);
+            if (Bukkit.getPluginManager().isPluginEnabled("Arconix")) {
+                this.hologramHandler = new HologramHandler(this);
+            }
         }, 10);
 
         Bukkit.getPluginManager().registerEvents(new SpawnerListeners(this), this);
@@ -206,7 +207,7 @@ public class UltimateStacker extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
 
-        console.sendMessage(TextComponent.formatText("&a============================="));
+        console.sendMessage(Methods.formatText("&a============================="));
     }
 
     private void update() {
@@ -260,7 +261,7 @@ public class UltimateStacker extends JavaPlugin {
         }
 
         for (SpawnerStack stack : spawnerStackManager.getStacks()) {
-            storage.prepareSaveItem("spawners", new StorageItem("location", Serialize.getInstance().serializeLocation(stack.getLocation())),
+            storage.prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
                     new StorageItem("amount", stack.getAmount()));
         }
 

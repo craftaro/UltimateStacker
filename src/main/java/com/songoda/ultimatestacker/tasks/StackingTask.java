@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.tasks;
 
-import com.songoda.arconix.api.methods.formatting.TextComponent;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
@@ -62,7 +61,7 @@ public class StackingTask extends BukkitRunnable {
 
                     if (entityO.hasMetadata("grabbed")
                             || item == null
-                            || entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextComponent.convertToInvisibleString("IS"))
+                            || entityO.isCustomNameVisible() && !entityO.getCustomName().contains(Methods.convertToInvisibleString("IS"))
                             || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
                         continue;
 
@@ -76,7 +75,7 @@ public class StackingTask extends BukkitRunnable {
 
                     int size = item.getAmount();
 
-                    String name = TextComponent.convertToInvisibleString("IS") + Methods.compileItemName(item.getType(), size);
+                    String name = Methods.convertToInvisibleString("IS") + Methods.compileItemName(item.getType(), size);
 
                     if (instance.getItemFile().getConfig().getBoolean("Items." + item.getType().name() + ".Has Hologram")) {
                         entityO.setCustomName(name);

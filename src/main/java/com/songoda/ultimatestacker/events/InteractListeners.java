@@ -30,12 +30,6 @@ public class InteractListeners implements Listener {
     }
 
     @EventHandler
-    public void onBread(EntityBreedEvent event) {
-        event.getFather().removeMetadata("inLove", instance);
-        event.getMother().removeMetadata("inLove", instance);
-    }
-
-    @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         Entity entity = event.getRightClicked();

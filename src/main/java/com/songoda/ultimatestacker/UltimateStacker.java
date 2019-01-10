@@ -196,6 +196,8 @@ public class UltimateStacker extends JavaPlugin {
             }
         }, 10);
 
+        if (isServerVersionAtLeast(ServerVersion.V1_10))
+            Bukkit.getPluginManager().registerEvents(new BreedListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new SpawnerListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new DeathListeners(this), this);

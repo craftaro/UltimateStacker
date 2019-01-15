@@ -87,11 +87,18 @@ public class BlockListeners implements Listener {
         Block block = event.getBlock();
 
         if (!event.isCancelled()) {
-            if (block == null || block.getType() != Material.MOB_SPAWNER) return;
-
-            if (!instance.spawnersEnabled()) return;
+            if (block == null
+                    || block.getType() != Material.MOB_SPAWNER
+                    || !instance.spawnersEnabled())
+                return;
 
             SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), getSpawnerAmount(event.getItemInHand())));
+
+            CreatureSpawner cs = (CreatureSpawner) block.getState();
+            CreatureSpawner cs2 = (CreatureSpawner) ((BlockStateMeta) event.getItemInHand().getItemMeta()).getBlockState();
+            cs.setSpawnedType(cs2.getSpawnedType());
+            cs.update();
+
             instance.getHologramHandler().updateHologram(stack);
         }
 

@@ -48,6 +48,10 @@ public class Methods {
             entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
         }
 
+        if (initalEntity.hasMetadata("breedCooldown")) {
+            entityList.removeIf(entity -> !entity.hasMetadata("breedCooldown"));
+        }
+
         return entityList;
     }
 

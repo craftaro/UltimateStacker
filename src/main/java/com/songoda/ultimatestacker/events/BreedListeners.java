@@ -1,9 +1,11 @@
 package com.songoda.ultimatestacker.events;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class BreedListeners implements Listener {
 
@@ -16,7 +18,15 @@ public class BreedListeners implements Listener {
     @EventHandler
     public void onBread(EntityBreedEvent event) {
 
+        Bukkit.getScheduler().scheduleSyncDelayedTask(instance, () -> {
+            if (event.getFather() != null)
+                event.getFather().removeMetadata("breedCooldown", instance);
+            if (event.getMother() != null)
+                event.getMother().removeMetadata("breedCooldown", instance);
+        }, 5 * 20 * 60);
+        event.getFather().setMetadata("breedCooldown", new FixedMetadataValue(instance, true));
         event.getFather().removeMetadata("inLove", instance);
+        event.getMother().setMetadata("breedCooldown", new FixedMetadataValue(instance, true));
         event.getMother().removeMetadata("inLove", instance);
     }
 }

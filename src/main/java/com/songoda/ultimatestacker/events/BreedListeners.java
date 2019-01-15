@@ -15,6 +15,7 @@ public class BreedListeners implements Listener {
 
     @EventHandler
     public void onBread(EntityBreedEvent event) {
+
         event.getFather().removeMetadata("inLove", instance);
         event.getMother().removeMetadata("inLove", instance);
     }

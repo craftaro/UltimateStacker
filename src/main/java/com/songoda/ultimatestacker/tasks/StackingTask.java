@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class StackingTask extends BukkitRunnable {
@@ -52,8 +53,11 @@ public class StackingTask extends BukkitRunnable {
         EntityStackManager stackManager = instance.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
 
+            List<Entity> entities = world.getEntities();
+            Collections.reverse(entities);
+
             nextEntity:
-            for (Entity entityO : world.getEntities()) {
+            for (Entity entityO : entities) {
                 if (entityO == null || entityO instanceof Player) continue;
 
                 if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
@@ -141,6 +145,7 @@ public class StackingTask extends BukkitRunnable {
 
                 stack.updateStack();
             }
+            entities.clear();
         }
     }
 

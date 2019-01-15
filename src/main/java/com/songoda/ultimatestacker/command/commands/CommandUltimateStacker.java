@@ -14,7 +14,7 @@ public class CommandUltimateStacker extends AbstractCommand {
     @Override
     protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
         sender.sendMessage("");
-        sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7Version " + instance.getDescription().getVersion() + " Created with <3 by &5&l&oBrianna"));
+        sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7Version " + instance.getDescription().getVersion() + " Created with <3 by &5&l&oSongoda"));
 
         for (AbstractCommand command : instance.getCommandManager().getCommands()) {
             if (command.getPermissionNode() == null || sender.hasPermission(command.getPermissionNode())) {

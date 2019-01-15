@@ -44,7 +44,8 @@ public class EntityStack {
             return;
         }
         this.amount = amount;
-        updateStack();
+        if (amount != 0)
+            updateStack();
     }
 
     @Override

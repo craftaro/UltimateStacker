@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -55,6 +56,8 @@ public class StackingTask extends BukkitRunnable {
 
             List<Entity> entities = world.getEntities();
             Collections.reverse(entities);
+
+            List<UUID> removed = new ArrayList<>();
 
             nextEntity:
             for (Entity entityO : entities) {
@@ -114,6 +117,7 @@ public class StackingTask extends BukkitRunnable {
                 List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
 
                 for (Entity entity : new ArrayList<>(entityList)) {
+                    if (removed.contains(entity.getUniqueId())) continue;
                     EntityStack stack = stackManager.getStack(entity);
                     if (stack == null && entity.getCustomName() != null) {
                         entityList.remove(entity);
@@ -124,7 +128,9 @@ public class StackingTask extends BukkitRunnable {
                     if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
                         stack.addAmount(amtToStack);
                         stack.updateStack();
+                        removed.add(initalEntity.getUniqueId());
                         initalEntity.remove();
+
                         continue nextEntity;
                     }
                 }
@@ -139,13 +145,15 @@ public class StackingTask extends BukkitRunnable {
                 EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, entityList.size() + 1));
 
                 for (Entity entity : entityList) {
-                    if (stackManager.isStacked(entity)) continue;
+                    if (stackManager.isStacked(entity) || removed.contains(entity.getUniqueId())) continue;
+                    removed.add(entity.getUniqueId());
                     entity.remove();
                 }
 
                 stack.updateStack();
             }
             entities.clear();
+            removed.clear();
         }
     }
 

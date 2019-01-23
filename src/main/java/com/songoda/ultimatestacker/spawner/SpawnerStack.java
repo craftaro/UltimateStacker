@@ -9,7 +9,7 @@ import org.bukkit.block.CreatureSpawner;
 public class SpawnerStack {
 
     private final Location location;
-    private int amount;
+    private int amount = 1;
 
     public SpawnerStack(Location location, int amount) {
         this.location = location;

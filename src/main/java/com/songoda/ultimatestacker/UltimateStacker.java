@@ -4,7 +4,9 @@ import com.songoda.ultimatestacker.command.CommandManager;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.events.*;
-import com.songoda.ultimatestacker.handlers.HologramHandler;
+import com.songoda.ultimatestacker.hologram.Hologram;
+import com.songoda.ultimatestacker.hologram.HologramArconix;
+import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
@@ -22,6 +24,7 @@ import org.bukkit.*;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,7 +51,7 @@ public class UltimateStacker extends JavaPlugin {
     private SpawnerStackManager spawnerStackManager;
     private CommandManager commandManager;
     private StackingTask stackingTask;
-    private HologramHandler hologramHandler;
+    private Hologram hologram;
 
     private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
     private Storage storage;
@@ -60,6 +63,8 @@ public class UltimateStacker extends JavaPlugin {
     public void onDisable() {
         this.saveToFile();
         this.storage.closeConnection();
+        if (hologram != null)
+            this.hologram.unloadHolograms();
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         console.sendMessage(Methods.formatText("&a============================="));
@@ -167,12 +172,6 @@ public class UltimateStacker extends JavaPlugin {
                     try {
                         Location location = Methods.unserializeLocation(row.getKey());
 
-                        if (location.getWorld() == null || !location.getBlock().getType().name().contains("SPAWNER")) {
-                            if (location.getWorld() != null && !location.getBlock().getType().name().contains("SPAWNER")) {
-                                this.hologramHandler.despawn(location.getBlock());
-                            }
-                        }
-
                         SpawnerStack stack = new SpawnerStack(
                                 location,
                                 row.get("amount").asInt());
@@ -191,11 +190,10 @@ public class UltimateStacker extends JavaPlugin {
             }
             // Save data initially so that if the person reloads again fast they don't lose all their data.
             this.saveToFile();
-            if (Bukkit.getPluginManager().isPluginEnabled("Arconix")) {
-                this.hologramHandler = new HologramHandler(this);
-            }
+            if (hologram != null)
+                hologram.loadHolograms();
         }, 10);
-
+        PluginManager pluginManager = Bukkit.getPluginManager();
         if (isServerVersionAtLeast(ServerVersion.V1_10))
             Bukkit.getPluginManager().registerEvents(new BreedListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new SpawnerListeners(this), this);
@@ -206,6 +204,9 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new InventoryListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new EntityListeners(this), this);
 
+        // Register Hologram Plugin
+        if (pluginManager.isPluginEnabled("Arconix")) hologram = new HologramArconix(this);
+        else if (pluginManager.isPluginEnabled("HolographicDisplays")) hologram = new HologramHolographicDisplays(this);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
 
@@ -297,6 +298,8 @@ public class UltimateStacker extends JavaPlugin {
         return this.getConfig().getBoolean("Main.Stack Spawners");
     }
 
+    public Hologram getHologram() { return hologram; }
+    
     public ServerVersion getServerVersion() {
         return serverVersion;
     }
@@ -311,10 +314,6 @@ public class UltimateStacker extends JavaPlugin {
 
     public boolean isServerVersionAtLeast(ServerVersion version) {
         return serverVersion.ordinal() >= version.ordinal();
-    }
-
-    public HologramHandler getHologramHandler() {
-        return hologramHandler;
     }
 
     public References getReferences() {

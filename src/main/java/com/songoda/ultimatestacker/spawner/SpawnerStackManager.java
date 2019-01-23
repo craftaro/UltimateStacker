@@ -13,7 +13,8 @@ public class SpawnerStackManager {
     private static final Map<Location, SpawnerStack> registeredSpawners = new HashMap<>();
 
     public SpawnerStack addSpawner(SpawnerStack spawnerStack) {
-        return registeredSpawners.put(roundLocation(spawnerStack.getLocation()), spawnerStack);
+        registeredSpawners.put(roundLocation(spawnerStack.getLocation()), spawnerStack);
+        return spawnerStack;
     }
 
     public SpawnerStack removeSpawner(Location location) {

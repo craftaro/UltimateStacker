@@ -1,7 +1,7 @@
 name: UltimateStacker
 description: UltimateStacker
 version: maven-version-number
-soft-depend: [Arconix]
+softdepend: [Arconix, HolographicDisplays]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
 commands:

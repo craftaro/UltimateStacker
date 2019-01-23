@@ -71,14 +71,14 @@ public class BlockListeners implements Listener {
                 }
 
                 stack.setAmount(stack.getAmount() + itemAmount);
-                if (instance.getHologramHandler() != null)
-                    instance.getHologramHandler().updateHologram(stack);
+                if (instance.getHologram() != null)
+                    instance.getHologram().update(stack);
                 Methods.takeItem(player, itemAmount);
             }
         }
 
-
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologramHandler().processChange(block), 10L);
+        if (instance.getHologram() != null)
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 10L);
 
     }
 
@@ -99,10 +99,12 @@ public class BlockListeners implements Listener {
             cs.setSpawnedType(cs2.getSpawnedType());
             cs.update();
 
-            instance.getHologramHandler().updateHologram(stack);
+            if (instance.getHologram() != null)
+                instance.getHologram().add(stack);
         }
 
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologramHandler().processChange(block), 1L);
+        if (instance.getHologram() != null)
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -128,18 +130,19 @@ public class BlockListeners implements Listener {
         if (player.isSneaking()) {
             event.setCancelled(false);
             amt = stack.getAmount();
-            instance.getHologramHandler().despawn(block);
+            if (instance.getHologram() != null)
+            instance.getHologram().remove(stack);
             instance.getSpawnerStackManager().removeSpawner(block.getLocation());
         } else {
             if (stack.getAmount() <= 1) {
                 event.setCancelled(false);
-                if (instance.getHologramHandler() != null)
-                instance.getHologramHandler().despawn(block);
                 instance.getSpawnerStackManager().removeSpawner(block.getLocation());
+                if (instance.getHologram() != null)
+                    instance.getHologram().remove(stack);
             } else {
                 stack.setAmount(stack.getAmount() - 1);
-                if (instance.getHologramHandler() != null)
-                    instance.getHologramHandler().updateHologram(stack);
+                if (instance.getHologram() != null)
+                    instance.getHologram().update(stack);
             }
         }
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))

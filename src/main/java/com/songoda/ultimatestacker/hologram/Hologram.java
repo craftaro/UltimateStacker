@@ -41,7 +41,7 @@ public abstract class Hologram {
 
     public void add(SpawnerStack spawner) {
         int amount = spawner.getAmount();
-        if (spawner.getLocation().getBlock().getType() != Material.SPAWNER) return;
+        if (spawner.getLocation().getBlock().getType() != Material.MOB_SPAWNER) return;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner) spawner.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
@@ -55,7 +55,7 @@ public abstract class Hologram {
 
     public void update(SpawnerStack spawner) {
         int amount = spawner.getAmount();
-        if (spawner.getLocation().getBlock().getType() != Material.SPAWNER) return;
+        if (spawner.getLocation().getBlock().getType() != Material.MOB_SPAWNER) return;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner) spawner.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);

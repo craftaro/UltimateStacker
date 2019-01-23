@@ -1,13 +1,13 @@
-package com.songoda.epicspawners.hologram;
+package com.songoda.ultimatestacker.hologram;
 
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.songoda.epicspawners.EpicSpawnersPlugin;
+import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.Location;
 
 
 public class HologramHolographicDisplays extends Hologram {
 
-    public HologramHolographicDisplays(EpicSpawnersPlugin instance) {
+    public HologramHolographicDisplays(UltimateStacker instance) {
         super(instance);
     }
 

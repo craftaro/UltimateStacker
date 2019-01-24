@@ -1,6 +1,8 @@
 package com.songoda.ultimatestacker.utils;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.entity.EntityStackManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
@@ -15,6 +17,55 @@ import java.util.List;
 import java.util.Map;
 
 public class Methods {
+
+    public static void onDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
+        UltimateStacker instance = UltimateStacker.getInstance();
+
+        EntityStackManager stackManager = instance.getEntityStackManager();
+
+        if (!stackManager.isStacked(killed)) return;
+
+        killed.setCustomName(null);
+        killed.setCustomNameVisible(false);
+
+        EntityStack stack = stackManager.getStack(killed);
+
+        if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death") && stack.getAmount() != 1) {
+            for (int i = 1; i < stack.getAmount(); i++) {
+                for (ItemStack item : items) {
+                    killed.getWorld().dropItemNaturally(killed.getLocation(), item);
+                }
+                killed.getWorld().spawn(killed.getLocation(), ExperienceOrb.class).setExperience(droppedExp);
+            }
+        } else {
+            Entity newEntity = newEntity(killed);
+            stack = stackManager.updateStack(killed, newEntity);
+
+            stack.addAmount(-1);
+            if (stack.getAmount() <= 1) {
+                stackManager.removeStack(newEntity);
+                newEntity.setCustomNameVisible(false);
+                newEntity.setCustomName(null);
+            }
+        }
+    }
+
+    private static LivingEntity newEntity(LivingEntity killed) {
+        LivingEntity newEntity = (LivingEntity) killed.getWorld().spawnEntity(killed.getLocation(), killed.getType());
+        newEntity.setVelocity(killed.getVelocity());
+        if (killed instanceof Ageable && !((Ageable) killed).isAdult()) {
+            ((Ageable) newEntity).setBaby();
+        } else if (killed instanceof Sheep) {
+            ((Sheep) newEntity).setColor(((Sheep) killed).getColor());
+        } else if (killed instanceof Villager) {
+            ((Villager) newEntity).setProfession(((Villager) killed).getProfession());
+        }
+
+        newEntity.setFireTicks(killed.getFireTicks());
+        newEntity.addPotionEffects(killed.getActivePotionEffects());
+
+        return newEntity;
+    }
 
     public static List<Entity> getSimilarEntitesAroundEntity(Entity initalEntity) {
 

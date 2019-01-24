@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +17,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class EntityListeners implements Listener {
@@ -29,6 +31,10 @@ public class EntityListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlow(EntityExplodeEvent event) {
         if (!(event.getEntity() instanceof Creeper) && !(event.getEntity() instanceof TNTPrimed)) return;
+
+        if (event.getEntity() instanceof Creeper) {
+            Methods.onDeath((LivingEntity)event.getEntity(), new ArrayList<>(), 0);
+        }
 
             List<Block> destroyed = event.blockList();
         for (Block block : destroyed) {

@@ -186,3 +186,15 @@ target/classes/SettingDefinitions\.yml
 \.idea/libraries/Maven__uk_antiperson_stackmob_LATEST\.xml
 
 \.idea/libraries/Maven__xyz_wildseries_wildstacker_b6\.xml
+
+\.idea/libraries/Maven__com_gmail_filoghost_holographicdisplays_holographicdisplays_LATEST\.xml
+
+target/classes/com/songoda/ultimatestacker/events/BreedListeners\.class
+
+target/classes/com/songoda/ultimatestacker/events/EntityListeners\.class
+
+target/classes/com/songoda/ultimatestacker/hologram/Hologram\.class
+
+target/classes/com/songoda/ultimatestacker/hologram/HologramArconix\.class
+
+target/classes/com/songoda/ultimatestacker/hologram/HologramHolographicDisplays\.class

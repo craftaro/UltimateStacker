@@ -50,6 +50,7 @@ public class StackingTask extends BukkitRunnable {
     public void run() {
         int maxItemStackSize = instance.getConfig().getInt("Item.Max Stack Size");
         int maxEntityStackSize = instance.getConfig().getInt("Entity.Max Stack Size");
+        int minEntityStackAmount = instance.getConfig().getInt("Entity.Min Stack Amount");
 
         EntityStackManager stackManager = instance.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
@@ -139,7 +140,7 @@ public class StackingTask extends BukkitRunnable {
 
                 entityList.removeIf(stackManager::isStacked);
 
-                if (entityList.size() < instance.getConfig().getInt("Entity.Min Stack Amount") - 1) continue;
+                if (entityList.size() < minEntityStackAmount - 1 || minEntityStackAmount > maxEntityStackSize) continue;
 
                 //If stack was never found make a new one.
                 EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, entityList.size() + 1));

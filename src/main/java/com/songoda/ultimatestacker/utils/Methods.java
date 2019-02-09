@@ -59,6 +59,8 @@ public class Methods {
             ((Sheep) newEntity).setColor(((Sheep) killed).getColor());
         } else if (killed instanceof Villager) {
             ((Villager) newEntity).setProfession(((Villager) killed).getProfession());
+        } else if (killed instanceof Slime) {
+            ((Slime)newEntity).setSize(((Slime)killed).getSize());;
         }
 
         newEntity.setFireTicks(killed.getFireTicks());
@@ -97,6 +99,11 @@ public class Methods {
         if (initalEntity instanceof Villager) {
             Villager villager = ((Villager) initalEntity);
             entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
+        }
+
+        if (initalEntity instanceof Slime) {
+            Slime slime = ((Slime) initalEntity);
+            entityList.removeIf(entity -> ((Slime)entity).getSize() != slime.getSize());
         }
 
         if (initalEntity.hasMetadata("breedCooldown")) {

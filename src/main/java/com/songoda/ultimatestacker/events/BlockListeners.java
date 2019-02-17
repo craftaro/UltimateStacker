@@ -113,6 +113,7 @@ public class BlockListeners implements Listener {
         if (block.getType() != Material.MOB_SPAWNER) return;
 
         if (!instance.spawnersEnabled()) return;
+        event.setExpToDrop(0);
 
         CreatureSpawner cs = (CreatureSpawner) block.getState();
 

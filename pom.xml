@@ -47,12 +47,11 @@
         </repository>
     </repositories>
     <dependencies>
-        <dependency>
-            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
-            <artifactId>holographicdisplays</artifactId>
-            <version>LATEST</version>
-            <scope>provided</scope>
-        </dependency>
+<dependency>
+    <groupId>com.gmail.filoghost.holographicdisplays</groupId>
+    <artifactId>holographicdisplays-api</artifactId>
+    <version>2.3.2</version>
+</dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>

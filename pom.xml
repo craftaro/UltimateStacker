@@ -50,8 +50,7 @@
         <dependency>
             <groupId>com.gmail.filoghost.holographicdisplays</groupId>
             <artifactId>holographicdisplays-api</artifactId>
-            <version>LATEST</version>
-            <scope>provided</scope>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.spigotmc</groupId>

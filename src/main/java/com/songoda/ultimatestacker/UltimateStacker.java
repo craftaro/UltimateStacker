@@ -188,6 +188,7 @@ public class UltimateStacker extends JavaPlugin {
                 storage.prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
                         new StorageItem("amount", stack.getAmount()));
             }
+
             // Save data initially so that if the person reloads again fast they don't lose all their data.
             this.saveToFile();
             if (hologram != null)
@@ -260,16 +261,6 @@ public class UltimateStacker extends JavaPlugin {
     private void saveToFile() {
         this.storage.closeConnection();
         checkStorage();
-
-        for (EntityStack stack : entityStackManager.getStacks().values()) {
-            storage.prepareSaveItem("entities", new StorageItem("uuid", stack.getEntity().getUniqueId().toString()),
-                    new StorageItem("amount", stack.getAmount()));
-        }
-
-        for (SpawnerStack stack : spawnerStackManager.getStacks()) {
-            storage.prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
-                    new StorageItem("amount", stack.getAmount()));
-        }
 
         storage.doSave();
     }

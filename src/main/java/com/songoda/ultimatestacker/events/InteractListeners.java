@@ -36,13 +36,14 @@ public class InteractListeners implements Listener {
 
         if (!instance.getEntityStackManager().isStacked(entity) || event.getColor() == ((Sheep) entity).getColor()) return;
         EntityStack stack = instance.getEntityStackManager().getStack(entity);
+        if (stack.getAmount() <= 1) return;
 
         Entity newEntity = entity.getWorld().spawnEntity(entity.getLocation(), entity.getType());
         entity.setVelocity(getRandomVector());
 
         Sheep sheep = ((Sheep) newEntity);
-        sheep.setSheared(sheep.isSheared());
-        sheep.setColor(sheep.getColor());
+        sheep.setSheared(((Sheep)entity).isSheared());
+        sheep.setColor(((Sheep)entity).getColor());
 
         instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);
@@ -80,13 +81,13 @@ public class InteractListeners implements Listener {
 
         if (entity instanceof Sheep) {
             Sheep sheep = ((Sheep) newEntity);
-            sheep.setSheared(sheep.isSheared());
-            sheep.setColor(sheep.getColor());
+            sheep.setSheared(((Sheep)entity).isSheared());
+            sheep.setColor(((Sheep)entity).getColor());
         }
 
         if (entity instanceof Villager) {
             Villager villager = ((Villager) newEntity);
-            villager.setProfession(villager.getProfession());
+            villager.setProfession(((Villager)entity).getProfession());
         }
 
 

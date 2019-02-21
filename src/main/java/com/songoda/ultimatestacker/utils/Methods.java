@@ -10,6 +10,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +40,11 @@ public class Methods {
             }
         } else {
             Entity newEntity = newEntity(killed);
+
+            if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
+                if (killed.hasMetadata("ES")) newEntity.setMetadata("ES",
+                        new FixedMetadataValue(com.songoda.epicspawners.EpicSpawnersPlugin.getInstance(), "ES"));
+
             stack = stackManager.updateStack(killed, newEntity);
 
             stack.addAmount(-1);
@@ -60,7 +66,7 @@ public class Methods {
         } else if (killed instanceof Villager) {
             ((Villager) newEntity).setProfession(((Villager) killed).getProfession());
         } else if (killed instanceof Slime) {
-            ((Slime)newEntity).setSize(((Slime)killed).getSize());;
+            ((Slime)newEntity).setSize(((Slime)killed).getSize());
         }
 
         newEntity.setFireTicks(killed.getFireTicks());

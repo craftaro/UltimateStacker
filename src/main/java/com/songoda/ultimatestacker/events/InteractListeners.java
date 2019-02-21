@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.SheepDyeWoolEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -27,6 +28,25 @@ public class InteractListeners implements Listener {
 
     public InteractListeners(UltimateStacker instance) {
         this.instance = instance;
+    }
+
+    @EventHandler
+    public void onSheepDye(SheepDyeWoolEvent event) {
+        Entity entity = event.getEntity();
+
+        if (!instance.getEntityStackManager().isStacked(entity) || event.getColor() == ((Sheep) entity).getColor()) return;
+        EntityStack stack = instance.getEntityStackManager().getStack(entity);
+
+        Entity newEntity = entity.getWorld().spawnEntity(entity.getLocation(), entity.getType());
+        entity.setVelocity(getRandomVector());
+
+        Sheep sheep = ((Sheep) newEntity);
+        sheep.setSheared(sheep.isSheared());
+        sheep.setColor(sheep.getColor());
+
+        instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
+        stack.setAmount(1);
+        instance.getEntityStackManager().removeStack(entity);
     }
 
     @EventHandler

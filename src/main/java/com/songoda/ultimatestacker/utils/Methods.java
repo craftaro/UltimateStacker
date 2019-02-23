@@ -7,6 +7,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,6 +19,36 @@ import java.util.List;
 import java.util.Map;
 
 public class Methods {
+
+    private static void handleWholeStackDeath(Location killedLocation, EntityStack stack, List<ItemStack> items, int droppedExp) {
+        for (int i = 1; i < stack.getAmount(); i++) {
+            for (ItemStack item : items) {
+                killedLocation.getWorld().dropItemNaturally(killedLocation, item);
+            }
+
+            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp);
+        }
+    }
+
+    private static void handleSingleStackDeath(LivingEntity killed) {
+        UltimateStacker instance = UltimateStacker.getInstance();
+        EntityStackManager stackManager = instance.getEntityStackManager();
+        Entity newEntity = newEntity(killed);
+
+        if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
+            if (killed.hasMetadata("ES"))
+                newEntity.setMetadata("ES", new FixedMetadataValue(com.songoda.epicspawners.EpicSpawnersPlugin.getInstance(), "ES"));
+
+        EntityStack entityStack = stackManager.updateStack(killed, newEntity);
+
+        entityStack.addAmount(-1);
+
+        if (entityStack.getAmount() <= 1) {
+            stackManager.removeStack(newEntity);
+            newEntity.setCustomNameVisible(false);
+            newEntity.setCustomName(null);
+        }
+    }
 
     public static void onDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
         UltimateStacker instance = UltimateStacker.getInstance();
@@ -32,28 +63,30 @@ public class Methods {
         EntityStack stack = stackManager.getStack(killed);
 
         if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death") && stack.getAmount() != 1) {
-            for (int i = 1; i < stack.getAmount(); i++) {
-                for (ItemStack item : items) {
-                    killed.getWorld().dropItemNaturally(killed.getLocation(), item);
+            handleWholeStackDeath(killed.getLocation(), stack, items, droppedExp);
+        } else if(instance.getConfig().getBoolean("Entity.Kill Whole Stack On Special Death Cause") && stack.getAmount() != 1) {
+            List<String> reasons = instance.getConfig().getStringList("Entity.Special Death Cause");
+            EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
+
+            if(lastDamageCause != null) {
+                EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
+                boolean killWholeStack = false;
+
+                for(String s : reasons) {
+                    if(cause.name().equalsIgnoreCase(s)) {
+                        killWholeStack = true;
+                        break;
+                    }
                 }
-                killed.getWorld().spawn(killed.getLocation(), ExperienceOrb.class).setExperience(droppedExp);
-            }
-        } else {
-            Entity newEntity = newEntity(killed);
 
-            if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
-                if (killed.hasMetadata("ES")) newEntity.setMetadata("ES",
-                        new FixedMetadataValue(com.songoda.epicspawners.EpicSpawnersPlugin.getInstance(), "ES"));
-
-            stack = stackManager.updateStack(killed, newEntity);
-
-            stack.addAmount(-1);
-            if (stack.getAmount() <= 1) {
-                stackManager.removeStack(newEntity);
-                newEntity.setCustomNameVisible(false);
-                newEntity.setCustomName(null);
+                if(killWholeStack) {
+                    handleWholeStackDeath(killed.getLocation(), stack, items, droppedExp);
+                    return;
+                }
             }
         }
+
+        handleSingleStackDeath(killed);
     }
 
     private static LivingEntity newEntity(LivingEntity killed) {

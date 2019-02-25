@@ -20,8 +20,13 @@ import java.util.Map;
 
 public class Methods {
 
-    private static void handleWholeStackDeath(Location killedLocation, EntityStack stack, List<ItemStack> items, int droppedExp) {
+    private static void handleWholeStackDeath(LivingEntity killed, EntityStack stack, List<ItemStack> items, int droppedExp) {
+        Location killedLocation = killed.getLocation();
         for (int i = 1; i < stack.getAmount(); i++) {
+            if (i == 1) {
+                if (killed.getType() != EntityType.PIG_ZOMBIE)
+                    items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
+            }
             for (ItemStack item : items) {
                 killedLocation.getWorld().dropItemNaturally(killedLocation, item);
             }
@@ -34,7 +39,9 @@ public class Methods {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
         Entity newEntity = newEntity(killed);
-        ((LivingEntity) newEntity).getEquipment().clear();
+
+        if (killed.getType() != EntityType.PIG_ZOMBIE)
+            ((LivingEntity) newEntity).getEquipment().clear();
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))
@@ -64,30 +71,23 @@ public class Methods {
         EntityStack stack = stackManager.getStack(killed);
 
         if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death") && stack.getAmount() != 1) {
-            handleWholeStackDeath(killed.getLocation(), stack, items, droppedExp);
+            handleWholeStackDeath(killed, stack, items, droppedExp);
         } else if(instance.getConfig().getBoolean("Entity.Kill Whole Stack On Special Death Cause") && stack.getAmount() != 1) {
             List<String> reasons = instance.getConfig().getStringList("Entity.Special Death Cause");
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
             if(lastDamageCause != null) {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
-                boolean killWholeStack = false;
 
                 for(String s : reasons) {
                     if(cause.name().equalsIgnoreCase(s)) {
-                        killWholeStack = true;
+                        handleWholeStackDeath(killed, stack, items, droppedExp);
                         break;
                     }
                 }
-
-                if(killWholeStack) {
-                    handleWholeStackDeath(killed.getLocation(), stack, items, droppedExp);
-                    return;
-                }
             }
+            handleSingleStackDeath(killed);
         }
-
-        handleSingleStackDeath(killed);
     }
 
     private static LivingEntity newEntity(LivingEntity killed) {

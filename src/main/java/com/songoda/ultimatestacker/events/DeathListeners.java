@@ -11,6 +11,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.ArrayList;
+
 public class DeathListeners implements Listener {
 
     private final UltimateStacker instance;
@@ -21,6 +23,6 @@ public class DeathListeners implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        Methods.onDeath(event.getEntity(), event.getDrops(), event.getDroppedExp());
+        Methods.onDeath(event.getEntity(), new ArrayList<>(event.getDrops()), event.getDroppedExp());
     }
 }

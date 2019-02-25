@@ -34,6 +34,7 @@ public class Methods {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
         Entity newEntity = newEntity(killed);
+        ((LivingEntity) newEntity).getEquipment().clear();
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))

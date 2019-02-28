@@ -78,11 +78,10 @@ public class Methods {
 
             if(lastDamageCause != null) {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
-
                 for(String s : reasons) {
                     if(cause.name().equalsIgnoreCase(s)) {
                         handleWholeStackDeath(killed, stack, items, droppedExp);
-                        break;
+                        return;
                     }
                 }
             }

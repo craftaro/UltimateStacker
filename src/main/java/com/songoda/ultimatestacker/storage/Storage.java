@@ -19,7 +19,7 @@ public abstract class Storage {
     public Storage(UltimateStacker instance) {
         this.instance = instance;
         this.dataFile = new ConfigWrapper(instance, "", "data.yml");
-        this.dataFile.createNewFile(null, "EpicHoppers Data File");
+        this.dataFile.createNewFile(null, "UltimateStacker Data File");
         this.dataFile.getConfig().options().copyDefaults(true);
         this.dataFile.saveConfig();
     }
@@ -32,7 +32,7 @@ public abstract class Storage {
 
     public void updateData(UltimateStacker instance) {
         for (EntityStack stack : instance.getEntityStackManager().getStacks().values()) {
-            prepareSaveItem("entities", new StorageItem("uuid", stack.getEntity().getUniqueId().toString()),
+            prepareSaveItem("entities", new StorageItem("uuid", stack.getEntityUniqueId().toString()),
                     new StorageItem("amount", stack.getAmount()));
         }
 

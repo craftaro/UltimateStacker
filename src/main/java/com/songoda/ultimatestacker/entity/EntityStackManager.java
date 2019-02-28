@@ -13,7 +13,7 @@ public class EntityStackManager {
     private static final Map<UUID, EntityStack> stacks = new HashMap<>();
 
     public EntityStack addStack(EntityStack stack) {
-        stacks.put(stack.getEntity().getUniqueId(), stack);
+        stacks.put(stack.getEntityUniqueId(), stack);
         return stack;
     }
 
@@ -27,6 +27,10 @@ public class EntityStackManager {
 
     public boolean isStacked(Entity entity) {
         return stacks.containsKey(entity.getUniqueId());
+    }
+
+    public EntityStack removeStack(UUID entity) {
+        return stacks.remove(entity);
     }
 
     public EntityStack removeStack(Entity entity) {

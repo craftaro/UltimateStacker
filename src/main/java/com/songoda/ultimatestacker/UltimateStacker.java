@@ -155,16 +155,16 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getScheduler().runTaskLater(this, () -> {
             if (storage.containsGroup("entities")) {
                 for (StorageRow row : storage.getRowsByGroup("entities")) {
-
-                    Entity entity = getEntityByUniqueId(UUID.fromString(row.getKey()));
-
-                    if (entity == null) continue;
-
+                    try {
                     EntityStack stack = new EntityStack(
-                            entity,
+                            UUID.fromString(row.getKey()),
                             row.get("amount").asInt());
 
                     this.entityStackManager.addStack(stack);
+                    } catch (Exception e) {
+                        console.sendMessage("Failed to load entity.");
+                        e.printStackTrace();
+                    }
                 }
             }
             if (storage.containsGroup("spawners")) {
@@ -182,11 +182,6 @@ public class UltimateStacker extends JavaPlugin {
                         e.printStackTrace();
                     }
                 }
-            }
-
-            for (SpawnerStack stack : spawnerStackManager.getStacks()) {
-                storage.prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
-                        new StorageItem("amount", stack.getAmount()));
             }
 
             // Save data initially so that if the person reloads again fast they don't lose all their data.

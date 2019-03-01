@@ -24,8 +24,10 @@ public class Methods {
         Location killedLocation = killed.getLocation();
         for (int i = 1; i < stack.getAmount(); i++) {
             if (i == 1) {
-                if (killed.getType() != EntityType.PIG_ZOMBIE)
-                    items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
+                items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
+                for (ItemStack item : killed.getEquipment().getArmorContents()) {
+                    items.removeIf(it -> it.isSimilar(item));
+                }
             }
             for (ItemStack item : items) {
                 killedLocation.getWorld().dropItemNaturally(killedLocation, item);
@@ -40,8 +42,10 @@ public class Methods {
         EntityStackManager stackManager = instance.getEntityStackManager();
         Entity newEntity = newEntity(killed);
 
-        if (killed.getType() != EntityType.PIG_ZOMBIE)
-            ((LivingEntity) newEntity).getEquipment().clear();
+        ((LivingEntity) newEntity).getEquipment().clear();
+        
+        if (killed.getType() == EntityType.PIG_ZOMBIE)
+            ((LivingEntity) newEntity).getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))

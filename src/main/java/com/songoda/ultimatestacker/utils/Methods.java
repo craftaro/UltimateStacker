@@ -49,7 +49,7 @@ public class Methods {
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))
-                newEntity.setMetadata("ES", new FixedMetadataValue(com.songoda.epicspawners.EpicSpawnersPlugin.getInstance(), "ES"));
+                newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
 
         EntityStack entityStack = stackManager.updateStack(killed, newEntity);
 

@@ -2,11 +2,12 @@ package com.songoda.ultimatestacker.entity;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
 import java.util.UUID;
-
 public class EntityStack {
 
     private UUID entity;
@@ -23,7 +24,7 @@ public class EntityStack {
     }
 
     public void updateStack() {
-        Entity entity = Bukkit.getEntity(this.entity);
+        Entity entity = getEntityByUniqueId(this.entity);
         if (entity == null) return;
 
         entity.setCustomNameVisible(true);
@@ -31,7 +32,7 @@ public class EntityStack {
     }
 
     public Entity getEntity() {
-        Entity entity = Bukkit.getEntity(this.entity);
+        Entity entity = getEntityByUniqueId(this.entity);
         if (entity == null) {
             UltimateStacker.getInstance().getEntityStackManager().removeStack(this.entity);
             return null;
@@ -58,7 +59,7 @@ public class EntityStack {
 
     public void setAmount(int amount) {
         if (amount == 1) {
-            Entity entity = Bukkit.getEntity(this.entity);
+            Entity entity = getEntityByUniqueId(this.entity);
             if (entity == null) return;
 
             UltimateStacker.getInstance().getEntityStackManager().removeStack(this.entity);
@@ -69,6 +70,20 @@ public class EntityStack {
         this.amount = amount;
         if (amount != 0)
             updateStack();
+    }
+
+    public Entity getEntityByUniqueId(UUID uniqueId) {
+        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12))
+            return Bukkit.getEntity(uniqueId);
+
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (entity.getUniqueId().equals(uniqueId))
+                    return entity;
+            }
+        }
+
+        return null;
     }
 
     @Override

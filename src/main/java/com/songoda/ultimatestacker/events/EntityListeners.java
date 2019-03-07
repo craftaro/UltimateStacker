@@ -50,6 +50,30 @@ public class EntityListeners implements Listener {
     }
 
     @EventHandler
+    public void onEgg(ItemSpawnEvent event) {
+        if (event.getEntity().getItemStack().getType() != Material.EGG) return;
+
+        Location location = event.getLocation();
+
+        List<Entity> entities = new ArrayList<>(location.getWorld().getNearbyEntities(location, .1, .5, .1));
+
+        if (entities.isEmpty()) return;
+
+        Entity entity = entities.get(0);
+
+        EntityStackManager stackManager = instance.getEntityStackManager();
+
+        if (!stackManager.isStacked(entity)) return;
+
+        EntityStack stack = stackManager.getStack(entity);
+
+        ItemStack item = event.getEntity().getItemStack();
+        item.setAmount((stack.getAmount() - 1) + item.getAmount() > item.getMaxStackSize() ? item.getMaxStackSize()
+                : item.getAmount() + (stack.getAmount() - 1));
+        event.getEntity().setItemStack(item);
+    }
+
+    @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         event.getItem().setItemStack(instance.getStackingTask().setMax(event.getItem().getItemStack(), 0, true));

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -115,18 +116,17 @@ public class StackingTask extends BukkitRunnable {
                 if (configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
-                List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
+                List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity).stream().filter(entity ->
+                        !entity.hasMetadata("no-stack")
+                                && entity.getCustomName() == null
+                                && stackManager.getStack(entity) != null
+                                && removed.contains(entity.getUniqueId())).collect(Collectors.toList());
 
-                for (Entity entity : new ArrayList<>(entityList)) {
-                    if (removed.contains(entity.getUniqueId())) continue;
+                for (Entity entity : entityList) {
                     EntityStack stack = stackManager.getStack(entity);
-                    if (stack == null && entity.getCustomName() != null) {
-                        entityList.remove(entity);
-                        continue;
-                    }
 
                     //If a stack was found add 1 to this stack.
-                    if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
+                    if ((stack.getAmount() + amtToStack) <= maxEntityStackSize) {
                         stack.addAmount(amtToStack);
                         stack.updateStack();
                         removed.add(initalEntity.getUniqueId());

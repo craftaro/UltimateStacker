@@ -41,6 +41,7 @@ public class Methods {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
         Entity newEntity = newEntity(killed);
+        killed.setMetadata("no-stack", new FixedMetadataValue(instance, true));
 
         ((LivingEntity) newEntity).getEquipment().clear();
         
@@ -83,10 +84,9 @@ public class Methods {
             if(lastDamageCause != null) {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for(String s : reasons) {
-                    if(cause.name().equalsIgnoreCase(s)) {
-                        handleWholeStackDeath(killed, stack, items, droppedExp);
-                        return;
-                    }
+                    if(!cause.name().equalsIgnoreCase(s)) continue;
+                    handleWholeStackDeath(killed, stack, items, droppedExp);
+                    return;
                 }
             }
             handleSingleStackDeath(killed);

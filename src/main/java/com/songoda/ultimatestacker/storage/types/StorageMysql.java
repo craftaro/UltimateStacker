@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static me.ryanhamshire.GriefPrevention.GriefPrevention.instance;
-
 public class StorageMysql extends Storage {
 
     private static Map<String, StorageItem[]> toSave = new HashMap<>();

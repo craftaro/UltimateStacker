@@ -15,10 +15,7 @@ import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
-import com.songoda.ultimatestacker.utils.ConfigWrapper;
-import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ServerVersion;
-import com.songoda.ultimatestacker.utils.SettingsManager;
+import com.songoda.ultimatestacker.utils.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.command.ConsoleCommandSender;
@@ -208,6 +205,9 @@ public class UltimateStacker extends JavaPlugin {
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
+
+        // Starting Metrics
+        new Metrics(this);
 
         console.sendMessage(Methods.formatText("&a============================="));
     }

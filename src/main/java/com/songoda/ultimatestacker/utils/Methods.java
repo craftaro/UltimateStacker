@@ -41,7 +41,6 @@ public class Methods {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
         Entity newEntity = newEntity(killed);
-        killed.setMetadata("no-stack", new FixedMetadataValue(instance, true));
 
         ((LivingEntity) newEntity).getEquipment().clear();
         
@@ -71,7 +70,8 @@ public class Methods {
         if (!stackManager.isStacked(killed)) return;
 
         killed.setCustomName(null);
-        killed.setCustomNameVisible(false);
+        killed.setCustomNameVisible(true);
+        killed.setCustomName(formatText("&7"));
 
         EntityStack stack = stackManager.getStack(killed);
 

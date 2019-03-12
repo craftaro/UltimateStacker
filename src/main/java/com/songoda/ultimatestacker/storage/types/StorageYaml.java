@@ -84,24 +84,18 @@ public class StorageYaml extends Storage {
     public void save() {
         try {
             for (Map.Entry<String, Object> entry : lastSave.entrySet()) {
-                System.out.println("key: " + entry.getKey());
                 if (toSave.containsKey(entry.getKey())) {
-                    System.out.println("found");
                     Object newValue = toSave.get(entry.getKey());
-                    System.out.println(entry.getValue() + ":" + newValue);
                     if (!entry.getValue().equals(newValue)) {
-                        System.out.println("new value");
                         dataFile.getConfig().set(entry.getKey(), newValue);
                     }
                     toSave.remove(entry.getKey());
                 } else {
-                    System.out.println("Deleting " + entry.getValue());
                     dataFile.getConfig().set(entry.getKey(), null);
                 }
             }
 
             for (Map.Entry<String, Object> entry : toSave.entrySet()) {
-                System.out.println(entry.getValue() + " INSERT");
                 dataFile.getConfig().set(entry.getKey(), entry.getValue());
             }
 

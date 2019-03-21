@@ -17,25 +17,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
 
     private final UltimateStacker instance;
 
-    private Class<?> clazzItemStack, clazzItem, clazzCraftItemStack;
-
     private Method methodGetItem, methodAsNMSCopy;
-
     private Field fieldMaxStackSize;
 
     public StackingTask(UltimateStacker instance) {
         this.instance = instance;
+
+        // Cache reflection.
         try {
             String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-            clazzCraftItemStack = Class.forName("org.bukkit.craftbukkit." + ver + ".inventory.CraftItemStack");
-            clazzItemStack = Class.forName("net.minecraft.server." + ver + ".ItemStack");
-            clazzItem = Class.forName("net.minecraft.server." + ver + ".Item");
+            Class<?> clazzCraftItemStack = Class.forName("org.bukkit.craftbukkit." + ver + ".inventory.CraftItemStack");
+            Class<?> clazzItemStack = Class.forName("net.minecraft.server." + ver + ".ItemStack");
+            Class<?> clazzItem = Class.forName("net.minecraft.server." + ver + ".Item");
 
             methodAsNMSCopy = clazzCraftItemStack.getMethod("asNMSCopy", ItemStack.class);
             methodGetItem = clazzItemStack.getDeclaredMethod("getItem");
@@ -45,6 +43,10 @@ public class StackingTask extends BukkitRunnable {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
+
+        // Start stacking task.
+        new StackingTask(instance).runTaskTimer(instance, 0,
+                instance.getConfig().getInt("Main.Stack Search Tick Speed"));
     }
 
     @Override
@@ -135,7 +137,6 @@ public class StackingTask extends BukkitRunnable {
 
                         continue nextEntity;
                     }
-
                 }
 
                 if (initialStack != null) continue;
@@ -149,11 +150,11 @@ public class StackingTask extends BukkitRunnable {
                 //If stack was never found make a new one.
                 EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, entityList.size() + 1));
 
-                for (Entity entity : entityList) {
-                    if (stackManager.isStacked(entity) || removed.contains(entity.getUniqueId())) continue;
+                entityList.stream().filter(entity -> !stackManager.isStacked(entity)
+                        && !removed.contains(entity.getUniqueId())).forEach(entity -> {
                     removed.add(entity.getUniqueId());
                     entity.remove();
-                }
+                });
 
                 stack.updateStack();
             }
@@ -170,9 +171,5 @@ public class StackingTask extends BukkitRunnable {
             e.printStackTrace();
         }
         return item;
-    }
-
-    public void startTask() {
-        new StackingTask(instance).runTaskTimer(instance, 0, instance.getConfig().getInt("Main.Stack Search Tick Speed"));
     }
 }

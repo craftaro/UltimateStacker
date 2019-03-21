@@ -145,7 +145,6 @@ public class UltimateStacker extends JavaPlugin {
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager();
         this.stackingTask = new StackingTask(this);
-        this.stackingTask.startTask();
 
         checkStorage();
 

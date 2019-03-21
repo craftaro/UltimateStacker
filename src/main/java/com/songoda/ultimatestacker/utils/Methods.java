@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Methods {
 
@@ -40,12 +41,12 @@ public class Methods {
     private static void handleSingleStackDeath(LivingEntity killed) {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
-        Entity newEntity = newEntity(killed);
+        LivingEntity newEntity = newEntity(killed);
 
-        ((LivingEntity) newEntity).getEquipment().clear();
+        newEntity.getEquipment().clear();
         
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            ((LivingEntity) newEntity).getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+            newEntity.getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))
@@ -114,12 +115,10 @@ public class Methods {
 
     public static List<Entity> getSimilarEntitesAroundEntity(Entity initalEntity) {
 
-        //Create a list of all entities around the initial entity.
-        List<Entity> entityList = initalEntity.getNearbyEntities(5, 5, 5);
-
-        //Remove entities of a different type.
-        entityList.removeIf(entity1 -> entity1.getType() != initalEntity.getType()
-                || entity1 == initalEntity);
+        //Create a list of all entities around the initial entity of the same type.
+        List<Entity> entityList = initalEntity.getNearbyEntities(5, 5, 5).stream()
+                .filter(entity -> entity.getType() == initalEntity.getType() && entity != initalEntity)
+                .collect(Collectors.toList());
 
         if (initalEntity instanceof Ageable) {
             if (((Ageable) initalEntity).isAdult()) {
@@ -137,14 +136,10 @@ public class Methods {
                 entityList.removeIf(entity -> ((Sheep) entity).isSheared());
             }
             entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
-        }
-
-        if (initalEntity instanceof Villager) {
+        } else if (initalEntity instanceof Villager) {
             Villager villager = ((Villager) initalEntity);
             entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
-        }
-
-        if (initalEntity instanceof Slime) {
+        } else if (initalEntity instanceof Slime) {
             Slime slime = ((Slime) initalEntity);
             entityList.removeIf(entity -> ((Slime)entity).getSize() != slime.getSize());
         }

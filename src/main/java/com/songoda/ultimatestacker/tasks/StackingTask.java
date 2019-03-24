@@ -45,8 +45,7 @@ public class StackingTask extends BukkitRunnable {
         }
 
         // Start stacking task.
-        new StackingTask(instance).runTaskTimer(instance, 0,
-                instance.getConfig().getInt("Main.Stack Search Tick Speed"));
+        runTaskTimer(instance, 0, instance.getConfig().getInt("Main.Stack Search Tick Speed"));
     }
 
     @Override
@@ -119,6 +118,7 @@ public class StackingTask extends BukkitRunnable {
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
                 List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
+                entityList.removeIf(entity -> entity.hasMetadata("inLove") || entity.hasMetadata("breedCooldown"));
 
                 for (Entity entity : new ArrayList<>(entityList)) {
                     if (removed.contains(entity.getUniqueId())) continue;

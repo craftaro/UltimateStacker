@@ -32,9 +32,9 @@ public class InteractListeners implements Listener {
 
     @EventHandler
     public void onSheepDye(SheepDyeWoolEvent event) {
-        Entity entity = event.getEntity();
+        Sheep entity = event.getEntity();
 
-        if (!instance.getEntityStackManager().isStacked(entity) || event.getColor() == ((Sheep) entity).getColor()) return;
+        if (!instance.getEntityStackManager().isStacked(entity) || event.getColor() == entity.getColor()) return;
         EntityStack stack = instance.getEntityStackManager().getStack(entity);
         if (stack.getAmount() <= 1) return;
 
@@ -42,8 +42,8 @@ public class InteractListeners implements Listener {
         entity.setVelocity(getRandomVector());
 
         Sheep sheep = ((Sheep) newEntity);
-        sheep.setSheared(((Sheep)entity).isSheared());
-        sheep.setColor(((Sheep)entity).getColor());
+        sheep.setSheared(entity.isSheared());
+        sheep.setColor(entity.getColor());
 
         instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);
@@ -83,9 +83,7 @@ public class InteractListeners implements Listener {
             Sheep sheep = ((Sheep) newEntity);
             sheep.setSheared(((Sheep)entity).isSheared());
             sheep.setColor(((Sheep)entity).getColor());
-        }
-
-        if (entity instanceof Villager) {
+        } else if (entity instanceof Villager) {
             Villager villager = ((Villager) newEntity);
             villager.setProfession(((Villager)entity).getProfession());
         }

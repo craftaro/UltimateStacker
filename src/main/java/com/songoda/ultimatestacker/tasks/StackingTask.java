@@ -64,7 +64,7 @@ public class StackingTask extends BukkitRunnable {
 
             nextEntity:
             for (Entity entityO : entities) {
-                if (entityO == null || entityO instanceof Player) continue;
+                if (entityO == null || entityO instanceof Player || !entityO.isValid()) continue;
 
                 if (entityO instanceof Item && instance.getConfig().getBoolean("Main.Stack Items")) {
                     ItemStack item = ((Item) entityO).getItemStack();

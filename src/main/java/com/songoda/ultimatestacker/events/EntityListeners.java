@@ -49,6 +49,8 @@ public class EntityListeners implements Listener {
             ItemStack item = Methods.getSpawnerItem(((CreatureSpawner) block.getState()).getSpawnedType(), stack.getAmount());
             spawnerLocation.getWorld().dropItemNaturally(spawnerLocation.clone().add(.5, 0, .5), item);
 
+            if (instance.getHologram() == null) return;
+
             instance.getHologram().remove(stack);
         }
     }

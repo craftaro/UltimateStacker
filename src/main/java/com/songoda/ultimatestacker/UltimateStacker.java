@@ -106,6 +106,7 @@ public class UltimateStacker extends JavaPlugin {
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Enabled", true);
+                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Max Stack Size", -1);
             }
         }
@@ -269,16 +270,6 @@ public class UltimateStacker extends JavaPlugin {
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
         this.references = new References();
         this.reloadConfig();
-    }
-
-    public Entity getEntityByUniqueId(UUID uniqueId) {
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getLivingEntities()) {
-                if (entity.getUniqueId().equals(uniqueId))
-                    return entity;
-            }
-        }
-        return null;
     }
 
     public boolean spawnersEnabled() {

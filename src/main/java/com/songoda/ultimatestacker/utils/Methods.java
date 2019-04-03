@@ -176,7 +176,7 @@ public class Methods {
 
     public static String compileEntityName(Entity entity, int amount) {
         String nameFormat = UltimateStacker.getInstance().getConfig().getString("Entity.Name Format");
-        String displayName = Methods.formatText(entity.getType().name().toLowerCase().replace("_", " "), true);
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getConfig().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));

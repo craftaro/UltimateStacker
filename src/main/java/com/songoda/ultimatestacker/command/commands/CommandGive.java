@@ -33,7 +33,7 @@ public class CommandGive extends AbstractCommand {
         }
 
         if (type == null) {
-            sender.sendMessage(instance.getReferences().getPrefix() + Methods.formatText(instance.getReferences().getPrefix() + "&7The entity Type &6" + args[2] + " &7does not exist. Try one of these:"));
+            sender.sendMessage(instance.getReferences().getPrefix() + Methods.formatText(instance.getReferences().getPrefix() + "&7The entity StackType &6" + args[2] + " &7does not exist. Try one of these:"));
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {

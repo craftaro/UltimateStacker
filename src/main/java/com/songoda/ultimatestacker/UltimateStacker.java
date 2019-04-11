@@ -10,7 +10,6 @@ import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
-import com.songoda.ultimatestacker.storage.StorageItem;
 import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
@@ -19,7 +18,6 @@ import com.songoda.ultimatestacker.utils.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.*;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +29,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UltimateStacker extends JavaPlugin {
@@ -114,9 +114,9 @@ public class UltimateStacker extends JavaPlugin {
         mobFile.saveConfig();
 
         for (Material value : Material.values()) {
-                itemFile.getConfig().addDefault("Items." + value.name() + ".Has Hologram", true);
-                itemFile.getConfig().addDefault("Items." + value.name() + ".Max Stack Size", -1);
-                itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
+            itemFile.getConfig().addDefault("Items." + value.name() + ".Has Hologram", true);
+            itemFile.getConfig().addDefault("Items." + value.name() + ".Max Stack Size", -1);
+            itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
         }
         itemFile.getConfig().options().copyDefaults(true);
         itemFile.saveConfig();
@@ -153,11 +153,11 @@ public class UltimateStacker extends JavaPlugin {
             if (storage.containsGroup("entities")) {
                 for (StorageRow row : storage.getRowsByGroup("entities")) {
                     try {
-                    EntityStack stack = new EntityStack(
-                            UUID.fromString(row.getKey()),
-                            row.get("amount").asInt());
+                        EntityStack stack = new EntityStack(
+                                UUID.fromString(row.getKey()),
+                                row.get("amount").asInt());
 
-                    this.entityStackManager.addStack(stack);
+                        this.entityStackManager.addStack(stack);
                     } catch (Exception e) {
                         console.sendMessage("Failed to load entity.");
                         e.printStackTrace();

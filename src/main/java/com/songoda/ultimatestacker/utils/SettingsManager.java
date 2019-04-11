@@ -172,21 +172,22 @@ public class SettingsManager implements Listener {
 
 
     public void updateSettings() {
-        for (settings s : settings.values()) {
+        for (Settings s : Settings.values()) {
             instance.getConfig().addDefault(s.setting, s.option);
         }
     }
 
-    public enum settings {
-        o1("Main.Stack Items", true),
-        o2("Main.Stack Entities", true),
-        o22("Main.Stack Spawners", true),
+    public enum Settings {
+        STACK_ITEMS("Main.Stack Items", true),
+        STACK_ENTITIES("Main.Stack Entities", true),
+        STACK_SPAWNERS("Main.Stack Spawners", true),
         o3("Main.Stack Search Tick Speed", 5),
-        o4("Entity.Max Stack Size", 15),
-        oo("Entity.Min Stack Amount", 5),
+        DISABLED_WORLDS("Main.DISABLED Worlds", Arrays.asList("World1", "World2", "World3")),
+        MAX_STACK_ENTITIES("Entity.Max Stack Size", 15),
+        MIN_STACK_ENTITIES("Entity.Min Stack Amount", 5),
         o5("Entity.Kill Whole Stack On Death", false),
         o52("Entity.Kill Whole Stack On Special Death Cause", true),
-        o53("Entity.Special Death Cause", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID")),
+        SPECIAL_DEATH_CAUSE("Entity.Special Death Cause", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID")),
         NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x"),
         o6("Item.Max Stack Size", 120),
         NAME_FORMAT_ITEM("Item.Name Format", "&f{TYPE} &6{AMT}x"),
@@ -208,10 +209,27 @@ public class SettingsManager implements Listener {
         private String setting;
         private Object option;
 
-        settings(String setting, Object option) {
+        Settings(String setting, Object option) {
             this.setting = setting;
             this.option = option;
         }
+        
+        public List<String> getStringList() {
+            return UltimateStacker.getInstance().getConfig().getStringList(setting);
+        }
+
+        public boolean getBoolean() {
+            return UltimateStacker.getInstance().getConfig().getBoolean(setting);
+        }
+
+        public int getInt() {
+            return UltimateStacker.getInstance().getConfig().getInt(setting);
+        }
+
+        public String getString() {
+            return UltimateStacker.getInstance().getConfig().getString(setting);
+        }
+
 
     }
 }

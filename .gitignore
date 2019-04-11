@@ -234,3 +234,5 @@ target/classes/com/songoda/ultimatestacker/utils/Metrics\$SimpleBarChart\.class
 target/classes/com/songoda/ultimatestacker/utils/Metrics\$SimplePie\.class
 
 target/classes/com/songoda/ultimatestacker/utils/Metrics\$SingleLineChart\.class
+
+target/classes/META-INF/UltimateStacker\.kotlin_module

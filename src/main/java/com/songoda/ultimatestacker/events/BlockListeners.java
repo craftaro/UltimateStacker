@@ -1,11 +1,14 @@
 package com.songoda.ultimatestacker.events;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.SettingsManager;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
@@ -20,6 +23,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
+
+import java.util.List;
 
 public class BlockListeners implements Listener {
 
@@ -36,6 +41,9 @@ public class BlockListeners implements Listener {
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
         if (block == null || item == null || block.getType() != Material.MOB_SPAWNER || item.getType() != Material.MOB_SPAWNER || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+
+        List<String> disabledWorlds = SettingsManager.Settings.DISABLED_WORLDS.getStringList();
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         if (!instance.spawnersEnabled()) return;
 

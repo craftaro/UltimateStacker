@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class CommandSettings extends AbstractCommand {
 
     public CommandSettings(AbstractCommand parent) {
-        super("settings", parent, true);
+        super("Settings", parent, true);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us settings";
+        return "/us Settings";
     }
 
     @Override

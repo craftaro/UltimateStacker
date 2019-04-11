@@ -115,8 +115,10 @@ public class Methods {
 
     public static List<Entity> getSimilarEntitesAroundEntity(Entity initalEntity) {
 
+        int searcRadius = SettingsManager.Settings.SEARCH_RADIUS.getInt();
+
         //Create a list of all entities around the initial entity of the same type.
-        List<Entity> entityList = initalEntity.getNearbyEntities(5, 5, 5).stream()
+        List<Entity> entityList = initalEntity.getNearbyEntities(searcRadius, searcRadius, searcRadius).stream()
                 .filter(entity -> entity.getType() == initalEntity.getType() && entity != initalEntity)
                 .collect(Collectors.toList());
 

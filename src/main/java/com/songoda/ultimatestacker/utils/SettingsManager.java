@@ -23,7 +23,6 @@ public class SettingsManager implements Listener {
 
     private static final Pattern SETTINGS_PATTERN = Pattern.compile("(.{1,28}(?:\\s|$))|(.{0,28})", Pattern.DOTALL);
 
-    private static ConfigWrapper defs;
     private final UltimateStacker instance;
     private String pluginName = "UltimateStacker";
     private Map<Player, String> cat = new HashMap<>();
@@ -31,10 +30,6 @@ public class SettingsManager implements Listener {
 
     public SettingsManager(UltimateStacker plugin) {
         this.instance = plugin;
-
-        plugin.saveResource("SettingDefinitions.yml", true);
-        defs = new ConfigWrapper(plugin, "", "SettingDefinitions.yml");
-        defs.createNewFile("Loading data file", pluginName + " SettingDefinitions file");
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -148,16 +143,6 @@ public class SettingsManager implements Listener {
             } else if (config.isInt(fKey)) {
                 item.setType(Material.WATCH);
                 lore.add(Methods.formatText("&5" + config.getInt(fKey)));
-            }
-
-            if (defs.getConfig().contains(fKey)) {
-                String text = defs.getConfig().getString(key);
-
-                Matcher m = SETTINGS_PATTERN.matcher(text);
-                while (m.find()) {
-                    if (m.end() != text.length() || m.group().length() != 0)
-                        lore.add(Methods.formatText("&7" + m.group()));
-                }
             }
 
             meta.setLore(lore);

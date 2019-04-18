@@ -46,7 +46,7 @@ public class StackingTask extends BukkitRunnable {
         }
 
         // Start stacking task.
-        runTaskTimer(instance, 0, instance.getConfig().getInt("Main.Stack Search Tick Speed"));
+        runTaskTimer(instance, 0, SettingsManager.Settings.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override

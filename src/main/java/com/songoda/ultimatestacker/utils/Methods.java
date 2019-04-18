@@ -76,10 +76,10 @@ public class Methods {
 
         EntityStack stack = stackManager.getStack(killed);
 
-        if (instance.getConfig().getBoolean("Entity.Kill Whole Stack On Death") && stack.getAmount() != 1) {
+        if (SettingsManager.Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && stack.getAmount() != 1) {
             handleWholeStackDeath(killed, stack, items, droppedExp);
-        } else if(instance.getConfig().getBoolean("Entity.Kill Whole Stack On Special Death Cause") && stack.getAmount() != 1) {
-            List<String> reasons = instance.getConfig().getStringList("Entity.Special Death Cause");
+        } else if(SettingsManager.Settings.KILL_WHOLE_STACK_ON_SPECIAL_DEATH.getBoolean() && stack.getAmount() != 1) {
+            List<String> reasons = SettingsManager.Settings.SPECIAL_DEATH_CAUSE.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
             if(lastDamageCause != null) {

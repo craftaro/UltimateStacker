@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.entity;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.SettingsManager;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -27,7 +28,7 @@ public class EntityStack {
         Entity entity = getEntityByUniqueId(this.entity);
         if (entity == null) return;
 
-        entity.setCustomNameVisible(true);
+        entity.setCustomNameVisible(!SettingsManager.Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
         entity.setCustomName(Methods.compileEntityName(entity, amount));
     }
 

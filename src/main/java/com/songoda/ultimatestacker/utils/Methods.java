@@ -237,7 +237,7 @@ public class Methods {
         double y = location.getY();
         double z = location.getZ();
         String str = w + ":" + x + ":" + y + ":" + z;
-        str = str.replace(".0", "").replace("/", "");
+        str = str.replace(".0", "").replace(".", "/");
         return str;
     }
 

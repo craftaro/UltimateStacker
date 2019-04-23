@@ -99,6 +99,8 @@ public class Methods {
         newEntity.setVelocity(killed.getVelocity());
         if (killed instanceof Ageable && !((Ageable) killed).isAdult()) {
             ((Ageable) newEntity).setBaby();
+        }  else if (killed instanceof Llama) {
+            ((Llama) newEntity).setColor(((Llama) killed).getColor());
         } else if (killed instanceof Sheep) {
             ((Sheep) newEntity).setColor(((Sheep) killed).getColor());
         } else if (killed instanceof Villager) {
@@ -138,12 +140,19 @@ public class Methods {
                 entityList.removeIf(entity -> ((Sheep) entity).isSheared());
             }
             entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
+        } else if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11) && initalEntity instanceof Llama) {
+            Llama llama = ((Llama) initalEntity);
+            entityList.removeIf(entity -> ((Llama) entity).getColor() != llama.getColor());
         } else if (initalEntity instanceof Villager) {
             Villager villager = ((Villager) initalEntity);
             entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
         } else if (initalEntity instanceof Slime) {
             Slime slime = ((Slime) initalEntity);
             entityList.removeIf(entity -> ((Slime)entity).getSize() != slime.getSize());
+        } else if (initalEntity instanceof Horse) {
+            entityList.removeIf(entity -> ((Horse) entity).getInventory().getSaddle() != null
+                    || ((Horse) entity).getInventory().getArmor() != null);
+            //ToDo: Should be triple checked
         }
 
         if (initalEntity.hasMetadata("breedCooldown")) {

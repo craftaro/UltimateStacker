@@ -153,10 +153,11 @@ public class StackingTask extends BukkitRunnable {
                         || minEntityStackAmount == 1 && entityList.size() == 0) continue;
 
                 //If stack was never found make a new one.
-                EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, entityList.size() + 1));
+                EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, (entityList.size() + 1) >
+                        maxEntityStackSize ? maxEntityStackSize : entityList.size() + 1));
 
                 entityList.stream().filter(entity -> !stackManager.isStacked(entity)
-                        && !removed.contains(entity.getUniqueId())).forEach(entity -> {
+                        && !removed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
                     removed.add(entity.getUniqueId());
                     entity.remove();
                 });

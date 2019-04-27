@@ -5,7 +5,6 @@ import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.events.*;
 import com.songoda.ultimatestacker.hologram.Hologram;
-import com.songoda.ultimatestacker.hologram.HologramArconix;
 import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
@@ -24,16 +23,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class UltimateStacker extends JavaPlugin {
@@ -205,7 +195,6 @@ public class UltimateStacker extends JavaPlugin {
         if (getConfig().getBoolean("Spawners.Holograms Enabled")) {
             if (pluginManager.isPluginEnabled("HolographicDisplays"))
                 hologram = new HologramHolographicDisplays(this);
-            else if (pluginManager.isPluginEnabled("Arconix")) hologram = new HologramArconix(this);
         }
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);

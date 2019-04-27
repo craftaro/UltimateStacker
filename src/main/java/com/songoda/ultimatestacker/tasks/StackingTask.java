@@ -52,7 +52,7 @@ public class StackingTask extends BukkitRunnable {
     @Override
     public void run() {
         int maxItemStackSize = SettingsManager.Settings.MAX_STACK_ITEMS.getInt();
-        int maxEntityStackSize = SettingsManager.Settings.MAX_STACK_ENTITIES.getInt();
+        int maxEntityStackSizeGlobal = SettingsManager.Settings.MAX_STACK_ENTITIES.getInt();
         int minEntityStackAmount = SettingsManager.Settings.MIN_STACK_ENTITIES.getInt();
 
         List<String> disabledWorlds = SettingsManager.Settings.DISABLED_WORLDS.getStringList();
@@ -118,6 +118,7 @@ public class StackingTask extends BukkitRunnable {
                 if (!configurationSection.getBoolean("Mobs." + initalEntity.getType().name() + ".Enabled"))
                     continue;
 
+                int maxEntityStackSize = maxEntityStackSizeGlobal;
                 if (configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 

@@ -99,7 +99,9 @@ public class Methods {
         newEntity.setVelocity(killed.getVelocity());
         if (killed instanceof Ageable && !((Ageable) killed).isAdult()) {
             ((Ageable) newEntity).setBaby();
-        }  else if (killed instanceof Llama) {
+        }
+
+        if (killed instanceof Llama) {
             ((Llama) newEntity).setColor(((Llama) killed).getColor());
         } else if (killed instanceof Sheep) {
             ((Sheep) newEntity).setColor(((Sheep) killed).getColor());

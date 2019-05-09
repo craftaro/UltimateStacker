@@ -67,15 +67,18 @@ public class InteractListeners implements Listener {
 
         if (item.getType() == Material.NAME_TAG)
             event.setCancelled(true);
+        else if (entity instanceof Ageable && !((Ageable) entity).isAdult())
+            return;
 
         Entity newEntity = entity.getWorld().spawnEntity(entity.getLocation(), entity.getType());
         entity.setVelocity(getRandomVector());
+
 
         if (entity instanceof Ageable) {
             if (((Ageable) entity).isAdult()) {
                 ((Ageable) newEntity).setAdult();
             } else {
-                ((Ageable) entity).setBaby();
+                ((Ageable) newEntity).setBaby();
             }
         }
 
@@ -96,6 +99,10 @@ public class InteractListeners implements Listener {
         if (item.getType() == Material.NAME_TAG) {
             entity.setCustomName(item.getItemMeta().getDisplayName());
         } else {
+            if (entity instanceof Ageable
+                    && !((Ageable) entity).isAdult()) {
+                return;
+            }
             entity.setMetadata("inLove", new FixedMetadataValue(instance, true));
 
             Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> {

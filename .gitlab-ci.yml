@@ -5,7 +5,7 @@ variables:
     name: "UltimateStacker"
     suffex: "Legacy"
     path: "/builds/$CI_PROJECT_PATH"
-    version: "1.2.2"
+    version: "1.2.3"
 
 build:
   stage: build

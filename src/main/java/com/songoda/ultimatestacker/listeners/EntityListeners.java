@@ -1,10 +1,11 @@
-package com.songoda.ultimatestacker.events;
+package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,7 +15,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +41,7 @@ public class EntityListeners implements Listener {
             List<Block> destroyed = event.blockList();
         for (Block block : destroyed) {
 
-            if (block.getType() != Material.MOB_SPAWNER) continue;
+            if (block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) continue;
             Location spawnerLocation = block.getLocation();
 
             SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(spawnerLocation);

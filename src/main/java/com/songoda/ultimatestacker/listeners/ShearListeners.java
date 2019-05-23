@@ -1,4 +1,4 @@
-package com.songoda.ultimatestacker.events;
+package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;

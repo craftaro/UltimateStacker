@@ -1,25 +1,19 @@
-package com.songoda.ultimatestacker.events;
+package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityBreedEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.SheepDyeWoolEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class InteractListeners implements Listener {
@@ -117,42 +111,58 @@ public class InteractListeners implements Listener {
     }
 
     private boolean correctFood(ItemStack is, Entity entity) {
+        boolean is13 = instance.isServerVersionAtLeast(ServerVersion.V1_13);
         Material type = is.getType();
-        switch (entity.getType()) {
-            case COW:
-            case SHEEP:
+        switch (entity.getType().name()) {
+            case "COW":
+            case "SHEEP":
                 return type == Material.WHEAT;
-            case PIG:
-                return (type == Material.CARROT || type == Material.BEETROOT || type == Material.POTATO);
-            case CHICKEN:
-                return type == Material.SEEDS
+            case "PIG":
+                return type == Material.CARROT || type == Material.BEETROOT || type == Material.POTATO;
+            case "CHICKEN":
+                return type == (is13 ? Material.WHEAT_SEEDS : Material.valueOf("SEEDS"))
                         || type == Material.MELON_SEEDS
                         || type == Material.BEETROOT_SEEDS
                         || type == Material.PUMPKIN_SEEDS;
-            case HORSE:
+            case "HORSE":
                 return (type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT) && ((Horse)entity).isTamed();
-            case WOLF:
-                return (type == Material.RAW_BEEF
-                        || type == Material.RAW_CHICKEN
+            case "WOLF":
+                return type == (is13 ? Material.BEEF : Material.valueOf("RAW_BEEF"))
+                        || type == (is13 ? Material.CHICKEN : Material.valueOf("RAW_CHICKEN"))
+                        || (is13 && type == Material.COD)
                         || type == Material.MUTTON
-                        || type == Material.PORK
+                        || type == (is13 ? Material.PORKCHOP : Material.valueOf("PORK"))
                         || type == Material.RABBIT
-                        || type == Material.RAW_FISH
+                        || (is13 && type == Material.SALMON)
                         || type == Material.COOKED_BEEF
                         || type == Material.COOKED_CHICKEN
+                        || (is13 && type == Material.COOKED_COD)
                         || type == Material.COOKED_MUTTON
-                        || type == Material.GRILLED_PORK
+                        || type == (is13 ? Material.COOKED_PORKCHOP : Material.valueOf("GRILLED_PORK"))
                         || type == Material.COOKED_RABBIT
-                        || type == Material.COOKED_FISH)
+                        || (is13 && type == Material.COOKED_SALMON)
                         && ((Wolf) entity).isTamed();
-            case OCELOT:
-                return (type == Material.RAW_FISH)
-                        && ((Ocelot) entity).isTamed();
-            case RABBIT:
-                return type == Material.CARROT || type == Material.GOLDEN_CARROT || type == Material.YELLOW_FLOWER;
-            case LLAMA:
+            case "OCELOT":
+                return (is13 ? type == Material.SALMON
+                        || type == Material.COD
+                        || type == Material.PUFFERFISH
+                        || type == Material.TROPICAL_FISH
+
+                        : type == Material.valueOf("RAW_FISH")); // Now broken in 1.13 ((Ocelot) entity).isTamed()
+            case "PANDA":
+                return (type == Material.BAMBOO);
+            case "FOX":
+                return type == Material.SWEET_BERRIES;
+            case "CAT":
+                return (type == Material.COD || type == Material.SALMON) && ((Cat) entity).isTamed();
+            case "RABBIT":
+                return type == Material.CARROT || type == Material.GOLDEN_CARROT || type == Material.DANDELION;
+            case "LLAMA":
                 return type == Material.HAY_BLOCK;
+            case "TURTLE":
+                return type == Material.SEAGRASS;
         }
         return false;
     }
+
 }

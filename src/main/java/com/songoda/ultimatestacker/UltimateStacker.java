@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker;
 import com.songoda.ultimatestacker.command.CommandManager;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.events.*;
+import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.hologram.Hologram;
 import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
@@ -14,6 +14,7 @@ import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.*;
+import com.songoda.ultimatestacker.utils.settings.SettingsManager;
 import org.apache.commons.lang.ArrayUtils;
 import com.songoda.ultimatestacker.utils.updateModules.LocaleModule;
 import com.songoda.update.Plugin;
@@ -63,28 +64,9 @@ public class UltimateStacker extends JavaPlugin {
         console.sendMessage(Methods.formatText("&a============================="));
     }
 
-    private boolean checkVersion() {
-        int maxVersion = 12; // also supports 1.8 and higher
-        int currentVersion = Integer.parseInt(Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3].split("_")[1]);
-
-        if (currentVersion > maxVersion) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-                Bukkit.getConsoleSender().sendMessage("");
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "You installed the legacy (1.8 - 1.12) only version of " + this.getDescription().getName() + " on a 1." + currentVersion + " server. Since you are on the wrong version we disabled the plugin for you. Please install correct version to continue using " + this.getDescription().getName() + ".");
-                Bukkit.getConsoleSender().sendMessage("");
-            }, 20L);
-            return false;
-        }
-        return true;
-    }
-
-
     @Override
     public void onEnable() {
         INSTANCE = this;
-
-        // Check to make sure the Bukkit version is compatible.
-        if (!checkVersion()) return;
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         console.sendMessage(Methods.formatText("&a============================="));
@@ -92,9 +74,9 @@ public class UltimateStacker extends JavaPlugin {
         console.sendMessage(Methods.formatText("&7Action: &aEnabling&7..."));
 
         this.settingsManager = new SettingsManager(this);
-        this.commandManager = new CommandManager(this);
+        this.settingsManager.setupConfig();
 
-        settingsManager.updateSettings();
+        this.commandManager = new CommandManager(this);
 
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
@@ -122,9 +104,6 @@ public class UltimateStacker extends JavaPlugin {
         }
         spawnerFile.getConfig().options().copyDefaults(true);
         spawnerFile.saveConfig();
-
-        getConfig().options().copyDefaults(true);
-        saveConfig();
 
         String langMode = getConfig().getString("System.Language Mode");
         Locale.init(this);
@@ -183,7 +162,6 @@ public class UltimateStacker extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         if (isServerVersionAtLeast(ServerVersion.V1_10))
             Bukkit.getPluginManager().registerEvents(new BreedListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new SpawnerListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new DeathListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ShearListeners(this), this);
@@ -221,7 +199,6 @@ public class UltimateStacker extends JavaPlugin {
     }
 
     public void reload() {
-        settingsManager.updateSettings();
         String langMode = getConfig().getString("System.Language Mode");
         this.locale = Locale.getLocale(getConfig().getString("System.Language Mode", langMode));
         this.locale.reloadMessages();
@@ -229,7 +206,7 @@ public class UltimateStacker extends JavaPlugin {
         this.itemFile = new ConfigWrapper(this, "", "items.yml");
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
         this.references = new References();
-        this.reloadConfig();
+        this.settingsManager.reloadConfig();
     }
 
     public boolean spawnersEnabled() {

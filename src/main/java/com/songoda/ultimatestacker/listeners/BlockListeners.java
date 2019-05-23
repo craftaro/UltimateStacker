@@ -1,14 +1,13 @@
-package com.songoda.ultimatestacker.events;
+package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.SettingsManager;
+import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
@@ -40,9 +39,9 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
-        if (block == null || item == null || block.getType() != Material.MOB_SPAWNER || item.getType() != Material.MOB_SPAWNER || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+        if (block == null || block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")) || item.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")) || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
-        List<String> disabledWorlds = SettingsManager.Settings.DISABLED_WORLDS.getStringList();
+        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         if (!instance.spawnersEnabled()) return;
@@ -54,7 +53,7 @@ public class BlockListeners implements Listener {
 
         int itemAmount = getSpawnerAmount(item);
         int specific = instance.getSpawnerFile().getConfig().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
-        int maxStackSize = specific == -1 ? instance.getConfig().getInt("Spawners.Max Stack Size") : specific;
+        int maxStackSize = specific == -1 ? Setting.MAX_STACK_SPAWNERS.getInt() : specific;
 
         cs = (CreatureSpawner) block.getState();
 
@@ -96,7 +95,7 @@ public class BlockListeners implements Listener {
 
         if (!event.isCancelled()) {
             if (block == null
-                    || block.getType() != Material.MOB_SPAWNER
+                    || block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                     || !instance.spawnersEnabled())
                 return;
 
@@ -118,7 +117,7 @@ public class BlockListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() != Material.MOB_SPAWNER) return;
+        if (block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
 
         if (!instance.spawnersEnabled()) return;
         event.setExpToDrop(0);

@@ -4,7 +4,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.SettingsManager;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -46,16 +46,16 @@ public class StackingTask extends BukkitRunnable {
         }
 
         // Start stacking task.
-        runTaskTimer(instance, 0, SettingsManager.Settings.STACK_SEARCH_TICK_SPEED.getInt());
+        runTaskTimer(instance, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override
     public void run() {
-        int maxItemStackSize = SettingsManager.Settings.MAX_STACK_ITEMS.getInt();
-        int maxEntityStackSizeGlobal = SettingsManager.Settings.MAX_STACK_ENTITIES.getInt();
-        int minEntityStackAmount = SettingsManager.Settings.MIN_STACK_ENTITIES.getInt();
+        int maxItemStackSize = Setting.MAX_STACK_ITEMS.getInt();
+        int maxEntityStackSizeGlobal = Setting.MAX_STACK_ENTITIES.getInt();
+        int minEntityStackAmount = Setting.MIN_STACK_ENTITIES.getInt();
 
-        List<String> disabledWorlds = SettingsManager.Settings.DISABLED_WORLDS.getStringList();
+        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
 
         EntityStackManager stackManager = instance.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
@@ -70,7 +70,7 @@ public class StackingTask extends BukkitRunnable {
             for (Entity entityO : entities) {
                 if (entityO == null || entityO instanceof Player || !entityO.isValid()) continue;
 
-                if (entityO instanceof Item && SettingsManager.Settings.STACK_ITEMS.getBoolean()) {
+                if (entityO instanceof Item && Setting.STACK_ITEMS.getBoolean()) {
                     ItemStack item = ((Item) entityO).getItemStack();
 
                     if (entityO.hasMetadata("grabbed")
@@ -99,7 +99,7 @@ public class StackingTask extends BukkitRunnable {
                     continue;
                 }
 
-                if (!(entityO instanceof LivingEntity) || !SettingsManager.Settings.STACK_ENTITIES.getBoolean())
+                if (!(entityO instanceof LivingEntity) || !Setting.STACK_ENTITIES.getBoolean())
                     continue;
 
                 LivingEntity initalEntity = (LivingEntity) entityO;

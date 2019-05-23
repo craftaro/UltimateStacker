@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.utils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
@@ -46,7 +47,7 @@ public class Methods {
         newEntity.getEquipment().clear();
         
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(Material.GOLD_SWORD));
+            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersion(ServerVersion.V1_13) ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))
@@ -76,10 +77,10 @@ public class Methods {
 
         EntityStack stack = stackManager.getStack(killed);
 
-        if (SettingsManager.Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && stack.getAmount() != 1) {
+        if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && stack.getAmount() != 1) {
             handleWholeStackDeath(killed, stack, items, droppedExp);
-        } else if(SettingsManager.Settings.KILL_WHOLE_STACK_ON_SPECIAL_DEATH.getBoolean() && stack.getAmount() != 1) {
-            List<String> reasons = SettingsManager.Settings.SPECIAL_DEATH_CAUSE.getStringList();
+        } else if(stack.getAmount() != 1) {
+            List<String> reasons = Setting.SPECIAL_DEATH_CAUSE.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
             if(lastDamageCause != null) {
@@ -111,6 +112,8 @@ public class Methods {
             ((Slime)newEntity).setSize(((Slime)killed).getSize());
         }
 
+        //ToDo: Mooshroom Color Handling.
+        //ToDO: Ravenger Banner Handling.
         newEntity.setFireTicks(killed.getFireTicks());
         newEntity.addPotionEffects(killed.getActivePotionEffects());
 
@@ -119,7 +122,7 @@ public class Methods {
 
     public static List<Entity> getSimilarEntitesAroundEntity(Entity initalEntity) {
 
-        int searchRadius = SettingsManager.Settings.SEARCH_RADIUS.getInt();
+        int searchRadius = Setting.SEARCH_RADIUS.getInt();
 
         //Create a list of all entities around the initial entity of the same type.
         List<Entity> entityList = initalEntity.getNearbyEntities(searchRadius, searchRadius, searchRadius).stream()
@@ -212,7 +215,7 @@ public class Methods {
     }
 
     public static ItemStack getSpawnerItem(EntityType entityType, int amount) {
-        ItemStack item = new ItemStack(Material.MOB_SPAWNER, 1);
+        ItemStack item = new ItemStack((UltimateStacker.getInstance().isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")), 1);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Methods.compileSpawnerName(entityType, amount));
         CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta) meta).getBlockState();
@@ -220,6 +223,35 @@ public class Methods {
         ((BlockStateMeta) meta).setBlockState(cs);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public static ItemStack getGlass() {
+        UltimateStacker instance = UltimateStacker.getInstance();
+        return Methods.getGlass(instance.getConfig().getBoolean("Interfaces.Replace Glass Type 1 With Rainbow Glass"), instance.getConfig().getInt("Interfaces.Glass Type 1"));
+    }
+
+    public static ItemStack getBackgroundGlass(boolean type) {
+        UltimateStacker instance = UltimateStacker.getInstance();
+        if (type)
+            return getGlass(false, instance.getConfig().getInt("Interfaces.Glass Type 2"));
+        else
+            return getGlass(false, instance.getConfig().getInt("Interfaces.Glass Type 3"));
+    }
+
+    private static ItemStack getGlass(Boolean rainbow, int type) {
+        int randomNum = 1 + (int) (Math.random() * 6);
+        ItemStack glass;
+        if (rainbow) {
+            glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
+                    Material.LEGACY_STAINED_GLASS_PANE :  Material.valueOf("STAINED_GLASS_PANE"), 1, (short) randomNum);
+        } else {
+            glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
+                    Material.LEGACY_STAINED_GLASS_PANE :  Material.valueOf("STAINED_GLASS_PANE"), 1, (short) type);
+        }
+        ItemMeta glassmeta = glass.getItemMeta();
+        glassmeta.setDisplayName("§l");
+        glass.setItemMeta(glassmeta);
+        return glass;
     }
 
     /**

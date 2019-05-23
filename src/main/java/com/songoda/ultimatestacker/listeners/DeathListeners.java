@@ -1,15 +1,10 @@
-package com.songoda.ultimatestacker.events;
+package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 

@@ -5,7 +5,7 @@
     <version>maven-version-number</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>UltimateStacker-Legacy-${project.version}</finalName>
+        <finalName>UltimateStacker-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

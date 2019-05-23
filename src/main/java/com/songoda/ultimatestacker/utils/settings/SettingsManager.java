@@ -1,8 +1,8 @@
-package com.songoda.epicheads.utils.settings;
+package com.songoda.ultimatestacker.utils.settings;
 
-import com.songoda.epicheads.EpicHeads;
-import com.songoda.epicheads.utils.Methods;
-import com.songoda.epicheads.utils.ServerVersion;
+import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,11 +24,11 @@ import java.util.*;
  */
 public class SettingsManager implements Listener {
 
-    private final EpicHeads plugin;
+    private final UltimateStacker plugin;
     private Map<Player, String> cat = new HashMap<>();
     private Map<Player, String> current = new HashMap<>();
 
-    public SettingsManager(EpicHeads plugin) {
+    public SettingsManager(UltimateStacker plugin) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -84,7 +84,7 @@ public class SettingsManager implements Listener {
             config.set(value, event.getMessage());
         }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(EpicHeads.getInstance(), () ->
+        Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () ->
                 this.finishEditing(player), 0L);
 
         event.setCancelled(true);

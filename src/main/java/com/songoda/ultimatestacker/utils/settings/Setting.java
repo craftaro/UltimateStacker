@@ -1,7 +1,6 @@
-package com.songoda.epicheads.utils.settings;
+package com.songoda.ultimatestacker.utils.settings;
 
-import com.songoda.epicheads.EpicHeads;
-import com.songoda.epicheads.utils.ServerVersion;
+import com.songoda.ultimatestacker.UltimateStacker;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,67 +8,94 @@ import java.util.stream.Collectors;
 
 public enum Setting {
 
-    AUTOSAVE("Main.Auto Save Interval In Seconds", 15,
-            "The amount of time in between saving to file.",
-            "This is purely a safety function to prevent against unplanned crashes or",
-            "restarts. With that said it is advised to keep this enabled.",
-            "If however you enjoy living on the edge, feel free to turn it off."),
+    STACK_ITEMS("Main.Stack Items", true,
+            "Should items be stacked?"),
 
-    DISCORD("Main.Show Discord Button", true,
-            "This is the discord button displayed in the main GUI",
-            "Clicking this button will bring you to a discord where you can",
-            "add or remove heads to the global library this plugin uses.",
-            "AS well as get updates on future releases and features."),
+    STACK_ENTITIES("Main.Stack Entities", true,
+            "Should entities be stacked?"),
 
-    FREE_IN_CREATIVE("Main.Heads Free In Creative Mode", false,
-            "Enabling this will make it so that a player can get all heads",
-            "for free as long as they are in the creative game mode."),
+    STACK_SPAWNERS("Main.Stack Spawners", true,
+            "Should spawners be stacked?"),
 
-    DROP_MOB_HEADS("Main.Drop Mob Heads", true,
-            "Should heads drop after a monster is killed?"),
+    STACK_SEARCH_TICK_SPEED("Main.Stack Search Tick Speed", 5,
+            "The speed in which a new stacks will be created.",
+            "It is advised to keep this number low."),
 
-    DROP_PLAYER_HEADS("Main.Drop Player Heads", true,
-            "Should a players drop their head on death?"),
+    DISABLED_WORLDS("Main.DISABLED Worlds", Arrays.asList("World1", "World2", "World3"),
+            "Worlds that stacking doesn't happen in."),
 
-    DROP_CHANCE("Main.Head Drop Chance", "25%",
-            "When a player or monster is killed what should be",
-            "the chance that their head drops?"),
+    MAX_STACK_ENTITIES("Entity.Max Stack Size", 15,
+            "The max amount of entities in a single stack."),
 
-    DISABLED_HEADS("Main.Disabled Global Heads", Arrays.asList(34567, 34568, 34569),
-            "These are head ID's from the global database that are disabled.",
-            "By default this is filled with non existent ID's."),
+    MIN_STACK_ENTITIES("Entity.Min Stack Amount", 5,
+            "The minimum amount required before a stack can be formed."),
 
-    GLASS_TYPE_1("Interfaces.Glass Type 1", 7),
-    GLASS_TYPE_2("Interfaces.Glass Type 2", 11),
-    GLASS_TYPE_3("Interfaces.Glass Type 3", 3),
+    HOLOGRAMS_ON_LOOK_ENTITY("Entity.Only Show Holograms On Look", false,
+            "Only show nametags above an entities head when looking directly at them."),
 
-    HEAD_COST("Economy.Head Cost", 24.99,
-            "The cost the of the head. If you wan't to use PlayerPoints",
-            "or item tokens you need to use whole numbers."),
+    KILL_WHOLE_STACK_ON_DEATH("Entity.Kill Whole Stack On Death", false,
+            "Should killing a stack of entities kill the whole stack or",
+            "just one out of the stack?"),
 
-    VAULT_ECONOMY("Economy.Use Vault Economy", true,
-            "Should Vault be used?"),
+    SPECIAL_DEATH_CAUSE("Entity.Special Death Cause", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
+            "Events that will trigger an entire stack to be killed.",
+            "It should be noted that this is useless if the above setting is true.",
+            "Any of the following can be added to the list:",
+            "CONTACT, ENTITY_ATTACK, ENTITY_SWEEP_ATTACK",
+            "PROJECTILE, SUFFOCATION, FALL",
+            "FIRE, FIRE_TICK, MELTING",
+            "LAVA, DROWNING, BLOCK_EXPLOSION",
+            "ENTITY_EXPLOSION, VOID, LIGHTNING",
+            "SUICIDE, STARVATION, POISON",
+            "MAGIC, WITHER, FALLING_BLOCK",
+            "THORNS, DRAGON_BREATH, CUSTOM",
+            "FLY_INTO_WALL, HOT_FLOOR, CRAMMING",
+            "DRYOUT"),
 
-    PLAYER_POINTS_ECONOMY("Economy.Use Player Points Economy", false,
-            "Should PlayerPoints be used?"),
+    NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x",
+            "The text displayed above an entities head where {TYPE} refers to",
+            "The entities type and {AMT} is the amount currently stacked."),
 
-    ITEM_ECONOMY("Economy.Use Item Economy", false,
-            "Should item tokens be used?"),
+    SEARCH_RADIUS("Entity.Search Radius", 5,
+            "The distance entities must be to each other in order to stack."),
 
-    ITEM_TOKEN_TYPE("Economy.Item.Type", EpicHeads.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ? "PLAYER_HEAD" : "SKULL_ITEM",
-            "Which item material type should be used?",
-            "You can use any of the materials from the following link:",
-            "https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html"),
+    MAX_STACK_ITEMS("Item.Max Stack Size", 120,
+            "The max stack size for items.",
+            "Currently this can only be set to a max of 120."),
 
-    ITEM_TOKEN_ID("Economy.Item.Head ID", 14395,
-            "If a player head is used as the token which head ID should be used?",
-            "This can be any head from the global database."),
+    NAME_FORMAT_ITEM("Item.Name Format", "&f{TYPE} &6{AMT}x",
+            "The text displayed above a dropped item."),
 
-    ITEM_TOKEN_NAME("Economy.Item.Name", "&6Player Head Token",
-            "What should the token be named?"),
+    SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,
+            "Should holograms be displayed above stacked spawners?"),
 
-    ITEM_TOKEN_LORE("Economy.Item.Lore", Arrays.asList("&8Use in /Heads!"),
-            "What should the tokens lore be?"),
+    MAX_STACK_SPAWNERS("Spawners.Max Stack Size", 5,
+            "What should the max a spawner can stack to be?"),
+
+    NAME_FORMAT_SPAWNER("Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
+            "The text displayed above a stacked spawner where {TYPE} refers to",
+            "The entities type and {AMT} is the amount currently stacked."),
+
+    DATABASE_SUPPORT("Database.Activate Mysql Support", false,
+            "Should MySQL be used for data storage?"),
+
+    DATABASE_IP("Database.IP", "127.0.0.1",
+            "MySQL IP"),
+
+    DATABASE_PORT("Database.Port", 3306,
+            "MySQL Port"),
+
+    DATABASE_NAME("Database.Database Name", "UltimateStacker",
+            "The database you are inserting data into."),
+
+    DATABASE_PREFIX("Database.Prefix", "US-",
+            "The prefix for tables inserted into the database."),
+
+    DATABASE_USERNAME("Database.Username", "PUT_USERNAME_HERE",
+            "MySQL Username"),
+
+    DATABASE_PASSWORD("Database.Password", "PUT_PASSWORD_HERE",
+            "MySQL Password"),
 
     LANGUGE_MODE("System.Language Mode", "en_US",
             "The enabled language file.",
@@ -110,34 +136,34 @@ public enum Setting {
     }
 
     public List<Integer> getIntegerList() {
-        return EpicHeads.getInstance().getConfig().getIntegerList(setting);
+        return UltimateStacker.getInstance().getConfig().getIntegerList(setting);
     }
 
     public List<String> getStringList() {
-        return EpicHeads.getInstance().getConfig().getStringList(setting);
+        return UltimateStacker.getInstance().getConfig().getStringList(setting);
     }
 
     public boolean getBoolean() {
-        return EpicHeads.getInstance().getConfig().getBoolean(setting);
+        return UltimateStacker.getInstance().getConfig().getBoolean(setting);
     }
 
     public int getInt() {
-        return EpicHeads.getInstance().getConfig().getInt(setting);
+        return UltimateStacker.getInstance().getConfig().getInt(setting);
     }
 
     public long getLong() {
-        return EpicHeads.getInstance().getConfig().getLong(setting);
+        return UltimateStacker.getInstance().getConfig().getLong(setting);
     }
 
     public String getString() {
-        return EpicHeads.getInstance().getConfig().getString(setting);
+        return UltimateStacker.getInstance().getConfig().getString(setting);
     }
 
     public char getChar() {
-        return EpicHeads.getInstance().getConfig().getString(setting).charAt(0);
+        return UltimateStacker.getInstance().getConfig().getString(setting).charAt(0);
     }
 
     public double getDouble() {
-        return EpicHeads.getInstance().getConfig().getDouble(setting);
+        return UltimateStacker.getInstance().getConfig().getDouble(setting);
     }
 }

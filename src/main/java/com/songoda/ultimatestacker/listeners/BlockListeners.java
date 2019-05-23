@@ -39,7 +39,10 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
-        if (block == null || block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")) || item.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")) || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+        if (block == null
+                || block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                || item.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
@@ -95,7 +98,7 @@ public class BlockListeners implements Listener {
 
         if (!event.isCancelled()) {
             if (block == null
-                    || block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                    || block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                     || !instance.spawnersEnabled())
                 return;
 
@@ -117,7 +120,7 @@ public class BlockListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
+        if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
 
         if (!instance.spawnersEnabled()) return;
         event.setExpToDrop(0);

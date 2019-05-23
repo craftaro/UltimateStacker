@@ -41,7 +41,7 @@ public class EntityListeners implements Listener {
             List<Block> destroyed = event.blockList();
         for (Block block : destroyed) {
 
-            if (block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) continue;
+            if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) continue;
             Location spawnerLocation = block.getLocation();
 
             SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(spawnerLocation);

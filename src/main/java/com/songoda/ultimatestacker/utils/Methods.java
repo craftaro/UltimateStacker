@@ -47,7 +47,7 @@ public class Methods {
         newEntity.getEquipment().clear();
         
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersion(ServerVersion.V1_13) ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
+            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
 
         if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
             if (killed.hasMetadata("ES"))

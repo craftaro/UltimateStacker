@@ -9,7 +9,8 @@ public enum ServerVersion {
     V1_10("org.bukkit.craftbukkit.v1_10"),
     V1_11("org.bukkit.craftbukkit.v1_11"),
     V1_12("org.bukkit.craftbukkit.v1_12"),
-    V1_13("org.bukkit.craftbukkit.v1_13");
+    V1_13("org.bukkit.craftbukkit.v1_13"),
+    V1_14("org.bukkit.craftbukkit.v1_14");
 
 
     private final String packagePrefix;

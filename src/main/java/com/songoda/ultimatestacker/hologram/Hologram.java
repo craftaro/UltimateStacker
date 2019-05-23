@@ -42,7 +42,7 @@ public abstract class Hologram {
 
     public void add(SpawnerStack spawner) {
         int amount = spawner.getAmount();
-        if (spawner.getLocation().getBlock().getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
+        if (spawner.getLocation().getBlock().getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner) spawner.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
@@ -56,7 +56,7 @@ public abstract class Hologram {
 
     public void update(SpawnerStack spawner) {
         int amount = spawner.getAmount();
-        if (spawner.getLocation().getBlock().getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
+        if (spawner.getLocation().getBlock().getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
 
         CreatureSpawner creatureSpawner = (CreatureSpawner) spawner.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
@@ -71,7 +71,7 @@ public abstract class Hologram {
     protected abstract void update(Location location, String line);
 
     public void processChange(Block block) {
-        if (block.getType() != (instance.isServerVersion(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
+        if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
         SpawnerStack spawner = instance.getSpawnerStackManager().getSpawner(block);
 
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () ->

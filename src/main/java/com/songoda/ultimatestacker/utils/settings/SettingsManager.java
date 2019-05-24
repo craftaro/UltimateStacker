@@ -294,33 +294,16 @@ public class SettingsManager implements Listener {
         }
 
         try {
+            if (!plugin.getDataFolder().exists())
+                plugin.getDataFolder().mkdir();
             BufferedWriter writer =
-                    new BufferedWriter(new FileWriter(new File(plugin.getDataFolder() + "\\config.yml")));
+                    new BufferedWriter(new FileWriter(new File(plugin.getDataFolder() + File.separator + "config.yml")));
             writer.write(config.toString());
             writer.flush();
             writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static <K, V> void add(LinkedHashMap<K, V> map, int index, K key, V value) {
-        assert (map != null);
-        assert !map.containsKey(key);
-        assert (index >= 0) && (index < map.size());
-
-        int i = 0;
-        List<Map.Entry<K, V>> rest = new ArrayList<>();
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            if (i++ >= index) {
-                rest.add(entry);
-            }
-        }
-        map.put(key, value);
-        for (Map.Entry<K, V> entry : rest) {
-            map.remove(entry.getKey());
-            map.put(entry.getKey(), entry.getValue());
         }
     }
 }

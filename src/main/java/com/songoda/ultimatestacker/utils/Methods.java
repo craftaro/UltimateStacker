@@ -102,7 +102,7 @@ public class Methods {
             ((Ageable) newEntity).setBaby();
         }
 
-        if (killed instanceof Llama) {
+        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11) && killed instanceof Llama) {
             ((Llama) newEntity).setColor(((Llama) killed).getColor());
         } else if (killed instanceof Sheep) {
             ((Sheep) newEntity).setColor(((Sheep) killed).getColor());

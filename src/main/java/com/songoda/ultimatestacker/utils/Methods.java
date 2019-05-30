@@ -157,7 +157,6 @@ public class Methods {
         } else if (initalEntity instanceof Horse) {
             entityList.removeIf(entity -> ((Horse) entity).getInventory().getSaddle() != null
                     || ((Horse) entity).getInventory().getArmor() != null);
-            //ToDo: Should be triple checked
         }
 
         if (initalEntity.hasMetadata("breedCooldown")) {

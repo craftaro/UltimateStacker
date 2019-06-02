@@ -29,6 +29,6 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     public String getDescription() {
-        return "Edit the EpicSpawners Settings.";
+        return "Edit the UltimateStacker Settings.";
     }
 }

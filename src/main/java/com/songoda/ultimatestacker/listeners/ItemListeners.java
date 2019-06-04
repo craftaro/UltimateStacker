@@ -9,11 +9,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,11 +26,6 @@ public class ItemListeners implements Listener {
     public ItemListeners(UltimateStacker instance) {
         this.instance = instance;
     }
-
-    // Make it so that the max allowed stack size on the map is 32 that way this event will always trigger.
-    // If an item in the game world is larger than 32 then set it to 32 and add metadata. The player shouldn't notice.
-    // Make it so that weighted pressure plates work.
-    // When picking up some of a stack the item will need to be updated to reflect that.
 
     @EventHandler
     public void onMerge(ItemMergeEvent event) {

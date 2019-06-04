@@ -23,27 +23,8 @@ public class StackingTask extends BukkitRunnable {
 
     private final UltimateStacker instance;
 
-    private Method methodGetItem, methodAsNMSCopy;
-    private Field fieldMaxStackSize;
-
     public StackingTask(UltimateStacker instance) {
         this.instance = instance;
-
-        // Cache reflection.
-        try {
-            String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-            Class<?> clazzCraftItemStack = Class.forName("org.bukkit.craftbukkit." + ver + ".inventory.CraftItemStack");
-            Class<?> clazzItemStack = Class.forName("net.minecraft.server." + ver + ".ItemStack");
-            Class<?> clazzItem = Class.forName("net.minecraft.server." + ver + ".Item");
-
-            methodAsNMSCopy = clazzCraftItemStack.getMethod("asNMSCopy", ItemStack.class);
-            methodGetItem = clazzItemStack.getDeclaredMethod("getItem");
-
-            fieldMaxStackSize = clazzItem.getDeclaredField("maxStackSize");
-            fieldMaxStackSize.setAccessible(true);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-        }
 
         // Start stacking task.
         runTaskTimer(instance, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
@@ -51,7 +32,6 @@ public class StackingTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        int maxItemStackSize = Setting.MAX_STACK_ITEMS.getInt();
         int maxEntityStackSizeGlobal = Setting.MAX_STACK_ENTITIES.getInt();
         int minEntityStackAmount = Setting.MIN_STACK_ENTITIES.getInt();
 
@@ -68,38 +48,11 @@ public class StackingTask extends BukkitRunnable {
 
             nextEntity:
             for (Entity entityO : entities) {
-                if (entityO == null || entityO instanceof Player || !entityO.isValid()) continue;
-
-                if (entityO instanceof Item && Setting.STACK_ITEMS.getBoolean()) {
-                    ItemStack item = ((Item) entityO).getItemStack();
-
-                    if (entityO.hasMetadata("grabbed")
-                            || item == null
-                            || entityO.isCustomNameVisible() && !entityO.getCustomName().contains(Methods.convertToInvisibleString("IS"))
-                            || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-                        continue;
-
-                    int specific = instance.getItemFile().getConfig().getInt("Items." + item.getType().name() + ".Max Stack Size");
-                    int max = specific == -1 && new ItemStack(item.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
-
-                    if (max == -1) max = 1;
-
-                    if (item.getMaxStackSize() != max && item.getMaxStackSize() != 1 && (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()))
-                        setMax(item, max, false);
-
-                    int size = item.getAmount();
-
-                    String name = Methods.convertToInvisibleString("IS") + Methods.compileItemName(item.getType(), size);
-
-                    if (instance.getItemFile().getConfig().getBoolean("Items." + item.getType().name() + ".Has Hologram")) {
-                        entityO.setCustomName(name);
-                        entityO.setCustomNameVisible(true);
-                    }
-
-                    continue;
-                }
-
-                if (!(entityO instanceof LivingEntity) || !Setting.STACK_ENTITIES.getBoolean())
+                if (entityO == null
+                        || entityO instanceof Player
+                        || !entityO.isValid()
+                        || !(entityO instanceof LivingEntity)
+                        || !Setting.STACK_ENTITIES.getBoolean())
                     continue;
 
                 LivingEntity initalEntity = (LivingEntity) entityO;
@@ -167,15 +120,5 @@ public class StackingTask extends BukkitRunnable {
             entities.clear();
             removed.clear();
         }
-    }
-
-    public ItemStack setMax(ItemStack item, int max, boolean reset) {
-        try {
-            Object objItemStack = methodGetItem.invoke(methodAsNMSCopy.invoke(null, item));
-            fieldMaxStackSize.set(objItemStack, reset ? new ItemStack(item.getType()).getMaxStackSize() : max);
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-        }
-        return item;
     }
 }

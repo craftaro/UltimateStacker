@@ -81,6 +81,7 @@ public class EntityListeners implements Listener {
 
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event) {
+        /*
         event.getItem().setItemStack(instance.getStackingTask().setMax(event.getItem().getItemStack(), 0, true));
 
         ItemStack item = event.getItem().getItemStack();
@@ -106,7 +107,7 @@ public class EntityListeners implements Listener {
         ItemStack newItem = new ItemStack(item);
         newItem.setAmount(amt);
 
-        event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem);
+        event.getItem().getWorld().dropItemNaturally(event.getItem().getLocation(), newItem); */
     }
 
 }

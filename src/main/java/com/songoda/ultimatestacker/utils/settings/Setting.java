@@ -59,7 +59,7 @@ public enum Setting {
     SEARCH_RADIUS("Entity.Search Radius", 5,
             "The distance entities must be to each other in order to stack."),
 
-    MAX_STACK_ITEMS("Item.Max Stack Size", 120,
+    MAX_STACK_ITEMS("Item.Max Stack Size", 512,
             "The max stack size for items.",
             "Currently this can only be set to a max of 120."),
 

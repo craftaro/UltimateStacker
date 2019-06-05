@@ -1,6 +1,8 @@
 package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
+import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
@@ -70,14 +72,24 @@ public class BlockListeners implements Listener {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (stack.getAmount() == maxStackSize) return;
 
+                ItemStack overflowItem = null;
                 if ((stack.getAmount() + itemAmount) > maxStackSize) {
-                    ItemStack newItem = Methods.getSpawnerItem(blockType, (stack.getAmount() + itemAmount) - maxStackSize);
-                    if (player.getInventory().firstEmpty() == -1)
-                        block.getLocation().getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), newItem);
-                    else
-                        player.getInventory().addItem(newItem);
-
+                    overflowItem = Methods.getSpawnerItem(blockType, (stack.getAmount() + itemAmount) - maxStackSize);
                     itemAmount = maxStackSize - stack.getAmount();
+                }
+
+                SpawnerPlaceEvent placeEvent = new SpawnerPlaceEvent(player, block, blockType, itemAmount);
+                Bukkit.getPluginManager().callEvent(placeEvent);
+                if (placeEvent.isCancelled()) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                if (overflowItem != null) {
+                    if (player.getInventory().firstEmpty() == -1)
+                        block.getLocation().getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), overflowItem);
+                    else
+                        player.getInventory().addItem(overflowItem);
                 }
 
                 stack.setAmount(stack.getAmount() + itemAmount);
@@ -88,23 +100,32 @@ public class BlockListeners implements Listener {
         }
 
         if (instance.getHologram() != null)
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 10L);
-
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 10L);
     }
 
     @EventHandler
     public void onSpawnerPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
+        Player player = event.getPlayer();
 
         if (!event.isCancelled()) {
             if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                     || !instance.spawnersEnabled())
                 return;
 
-            SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), getSpawnerAmount(event.getItemInHand())));
-
             CreatureSpawner cs = (CreatureSpawner) block.getState();
             CreatureSpawner cs2 = (CreatureSpawner) ((BlockStateMeta) event.getItemInHand().getItemMeta()).getBlockState();
+            int amount = getSpawnerAmount(event.getItemInHand());
+
+            SpawnerPlaceEvent placeEvent = new SpawnerPlaceEvent(player, block, cs2.getSpawnedType(), amount);
+            Bukkit.getPluginManager().callEvent(placeEvent);
+            if (placeEvent.isCancelled()) {
+                event.setCancelled(true);
+                return;
+            }
+
+            SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), amount));
+
             cs.setSpawnedType(cs2.getSpawnedType());
             cs.update();
 
@@ -136,25 +157,31 @@ public class BlockListeners implements Listener {
         event.setCancelled(true);
 
         int amt = 1;
+        boolean remove = false;
 
         if (player.isSneaking()) {
-            event.setCancelled(false);
             amt = stack.getAmount();
+            remove = true;
+        } else if (stack.getAmount() <= 1) {
+            remove = true;
+        }
+
+        SpawnerBreakEvent breakEvent = new SpawnerBreakEvent(player, block, blockType, amt);
+        Bukkit.getPluginManager().callEvent(breakEvent);
+        if (breakEvent.isCancelled())
+            return;
+
+        if (remove) {
+            event.setCancelled(false);
             if (instance.getHologram() != null)
-            instance.getHologram().remove(stack);
+                instance.getHologram().remove(stack);
             instance.getSpawnerStackManager().removeSpawner(block.getLocation());
         } else {
-            if (stack.getAmount() <= 1) {
-                event.setCancelled(false);
-                instance.getSpawnerStackManager().removeSpawner(block.getLocation());
-                if (instance.getHologram() != null)
-                    instance.getHologram().remove(stack);
-            } else {
-                stack.setAmount(stack.getAmount() - 1);
-                if (instance.getHologram() != null)
-                    instance.getHologram().update(stack);
-            }
+            stack.setAmount(stack.getAmount() - 1);
+            if (instance.getHologram() != null)
+                instance.getHologram().update(stack);
         }
+
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))
             block.getWorld().dropItemNaturally(block.getLocation(), Methods.getSpawnerItem(blockType, amt));
     }

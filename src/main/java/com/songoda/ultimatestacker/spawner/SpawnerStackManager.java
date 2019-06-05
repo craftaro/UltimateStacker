@@ -32,6 +32,10 @@ public class SpawnerStackManager {
         return this.getSpawner(block.getLocation());
     }
 
+    public boolean isSpawner(Location location) {
+        return registeredSpawners.get(location) != null;
+    }
+
     public Collection<SpawnerStack> getStacks() {
         return Collections.unmodifiableCollection(registeredSpawners.values());
     }

@@ -15,8 +15,7 @@ public class EntityStack {
     private int amount;
 
     public EntityStack(Entity entity, int amount) {
-        this.entity = entity.getUniqueId();
-        this.setAmount(amount);
+        this(entity.getUniqueId(), amount);
     }
 
     public EntityStack(UUID uuid, int amount) {

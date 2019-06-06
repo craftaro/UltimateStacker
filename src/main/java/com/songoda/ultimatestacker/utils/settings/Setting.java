@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.utils.settings;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
+import com.songoda.ultimatestacker.entity.Split;
 
 import java.util.Arrays;
 import java.util.List;
@@ -63,6 +64,11 @@ public enum Setting {
             "HORSE_HAS_SADDLE, HORSE_JUMP, RABBIT_TYPE, VILLAGER_PROFESSION",
             "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
             "TROPICALFISH_PATTERN, TROPICALFISH_BODY_COLOR, TROPICALFISH_PATTERN_COLOR"),
+
+    SPLIT_CHECKS("Entity.Split Checks", Arrays.asList(Split.values()).stream()
+            .map(Split::name).collect(Collectors.toList()),
+            "These are checks that when achieved will break separate a single entity",
+            "from a stack."),
 
     NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above an entities head where {TYPE} refers to",

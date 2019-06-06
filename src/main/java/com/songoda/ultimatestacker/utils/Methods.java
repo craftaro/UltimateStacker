@@ -13,11 +13,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Methods {
@@ -159,8 +161,8 @@ public class Methods {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (!(toClone instanceof Horse)) break;
-                    ((Horse) newEntity).setJumpStrength(((Horse) toClone).getJumpStrength());
+                    if (!(toClone instanceof AbstractHorse)) break;
+                    ((AbstractHorse) newEntity).setJumpStrength(((AbstractHorse) toClone).getJumpStrength());
                     break;
                 }
                 case HORSE_COLOR: {
@@ -356,9 +358,9 @@ public class Methods {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (!(initalEntity instanceof Horse)) break;
-                    Horse horse = ((Horse) initalEntity);
-                    entityList.removeIf(entity -> ((Horse) entity).getJumpStrength() != horse.getJumpStrength());
+                    if (!(initalEntity instanceof AbstractHorse)) break;
+                    AbstractHorse horse = ((AbstractHorse) initalEntity);
+                    entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
                     break;
                 }
                 case HORSE_COLOR: {
@@ -381,7 +383,10 @@ public class Methods {
                 }
                 case ENDERMAN_CARRY_BLOCK: {
                     if (!(initalEntity instanceof Enderman)) break;
-                    entityList.removeIf(entity -> ((Enderman) entity).getCarriedBlock() != null);
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13))
+                        entityList.removeIf(entity -> ((Enderman) entity).getCarriedBlock() == null);
+                    else
+                        entityList.removeIf(entity -> ((Enderman) entity).getCarriedMaterial().getItemType() == null);
                     break;
                 }
                 case WOLF_COLLAR_COLOR: {
@@ -457,6 +462,27 @@ public class Methods {
         }
 
         return entityList;
+    }
+
+    public static void splitFromStack(LivingEntity entity) {
+        UltimateStacker instance = UltimateStacker.getInstance();
+        EntityStack stack = instance.getEntityStackManager().getStack(entity);
+
+        if (stack.getAmount() <= 1) return;
+
+        Entity newEntity = Methods.newEntity(entity);
+
+        int newAmount = stack.getAmount() - 1;
+        if (newAmount != 1)
+            instance.getEntityStackManager().addStack(new EntityStack(newEntity, newAmount));
+        stack.setAmount(1);
+        instance.getEntityStackManager().removeStack(entity);
+        entity.setVelocity(getRandomVector());
+    }
+
+
+    private static Vector getRandomVector() {
+        return new Vector(ThreadLocalRandom.current().nextDouble(-1, 1.01), 0, ThreadLocalRandom.current().nextDouble(-1, 1.01)).normalize().multiply(0.5);
     }
 
     public static String compileSpawnerName(EntityType entityType, int amount) {

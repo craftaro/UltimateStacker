@@ -2,8 +2,10 @@ package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.entity.Split;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -26,26 +28,6 @@ public class InteractListeners implements Listener {
     }
 
     @EventHandler
-    public void onSheepDye(SheepDyeWoolEvent event) {
-        Sheep entity = event.getEntity();
-
-        if (!instance.getEntityStackManager().isStacked(entity) || event.getColor() == entity.getColor()) return;
-        EntityStack stack = instance.getEntityStackManager().getStack(entity);
-        if (stack.getAmount() <= 1) return;
-
-        Entity newEntity = entity.getWorld().spawnEntity(entity.getLocation(), entity.getType());
-        entity.setVelocity(getRandomVector());
-
-        Sheep sheep = ((Sheep) newEntity);
-        sheep.setSheared(entity.isSheared());
-        sheep.setColor(entity.getColor());
-
-        instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
-        stack.setAmount(1);
-        instance.getEntityStackManager().removeStack(entity);
-    }
-
-    @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
         if (!(event.getRightClicked() instanceof LivingEntity)) return;
         Player player = event.getPlayer();
@@ -59,18 +41,19 @@ public class InteractListeners implements Listener {
 
         EntityStack stack = instance.getEntityStackManager().getStack(entity);
 
-        if (stack.getAmount() <= 1) return;
+        if (stack.getAmount() <= 1
+                || item.getType() == Material.NAME_TAG
+                && Setting.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.NAME_TAG)
+                || item.getType() != Material.NAME_TAG
+                && Setting.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.ENTITY_BREED))
+            return;
 
         if (item.getType() == Material.NAME_TAG)
             event.setCancelled(true);
         else if (entity instanceof Ageable && !((Ageable) entity).isAdult())
             return;
 
-        Entity newEntity = Methods.newEntity(entity);
-
-        instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
-        stack.setAmount(1);
-        instance.getEntityStackManager().removeStack(entity);
+        Methods.splitFromStack(entity);
 
         if (item.getType() == Material.NAME_TAG) {
             entity.setCustomName(item.getItemMeta().getDisplayName());
@@ -86,10 +69,6 @@ public class InteractListeners implements Listener {
                 entity.removeMetadata("inLove", instance);
             }, 20 * 20);
         }
-    }
-
-    private Vector getRandomVector() {
-        return new Vector(ThreadLocalRandom.current().nextDouble(-1, 1.01), 0, ThreadLocalRandom.current().nextDouble(-1, 1.01)).normalize().multiply(0.5);
     }
 
     private boolean correctFood(ItemStack is, Entity entity) {

@@ -169,6 +169,7 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntityListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new ItemListeners(this), this);
         Bukkit.getPluginManager().registerEvents(new TameListeners(this), this);
+        Bukkit.getPluginManager().registerEvents(new SheepDyeListeners(this), this);
 
         // Register Hologram Plugin
         if (getConfig().getBoolean("Spawners.Holograms Enabled")) {

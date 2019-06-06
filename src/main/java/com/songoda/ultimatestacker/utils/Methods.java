@@ -112,6 +112,7 @@ public class Methods {
                     break;
                 }
                 case NERFED: {
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) break;
                     if (!toClone.hasAI()) newEntity.setAI(false);
                 }
                 case IS_TAMED: {
@@ -160,7 +161,8 @@ public class Methods {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (!(toClone instanceof AbstractHorse)) break;
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                            || !(toClone instanceof AbstractHorse)) break;
                     ((AbstractHorse) newEntity).setJumpStrength(((AbstractHorse) toClone).getJumpStrength());
                     break;
                 }
@@ -200,7 +202,8 @@ public class Methods {
                     break;
                 }
                 case PARROT_TYPE: {
-                    if (!(toClone instanceof Parrot)) break;
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)
+                            || !(toClone instanceof Parrot)) break;
                     ((Parrot) newEntity).setVariant(((Parrot) toClone).getVariant());
                     break;
                 }
@@ -239,7 +242,7 @@ public class Methods {
 
         if (Setting.KEEP_FIRE.getBoolean())
             newEntity.setFireTicks(toClone.getFireTicks());
-        if (Setting.KEEP_POTION.getBoolean())
+         if (Setting.KEEP_POTION.getBoolean())
             newEntity.addPotionEffects(toClone.getActivePotionEffects());
 
         return newEntity;
@@ -270,6 +273,7 @@ public class Methods {
                     break;
                 }
                 case NERFED: {
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) break;
                     entityList.removeIf(entity -> entity.hasAI() != initalEntity.hasAI());
                 }
                 case IS_TAMED: {
@@ -339,8 +343,13 @@ public class Methods {
                     break;
                 }
                 case HORSE_CARRYING_CHEST: {
-                    if (!(initalEntity instanceof ChestedHorse)) break;
-                    entityList.removeIf(entity -> ((ChestedHorse) entity).isCarryingChest());
+                    if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)) {
+                        if (!(initalEntity instanceof ChestedHorse)) break;
+                        entityList.removeIf(entity -> ((ChestedHorse) entity).isCarryingChest());
+                    } else {
+                        if (!(initalEntity instanceof Horse)) break;
+                        entityList.removeIf(entity -> ((Horse) entity).isCarryingChest());
+                    }
                     break;
                 }
                 case HORSE_HAS_ARMOR: {
@@ -359,9 +368,16 @@ public class Methods {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (!(initalEntity instanceof AbstractHorse)) break;
-                    AbstractHorse horse = ((AbstractHorse) initalEntity);
-                    entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
+                    if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)) {
+                        if (!(initalEntity instanceof AbstractHorse)) break;
+                        AbstractHorse horse = ((AbstractHorse) initalEntity);
+                        entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
+                    } else {
+                        if (!(initalEntity instanceof Horse)) break;
+                        Horse horse = ((Horse) initalEntity);
+                        entityList.removeIf(entity -> ((Horse) entity).getJumpStrength() != horse.getJumpStrength());
+
+                    }
                     break;
                 }
                 case HORSE_COLOR: {
@@ -407,7 +423,8 @@ public class Methods {
                     break;
                 }
                 case PARROT_TYPE: {
-                    if (!(initalEntity instanceof Parrot)) break;
+                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)
+                            ||!(initalEntity instanceof Parrot)) break;
                     Parrot parrot = (Parrot) initalEntity;
                     entityList.removeIf(entity -> ((Parrot) entity).getVariant() != parrot.getVariant());
                     break;

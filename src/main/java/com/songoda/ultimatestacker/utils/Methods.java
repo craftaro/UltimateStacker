@@ -82,7 +82,7 @@ public class Methods {
         if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && stack.getAmount() != 1) {
             handleWholeStackDeath(killed, stack, items, droppedExp);
         } else if(stack.getAmount() != 1) {
-            List<String> reasons = Setting.SPECIAL_DEATH_CAUSE.getStringList();
+            List<String> reasons = Setting.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
             if(lastDamageCause != null) {
@@ -379,14 +379,6 @@ public class Methods {
                     if (!(initalEntity instanceof Zombie)) break;
                     Zombie zombie = (Zombie) initalEntity;
                     entityList.removeIf(entity -> ((Zombie) entity).isBaby() != zombie.isBaby());
-                    break;
-                }
-                case ENDERMAN_CARRY_BLOCK: {
-                    if (!(initalEntity instanceof Enderman)) break;
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13))
-                        entityList.removeIf(entity -> ((Enderman) entity).getCarriedBlock() == null);
-                    else
-                        entityList.removeIf(entity -> ((Enderman) entity).getCarriedMaterial().getItemType() == null);
                     break;
                 }
                 case WOLF_COLLAR_COLOR: {

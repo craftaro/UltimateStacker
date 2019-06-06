@@ -23,7 +23,7 @@ public enum Setting {
             "The speed in which a new stacks will be created.",
             "It is advised to keep this number low."),
 
-    DISABLED_WORLDS("Main.DISABLED Worlds", Arrays.asList("World1", "World2", "World3"),
+    DISABLED_WORLDS("Main.Disabled Worlds", Arrays.asList("World1", "World2", "World3"),
             "Worlds that stacking doesn't happen in."),
 
     MAX_STACK_ENTITIES("Entity.Max Stack Size", 15,
@@ -39,7 +39,7 @@ public enum Setting {
             "Should killing a stack of entities kill the whole stack or",
             "just one out of the stack?"),
 
-    SPECIAL_DEATH_CAUSE("Entity.Special Death Cause", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
+    INSTANT_KILL("Entity.Instant Kill", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
             "Events that will trigger an entire stack to be killed.",
             "It should be noted that this is useless if the above setting is true.",
             "Any of the following can be added to the list:",
@@ -58,9 +58,9 @@ public enum Setting {
             "The acceptable check options are:",
             "NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
             "CAN_BREED, IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
-            "ZOMBIE_BABY, SLIME_SIZE, ENDERMAN_CARRY_BLOCK, PIG_SADDLE",
-            "SHEEP_SHEERED, SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE",
-            "HORSE_COLOR, HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",
+            "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEERED",
+            "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",
+            "HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",
             "HORSE_HAS_SADDLE, HORSE_JUMP, RABBIT_TYPE, VILLAGER_PROFESSION",
             "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
             "TROPICALFISH_PATTERN, TROPICALFISH_BODY_COLOR, TROPICALFISH_PATTERN_COLOR"),

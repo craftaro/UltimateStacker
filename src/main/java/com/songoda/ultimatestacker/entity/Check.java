@@ -11,7 +11,6 @@ public enum Check {
     SKELETON_TYPE(true),
     ZOMBIE_BABY(true),
     SLIME_SIZE(true),
-    ENDERMAN_CARRY_BLOCK(true),
     PIG_SADDLE(true),
     SHEEP_SHEERED(true),
     SHEEP_COLOR(true),

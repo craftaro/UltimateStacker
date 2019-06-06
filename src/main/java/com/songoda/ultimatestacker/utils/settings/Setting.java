@@ -10,15 +10,6 @@ import java.util.stream.Collectors;
 
 public enum Setting {
 
-    STACK_ITEMS("Main.Stack Items", true,
-            "Should items be stacked?"),
-
-    STACK_ENTITIES("Main.Stack Entities", true,
-            "Should entities be stacked?"),
-
-    STACK_SPAWNERS("Main.Stack Spawners", true,
-            "Should spawners be stacked?"),
-
     STACK_SEARCH_TICK_SPEED("Main.Stack Search Tick Speed", 5,
             "The speed in which a new stacks will be created.",
             "It is advised to keep this number low."),
@@ -26,23 +17,27 @@ public enum Setting {
     DISABLED_WORLDS("Main.Disabled Worlds", Arrays.asList("World1", "World2", "World3"),
             "Worlds that stacking doesn't happen in."),
 
-    MAX_STACK_ENTITIES("Entity.Max Stack Size", 15,
+
+    STACK_ENTITIES("Entities.Enabled", true,
+            "Should entities be stacked?"),
+
+    MAX_STACK_ENTITIES("Entities.Max Stack Size", 15,
             "The max amount of entities in a single stack."),
 
-    MIN_STACK_ENTITIES("Entity.Min Stack Amount", 5,
+    MIN_STACK_ENTITIES("Entities.Min Stack Amount", 5,
             "The minimum amount required before a stack can be formed."),
 
-    ENTITY_HOLOGRAMS("Entity.Holograms Enabled", true,
+    ENTITY_HOLOGRAMS("Entities.Holograms Enabled", true,
             "Should holograms be displayed above stacked entities?"),
 
-    HOLOGRAMS_ON_LOOK_ENTITY("Entity.Only Show Holograms On Look", false,
+    HOLOGRAMS_ON_LOOK_ENTITY("Entities.Only Show Holograms On Look", false,
             "Only show nametags above an entities head when looking directly at them."),
 
-    KILL_WHOLE_STACK_ON_DEATH("Entity.Kill Whole Stack On Death", false,
+    KILL_WHOLE_STACK_ON_DEATH("Entities.Kill Whole Stack On Death", false,
             "Should killing a stack of entities kill the whole stack or",
             "just one out of the stack?"),
 
-    INSTANT_KILL("Entity.Instant Kill", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
+    INSTANT_KILL("Entities.Instant Kill", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
             "Events that will trigger an entire stack to be killed.",
             "It should be noted that this is useless if the above setting is true.",
             "Any of the following can be added to the list:",
@@ -54,7 +49,7 @@ public enum Setting {
             "FALLING_BLOCK, THORNS, DRAGON_BREATH, CUSTOM",
             "FLY_INTO_WALL, HOT_FLOOR, CRAMMING, DRYOUT"),
 
-    STACK_CHECKS("Entity.Stack Checks", Arrays.asList(Check.values()).stream()
+    STACK_CHECKS("Entities.Stack Checks", Arrays.asList(Check.values()).stream()
             .filter(Check::isEnabledByDefault).map(Check::name).collect(Collectors.toList()),
             "These are checks that are processed before an entity is stacked.",
             "You can add and remove from the list at will.",
@@ -68,28 +63,34 @@ public enum Setting {
             "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
             "TROPICALFISH_PATTERN, TROPICALFISH_BODY_COLOR, TROPICALFISH_PATTERN_COLOR"),
 
-    SPLIT_CHECKS("Entity.Split Checks", Arrays.asList(Split.values()).stream()
+    SPLIT_CHECKS("Entities.Split Checks", Arrays.asList(Split.values()).stream()
             .map(Split::name).collect(Collectors.toList()),
             "These are checks that when achieved will break separate a single entity",
             "from a stack."),
 
-    NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x",
+    NAME_FORMAT_ENTITY("Entities.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above an entities head where {TYPE} refers to",
             "The entities type and {AMT} is the amount currently stacked."),
 
-    SEARCH_RADIUS("Entity.Search Radius", 5,
+    SEARCH_RADIUS("Entities.Search Radius", 5,
             "The distance entities must be to each other in order to stack."),
 
-    MAX_STACK_ITEMS("Item.Max Stack Size", 512,
+    STACK_ITEMS("Items.Enabled", true,
+            "Should items be stacked?"),
+    
+    MAX_STACK_ITEMS("Items.Max Stack Size", 512,
             "The max stack size for items.",
             "Currently this can only be set to a max of 120."),
 
-    NAME_FORMAT_ITEM("Item.Name Format", "&f{TYPE} &6{AMT}x",
+    NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above a dropped item."),
 
-    ITEM_HOLOGRAMS("Item.Holograms Enabled", true,
+    ITEM_HOLOGRAMS("Items.Holograms Enabled", true,
             "Should holograms be displayed above stacked items?"),
 
+    STACK_Enabled("Main.Enabled", true,
+            "Should spawners be stacked?"),
+    
     SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,
             "Should holograms be displayed above stacked spawners?"),
 

@@ -97,8 +97,7 @@ public class BlockListeners implements Listener {
         Block block = event.getBlock();
 
         if (!event.isCancelled()) {
-            if (block == null
-                    || block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+            if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                     || !instance.spawnersEnabled())
                 return;
 

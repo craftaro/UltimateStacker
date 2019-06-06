@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.utils.settings;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.Check;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,16 +42,27 @@ public enum Setting {
             "Events that will trigger an entire stack to be killed.",
             "It should be noted that this is useless if the above setting is true.",
             "Any of the following can be added to the list:",
-            "CONTACT, ENTITY_ATTACK, ENTITY_SWEEP_ATTACK",
-            "PROJECTILE, SUFFOCATION, FALL",
-            "FIRE, FIRE_TICK, MELTING",
-            "LAVA, DROWNING, BLOCK_EXPLOSION",
-            "ENTITY_EXPLOSION, VOID, LIGHTNING",
-            "SUICIDE, STARVATION, POISON",
-            "MAGIC, WITHER, FALLING_BLOCK",
-            "THORNS, DRAGON_BREATH, CUSTOM",
-            "FLY_INTO_WALL, HOT_FLOOR, CRAMMING",
-            "DRYOUT"),
+            "CONTACT, ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE",
+            "SUFFOCATION, FALL, FIRE, FIRE_TICK",
+            "MELTING, LAVA, DROWNING, BLOCK_EXPLOSION",
+            "ENTITY_EXPLOSION, VOID, LIGHTNING, SUICIDE",
+            "STARVATION, POISON, MAGIC, WITHER",
+            "FALLING_BLOCK, THORNS, DRAGON_BREATH, CUSTOM",
+            "FLY_INTO_WALL, HOT_FLOOR, CRAMMING, DRYOUT"),
+
+    STACK_CHECKS("Entity.Stack Checks", Arrays.asList(Check.values()).stream()
+            .filter(Check::isEnabledByDefault).map(Check::name).collect(Collectors.toList()),
+            "These are checks that are processed before an entity is stacked.",
+            "You can add and remove from the list at will.",
+            "The acceptable check options are:",
+            "NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
+            "CAN_BREED, IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
+            "ZOMBIE_BABY, SLIME_SIZE, ENDERMAN_CARRY_BLOCK, PIG_SADDLE",
+            "SHEEP_SHEERED, SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE",
+            "HORSE_COLOR, HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",
+            "HORSE_HAS_SADDLE, HORSE_JUMP, RABBIT_TYPE, VILLAGER_PROFESSION",
+            "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
+            "TROPICALFISH_PATTERN, TROPICALFISH_BODY_COLOR, TROPICALFISH_PATTERN_COLOR"),
 
     NAME_FORMAT_ENTITY("Entity.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above an entities head where {TYPE} refers to",

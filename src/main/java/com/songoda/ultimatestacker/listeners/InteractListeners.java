@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -46,8 +47,9 @@ public class InteractListeners implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractAtEntityEvent event) {
+        if (!(event.getRightClicked() instanceof LivingEntity)) return;
         Player player = event.getPlayer();
-        Entity entity = event.getRightClicked();
+        LivingEntity entity = (LivingEntity)event.getRightClicked();
 
         ItemStack item = player.getInventory().getItemInHand();
 
@@ -64,27 +66,7 @@ public class InteractListeners implements Listener {
         else if (entity instanceof Ageable && !((Ageable) entity).isAdult())
             return;
 
-        Entity newEntity = entity.getWorld().spawnEntity(entity.getLocation(), entity.getType());
-        entity.setVelocity(getRandomVector());
-
-
-        if (entity instanceof Ageable) {
-            if (((Ageable) entity).isAdult()) {
-                ((Ageable) newEntity).setAdult();
-            } else {
-                ((Ageable) newEntity).setBaby();
-            }
-        }
-
-        if (entity instanceof Sheep) {
-            Sheep sheep = ((Sheep) newEntity);
-            sheep.setSheared(((Sheep)entity).isSheared());
-            sheep.setColor(((Sheep)entity).getColor());
-        } else if (entity instanceof Villager) {
-            Villager villager = ((Villager) newEntity);
-            villager.setProfession(((Villager)entity).getProfession());
-        }
-
+        Entity newEntity = Methods.newEntity(entity);
 
         instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);

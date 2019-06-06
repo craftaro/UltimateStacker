@@ -75,7 +75,7 @@ public class StackingTask extends BukkitRunnable {
                 if (configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
-                List<Entity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
+                List<LivingEntity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
                 entityList.removeIf(entity -> entity.hasMetadata("inLove") || entity.hasMetadata("breedCooldown"));
 
                 for (Entity entity : new ArrayList<>(entityList)) {

@@ -507,7 +507,7 @@ public class Methods {
     }
 
     public static String compileItemName(Material type, int amount) {
-        String nameFormat = UltimateStacker.getInstance().getConfig().getString("Item.Name Format");
+        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig().getString("Items." + type.name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
@@ -519,7 +519,7 @@ public class Methods {
     }
 
     public static String compileEntityName(Entity entity, int amount) {
-        String nameFormat = UltimateStacker.getInstance().getConfig().getString("Entity.Name Format");
+        String nameFormat = Setting.NAME_FORMAT_ENTITY.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getConfig().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);

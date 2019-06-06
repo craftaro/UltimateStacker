@@ -248,7 +248,7 @@ public class Methods {
         return newEntity;
     }
 
-    public static List<LivingEntity> getSimilarEntitesAroundEntity(LivingEntity initalEntity) {
+    public static List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity) {
 
         int searchRadius = Setting.SEARCH_RADIUS.getInt();
 

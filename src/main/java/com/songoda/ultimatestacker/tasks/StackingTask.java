@@ -9,11 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,7 +72,7 @@ public class StackingTask extends BukkitRunnable {
                 if (configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
-                List<LivingEntity> entityList = Methods.getSimilarEntitesAroundEntity(initalEntity);
+                List<LivingEntity> entityList = Methods.getSimilarEntitiesAroundEntity(initalEntity);
                 entityList.removeIf(entity -> entity.hasMetadata("inLove") || entity.hasMetadata("breedCooldown"));
 
                 for (Entity entity : new ArrayList<>(entityList)) {

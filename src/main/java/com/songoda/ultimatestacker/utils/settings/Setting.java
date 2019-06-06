@@ -83,6 +83,9 @@ public enum Setting {
 
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),
+
+    ITEM_HOLOGRAMS("Items.Holograms Enabled", true,
+            "Should holograms be displayed above stacked items?"),
     
     MAX_STACK_ITEMS("Items.Max Stack Size", 512,
             "The max stack size for items.",
@@ -91,10 +94,7 @@ public enum Setting {
     NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above a dropped item."),
 
-    ITEM_HOLOGRAMS("Items.Holograms Enabled", true,
-            "Should holograms be displayed above stacked items?"),
-
-    STACK_Enabled("Main.Enabled", true,
+    SPAWNERS_ENABLED("Spawners.Enabled", true,
             "Should spawners be stacked?"),
     
     SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,

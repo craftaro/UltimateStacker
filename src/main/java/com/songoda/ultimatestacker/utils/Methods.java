@@ -101,7 +101,6 @@ public class Methods {
         LivingEntity newEntity = (LivingEntity) toClone.getWorld().spawnEntity(toClone.getLocation(), toClone.getType());
         newEntity.setVelocity(toClone.getVelocity());
 
-
         List<String> checks = Setting.STACK_CHECKS.getStringList();
 
         for (String checkStr : checks) {
@@ -238,8 +237,10 @@ public class Methods {
             }
         }
 
-        newEntity.setFireTicks(toClone.getFireTicks());
-        newEntity.addPotionEffects(toClone.getActivePotionEffects());
+        if (Setting.KEEP_FIRE.getBoolean())
+            newEntity.setFireTicks(toClone.getFireTicks());
+        if (Setting.KEEP_POTION.getBoolean())
+            newEntity.addPotionEffects(toClone.getActivePotionEffects());
 
         return newEntity;
     }

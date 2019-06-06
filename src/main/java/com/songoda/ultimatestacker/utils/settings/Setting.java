@@ -21,6 +21,13 @@ public enum Setting {
     STACK_ENTITIES("Entities.Enabled", true,
             "Should entities be stacked?"),
 
+    NAME_FORMAT_ENTITY("Entities.Name Format", "&f{TYPE} &6{AMT}x",
+            "The text displayed above an entities head where {TYPE} refers to",
+            "The entities type and {AMT} is the amount currently stacked."),
+
+    SEARCH_RADIUS("Entities.Search Radius", 5,
+            "The distance entities must be to each other in order to stack."),
+
     MAX_STACK_ENTITIES("Entities.Max Stack Size", 15,
             "The max amount of entities in a single stack."),
 
@@ -68,12 +75,11 @@ public enum Setting {
             "These are checks that when achieved will break separate a single entity",
             "from a stack."),
 
-    NAME_FORMAT_ENTITY("Entities.Name Format", "&f{TYPE} &6{AMT}x",
-            "The text displayed above an entities head where {TYPE} refers to",
-            "The entities type and {AMT} is the amount currently stacked."),
+    KEEP_FIRE("Entities.Keep Fire", true,
+            "Should fire ticks persist to the next entity when an entity dies?"),
 
-    SEARCH_RADIUS("Entities.Search Radius", 5,
-            "The distance entities must be to each other in order to stack."),
+    KEEP_POTION("Entities.Keep Potion Effects", true,
+            "Should potion effects persist to the next entity when an entity dies?"),
 
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),

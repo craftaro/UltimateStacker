@@ -32,6 +32,9 @@ public enum Setting {
     MIN_STACK_ENTITIES("Entity.Min Stack Amount", 5,
             "The minimum amount required before a stack can be formed."),
 
+    ENTITY_HOLOGRAMS("Entity.Holograms Enabled", true,
+            "Should holograms be displayed above stacked entities?"),
+
     HOLOGRAMS_ON_LOOK_ENTITY("Entity.Only Show Holograms On Look", false,
             "Only show nametags above an entities head when looking directly at them."),
 
@@ -83,6 +86,9 @@ public enum Setting {
 
     NAME_FORMAT_ITEM("Item.Name Format", "&f{TYPE} &6{AMT}x",
             "The text displayed above a dropped item."),
+
+    ITEM_HOLOGRAMS("Item.Holograms Enabled", true,
+            "Should holograms be displayed above stacked items?"),
 
     SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,
             "Should holograms be displayed above stacked spawners?"),

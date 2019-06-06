@@ -24,6 +24,8 @@ public class EntityStack {
     }
 
     public void updateStack() {
+        if (!Setting.ENTITY_HOLOGRAMS.getBoolean()) return;
+
         Entity entity = getEntityByUniqueId(this.entity);
         if (entity == null) return;
 

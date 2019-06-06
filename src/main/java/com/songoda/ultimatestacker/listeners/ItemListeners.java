@@ -109,7 +109,8 @@ public class ItemListeners implements Listener {
             item.getItemStack().setAmount(newAmount);
         }
 
-        if (instance.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")) {
+        if (instance.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
+                && Setting.ITEM_HOLOGRAMS.getBoolean()) {
             item.setCustomName(name);
             item.setCustomNameVisible(true);
         }

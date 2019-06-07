@@ -93,8 +93,9 @@ public class BlockListeners implements Listener {
                 }
 
                 stack.setAmount(stack.getAmount() + itemAmount);
-                if (instance.getHologram() != null)
+                if (instance.getHologram() != null) {
                     instance.getHologram().update(stack);
+                }
                 Methods.takeItem(player, itemAmount);
             }
         }
@@ -159,7 +160,7 @@ public class BlockListeners implements Listener {
         int amt = 1;
         boolean remove = false;
 
-        if (player.isSneaking()) {
+        if (player.isSneaking() && Setting.SNEAK_FOR_STACK.getBoolean()) {
             amt = stack.getAmount();
             remove = true;
         } else if (stack.getAmount() <= 1) {

@@ -1,7 +1,7 @@
 name: UltimateStacker
 description: UltimateStacker
 version: maven-version-number
-softdepend: [Arconix, HolographicDisplays, WorldGuard, EpicSpawners]
+softdepend: [HolographicDisplays, WorldGuard, EpicSpawners]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
 api-version: 1.13

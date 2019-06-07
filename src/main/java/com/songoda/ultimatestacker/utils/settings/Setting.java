@@ -103,6 +103,18 @@ public enum Setting {
     MAX_STACK_SPAWNERS("Spawners.Max Stack Size", 5,
             "What should the max a spawner can stack to be?"),
 
+    SNEAK_FOR_STACK("Spawners.Sneak To Receive A Stacked Spawner", true,
+            "Toggle ability to receive a stacked spawner when breaking a spawner while sneaking."),
+
+    SPAWNERS_DONT_EXPLODE("Spawners.Prevent Spawners From Exploding", false,
+            "Should spawners break when blown up?"),
+
+    EXPLOSION_DROP_CHANCE_TNT("Spawners.Chance On TNT Explosion", "100%",
+            "Chance of a TNT explosion dropping a spawner."),
+
+    EXPLOSION_DROP_CHANCE_CREEPER("Spawners.Chance On Creeper Explosion", "100%",
+            "Chance of a creeper explosion dropping a spawner."),
+
     NAME_FORMAT_SPAWNER("Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
             "The text displayed above a stacked spawner where {TYPE} refers to",
             "The entities type and {AMT} is the amount currently stacked."),

@@ -3,9 +3,9 @@ package com.songoda.ultimatestacker;
 import com.songoda.ultimatestacker.command.CommandManager;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.hologram.Hologram;
 import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
+import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
@@ -13,13 +13,19 @@ import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
-import com.songoda.ultimatestacker.utils.*;
+import com.songoda.ultimatestacker.utils.ConfigWrapper;
+import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.Metrics;
+import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import com.songoda.ultimatestacker.utils.settings.SettingsManager;
-import org.apache.commons.lang.ArrayUtils;
 import com.songoda.ultimatestacker.utils.updateModules.LocaleModule;
 import com.songoda.update.Plugin;
 import com.songoda.update.SongodaUpdate;
-import org.bukkit.*;
+import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.PluginManager;
@@ -161,18 +167,18 @@ public class UltimateStacker extends JavaPlugin {
         }, 10);
         PluginManager pluginManager = Bukkit.getPluginManager();
         if (isServerVersionAtLeast(ServerVersion.V1_10))
-            Bukkit.getPluginManager().registerEvents(new BreedListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new BlockListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new DeathListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new ShearListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new InteractListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new EntityListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new ItemListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new TameListeners(this), this);
-        Bukkit.getPluginManager().registerEvents(new SheepDyeListeners(this), this);
+            pluginManager.registerEvents(new BreedListeners(this), this);
+        pluginManager.registerEvents(new BlockListeners(this), this);
+        pluginManager.registerEvents(new DeathListeners(this), this);
+        pluginManager.registerEvents(new ShearListeners(this), this);
+        pluginManager.registerEvents(new InteractListeners(this), this);
+        pluginManager.registerEvents(new EntityListeners(this), this);
+        pluginManager.registerEvents(new ItemListeners(this), this);
+        pluginManager.registerEvents(new TameListeners(this), this);
+        pluginManager.registerEvents(new SheepDyeListeners(this), this);
 
         // Register Hologram Plugin
-        if (getConfig().getBoolean("Spawners.Holograms Enabled")) {
+        if (Setting.SPAWNER_HOLOGRAMS.getBoolean()) {
             if (pluginManager.isPluginEnabled("HolographicDisplays"))
                 hologram = new HologramHolographicDisplays(this);
         }
@@ -212,8 +218,7 @@ public class UltimateStacker extends JavaPlugin {
     }
 
     public boolean spawnersEnabled() {
-        if (this.getServer().getPluginManager().isPluginEnabled("EpicSpawners")) return false;
-        return this.getConfig().getBoolean("Main.Stack Spawners");
+        return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Setting.SPAWNERS_ENABLED.getBoolean();
     }
 
     public Hologram getHologram() { return hologram; }

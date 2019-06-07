@@ -107,7 +107,7 @@ public enum Setting {
             "Toggle ability to receive a stacked spawner when breaking a spawner while sneaking."),
 
     SPAWNERS_DONT_EXPLODE("Spawners.Prevent Spawners From Exploding", false,
-            "Should spawners break when blown up?"),
+            "Should spawners not break when blown up?"),
 
     EXPLOSION_DROP_CHANCE_TNT("Spawners.Chance On TNT Explosion", "100%",
             "Chance of a TNT explosion dropping a spawner."),

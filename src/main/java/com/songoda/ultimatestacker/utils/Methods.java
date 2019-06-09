@@ -1,5 +1,9 @@
 package com.songoda.ultimatestacker.utils;
 
+import com.gamingmesh.jobs.Jobs;
+import com.gamingmesh.jobs.actions.EntityActionInfo;
+import com.gamingmesh.jobs.container.ActionType;
+import com.gamingmesh.jobs.container.JobsPlayer;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -36,9 +40,11 @@ public class Methods {
             for (ItemStack item : items) {
                 killedLocation.getWorld().dropItemNaturally(killedLocation, item);
             }
-
             killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp);
         }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Jobs"))
+            runJobs(killed, stack.getAmount());
     }
 
     private static void handleSingleStackDeath(LivingEntity killed) {
@@ -64,6 +70,19 @@ public class Methods {
             newEntity.setCustomNameVisible(false);
             newEntity.setCustomName(null);
         }
+    }
+
+    private static void runJobs(LivingEntity killed, int amount) {
+        if (killed.getKiller() == null) return;
+
+        JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(killed.getKiller());
+        if (jPlayer == null)
+            return;
+
+        EntityActionInfo eInfo = new EntityActionInfo(killed, ActionType.KILL);
+
+        for (int i = 1; i < amount; i++)
+            Jobs.action(jPlayer, eInfo, killed);
     }
 
     public static void onDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {

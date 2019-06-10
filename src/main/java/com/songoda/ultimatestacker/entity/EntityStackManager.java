@@ -18,15 +18,27 @@ public class EntityStackManager {
     }
 
     public EntityStack addStack(Entity entity, int amount) {
-        return stacks.put(entity.getUniqueId(), new EntityStack(entity, amount));
+        return addStack(entity.getUniqueId(), amount);
+    }
+
+    public EntityStack addStack(UUID uuid, int amount) {
+        return stacks.put(uuid, new EntityStack(uuid, amount));
     }
 
     public EntityStack getStack(Entity entity) {
-        return stacks.get(entity.getUniqueId());
+        return getStack(entity.getUniqueId());
+    }
+
+    public EntityStack getStack(UUID uuid) {
+        return stacks.get(uuid);
     }
 
     public boolean isStacked(Entity entity) {
-        return stacks.containsKey(entity.getUniqueId());
+        return isStacked(entity.getUniqueId());
+    }
+
+    public boolean isStacked(UUID uuid) {
+        return stacks.containsKey(uuid);
     }
 
     public EntityStack removeStack(UUID entity) {

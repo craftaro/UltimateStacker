@@ -1,19 +1,13 @@
 package com.songoda.ultimatestacker.utils;
 
-import com.gamingmesh.jobs.Jobs;
-import com.gamingmesh.jobs.actions.EntityActionInfo;
-import com.gamingmesh.jobs.container.ActionType;
-import com.gamingmesh.jobs.container.JobsPlayer;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,94 +21,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Methods {
-
-    private static void handleWholeStackDeath(LivingEntity killed, EntityStack stack, List<ItemStack> items, int droppedExp) {
-        Location killedLocation = killed.getLocation();
-        for (int i = 1; i < stack.getAmount(); i++) {
-            if (i == 1) {
-                items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
-                for (ItemStack item : killed.getEquipment().getArmorContents()) {
-                    items.removeIf(it -> it.isSimilar(item));
-                }
-            }
-            for (ItemStack item : items) {
-                killedLocation.getWorld().dropItemNaturally(killedLocation, item);
-            }
-            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp);
-        }
-
-        if (Bukkit.getPluginManager().isPluginEnabled("Jobs"))
-            runJobs(killed, stack.getAmount());
-    }
-
-    private static void handleSingleStackDeath(LivingEntity killed) {
-        UltimateStacker instance = UltimateStacker.getInstance();
-        EntityStackManager stackManager = instance.getEntityStackManager();
-        LivingEntity newEntity = newEntity(killed);
-
-        newEntity.getEquipment().clear();
-        
-        if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
-
-        if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
-            if (killed.hasMetadata("ES"))
-                newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
-
-        EntityStack entityStack = stackManager.updateStack(killed, newEntity);
-
-        entityStack.addAmount(-1);
-
-        if (entityStack.getAmount() <= 1) {
-            stackManager.removeStack(newEntity);
-            newEntity.setCustomNameVisible(false);
-            newEntity.setCustomName(null);
-        }
-    }
-
-    private static void runJobs(LivingEntity killed, int amount) {
-        if (killed.getKiller() == null) return;
-
-        JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(killed.getKiller());
-        if (jPlayer == null)
-            return;
-
-        EntityActionInfo eInfo = new EntityActionInfo(killed, ActionType.KILL);
-
-        for (int i = 1; i < amount; i++)
-            Jobs.action(jPlayer, eInfo, killed);
-    }
-
-    public static void onDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
-        UltimateStacker instance = UltimateStacker.getInstance();
-
-        EntityStackManager stackManager = instance.getEntityStackManager();
-
-        if (!stackManager.isStacked(killed)) return;
-
-        killed.setCustomName(null);
-        killed.setCustomNameVisible(true);
-        killed.setCustomName(formatText("&7"));
-
-        EntityStack stack = stackManager.getStack(killed);
-
-        if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && stack.getAmount() != 1) {
-            handleWholeStackDeath(killed, stack, items, droppedExp);
-        } else if(stack.getAmount() != 1) {
-            List<String> reasons = Setting.INSTANT_KILL.getStringList();
-            EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
-
-            if(lastDamageCause != null) {
-                EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
-                for(String s : reasons) {
-                    if(!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, stack, items, droppedExp);
-                    return;
-                }
-            }
-            handleSingleStackDeath(killed);
-        }
-    }
 
     public static LivingEntity newEntity(LivingEntity toClone) {
         LivingEntity newEntity = (LivingEntity) toClone.getWorld().spawnEntity(toClone.getLocation(), toClone.getType());
@@ -599,6 +505,17 @@ public class Methods {
         glassmeta.setDisplayName("§l");
         glass.setItemMeta(glassmeta);
         return glass;
+    }
+
+    public static String formatTitle(String text) {
+        if (text == null || text.equals(""))
+            return "";
+        if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) {
+            if (text.length() > 31)
+                text = text.substring(0, 29) + "...";
+        }
+        text = formatText(text);
+        return text;
     }
 
     /**

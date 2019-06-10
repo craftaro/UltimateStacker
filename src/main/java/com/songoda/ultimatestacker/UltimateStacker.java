@@ -5,6 +5,8 @@ import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.hologram.Hologram;
 import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
+import com.songoda.ultimatestacker.hook.StackerHook;
+import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
@@ -28,9 +30,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class UltimateStacker extends JavaPlugin {
@@ -49,6 +54,8 @@ public class UltimateStacker extends JavaPlugin {
     private CommandManager commandManager;
     private StackingTask stackingTask;
     private Hologram hologram;
+
+    private List<StackerHook> stackerHooks = new ArrayList<>();
 
     private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
     private Storage storage;
@@ -183,12 +190,23 @@ public class UltimateStacker extends JavaPlugin {
                 hologram = new HologramHolographicDisplays(this);
         }
 
+        // Register Hooks
+        if (pluginManager.isPluginEnabled("Jobs")) {
+            stackerHooks.add(new JobsHook());
+        }
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
 
         // Starting Metrics
         new Metrics(this);
 
         console.sendMessage(Methods.formatText("&a============================="));
+    }
+
+    public void addExp(Player player, EntityStack stack) {
+        for (StackerHook stackerHook : stackerHooks) {
+            stackerHook.applyExperience(player, stack);
+        }
     }
 
     private void checkStorage() {
@@ -215,10 +233,6 @@ public class UltimateStacker extends JavaPlugin {
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
         this.references = new References();
         this.settingsManager.reloadConfig();
-    }
-
-    private void convert() {
-        WildS
     }
 
     public boolean spawnersEnabled() {

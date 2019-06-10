@@ -18,6 +18,8 @@ public class DeathListeners implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        Methods.onDeath(event.getEntity(), new ArrayList<>(event.getDrops()), event.getDroppedExp());
+        if (instance.getEntityStackManager().isStacked(event.getEntity()))
+            instance.getEntityStackManager().getStack(event.getEntity())
+                    .onDeath(event.getEntity(), new ArrayList<>(event.getDrops()), event.getDroppedExp());
     }
 }

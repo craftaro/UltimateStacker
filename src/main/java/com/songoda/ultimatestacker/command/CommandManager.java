@@ -28,6 +28,7 @@ public class CommandManager implements CommandExecutor {
         addCommand(new CommandRemoveAll(commandUltimateStacker));
         addCommand(new CommandReload(commandUltimateStacker));
         addCommand(new CommandGive(commandUltimateStacker));
+        addCommand(new CommandConvert(commandUltimateStacker));
     }
 
     private AbstractCommand addCommand(AbstractCommand abstractCommand) {

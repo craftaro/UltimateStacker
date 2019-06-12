@@ -49,7 +49,8 @@ public class Methods {
                     ((Tameable) newEntity).setOwner(((Tameable) toClone).getOwner());
                 }
                 case SKELETON_TYPE: {
-                    if (!(toClone instanceof Skeleton)) break;
+                    if (!(toClone instanceof Skeleton)
+                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)) break;
                     ((Skeleton) newEntity).setSkeletonType(((Skeleton) toClone).getSkeletonType());
                     break;
                 }

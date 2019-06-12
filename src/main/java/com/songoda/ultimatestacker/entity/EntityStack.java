@@ -98,7 +98,7 @@ public class EntityStack {
 
     private void handleWholeStackDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
         Location killedLocation = killed.getLocation();
-        for (int i = 1; i < getAmount(); i++) {
+        for (int i = 1; i < amount; i++) {
             if (i == 1) {
                 items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
                 for (ItemStack item : killed.getEquipment().getArmorContents()) {
@@ -108,8 +108,9 @@ public class EntityStack {
             for (ItemStack item : items) {
                 killedLocation.getWorld().dropItemNaturally(killedLocation, item);
             }
-            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp);
         }
+
+        killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
 
         UltimateStacker.getInstance().addExp(killed.getKiller(), this);
     }

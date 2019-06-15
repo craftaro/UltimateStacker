@@ -61,7 +61,7 @@ public enum Setting {
             "These are checks that are processed before an entity is stacked.",
             "You can add and remove from the list at will.",
             "The acceptable check options are:",
-            "NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
+            "SPAWN_REASON, NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
             "CAN_BREED, IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
             "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEERED",
             "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",

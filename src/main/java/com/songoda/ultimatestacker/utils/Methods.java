@@ -188,6 +188,10 @@ public class Methods {
         for (String checkStr : checks) {
             Check check = Check.valueOf(checkStr);
             switch (check) {
+                case SPAWN_REASON: {
+                    if (initalEntity.hasMetadata("US_REASON"))
+                        entityList.removeIf(entity -> entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").get(0).asString().equals("US_REASON"));
+                }
                 case AGE: {
                     if (!(initalEntity instanceof Ageable)) break;
 

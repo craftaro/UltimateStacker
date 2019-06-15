@@ -15,9 +15,12 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,6 +32,11 @@ public class EntityListeners implements Listener {
 
     public EntityListeners(UltimateStacker instance) {
         this.instance = instance;
+    }
+
+    @EventHandler
+    public void onSpawn(CreatureSpawnEvent event) {
+        event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
     }
 
     @EventHandler

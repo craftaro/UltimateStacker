@@ -2,7 +2,7 @@ package com.songoda.ultimatestacker.entity;
 
 public enum Check {
 
-    SPAWN_REASON(false), // ToDo: This
+    SPAWN_REASON(false),
     NERFED(true),
     AGE(true),
     TICK_AGE(false),

@@ -8,7 +8,10 @@ import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -57,7 +60,12 @@ public class StackingTask extends BukkitRunnable {
                 if (initalEntity.isDead()
                         || !initalEntity.isValid()
                         || initalEntity instanceof ArmorStand
-                        || initalEntity.hasMetadata("inLove")) continue;
+                        || initalEntity.hasMetadata("inLove")
+
+                        || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
+                        && !(initalEntity.hasMetadata("US_REASON")
+                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")))
+                    continue;
 
                 EntityStack initialStack = stackManager.getStack(initalEntity);
                 if (initialStack == null && initalEntity.getCustomName() != null) continue;
@@ -73,7 +81,12 @@ public class StackingTask extends BukkitRunnable {
                     maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
 
                 List<LivingEntity> entityList = Methods.getSimilarEntitiesAroundEntity(initalEntity);
-                entityList.removeIf(entity -> entity.hasMetadata("inLove") || entity.hasMetadata("breedCooldown"));
+                entityList.removeIf(entity -> entity.hasMetadata("inLove")
+                        || entity.hasMetadata("breedCooldown")
+
+                        || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
+                        && !(initalEntity.hasMetadata("US_REASON")
+                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")));
 
                 for (Entity entity : new ArrayList<>(entityList)) {
                     if (removed.contains(entity.getUniqueId())) continue;

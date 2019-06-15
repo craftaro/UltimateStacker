@@ -81,6 +81,12 @@ public enum Setting {
     KEEP_POTION("Entities.Keep Potion Effects", true,
             "Should potion effects persist to the next entity when an entity dies?"),
 
+    ONLY_STACK_FROM_SPAWNERS("Entities.Only Stack From Spawners", false,
+            "Should entities only be stacked if they originate from a spawner?",
+            "It should be noted that the identifier that tells the plugin",
+            "if the entity originated from a spawner or not is wiped on",
+            "server restart."),
+
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),
 

@@ -523,6 +523,18 @@ public class Methods {
         return text;
     }
 
+    public static boolean isInt(String number) {
+        if (number == null || number.equals(""))
+            return false;
+        try {
+            Integer.parseInt(number);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
+
     /**
      * Serializes the location of the block specified.
      *

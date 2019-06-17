@@ -7,6 +7,8 @@ import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,7 +19,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -36,7 +37,22 @@ public class EntityListeners implements Listener {
 
     @EventHandler
     public void onSpawn(CreatureSpawnEvent event) {
-        event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
+        LivingEntity entity = event.getEntity();
+        entity.setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
+
+        if (event.getSpawnReason().name().equals("DROWNED")
+                && entity.getCustomName() != null
+                && entity.getCustomName().contains(String.valueOf(ChatColor.COLOR_CHAR))) {
+            String name = event.getEntity().getCustomName().replace(String.valueOf(ChatColor.COLOR_CHAR), "");
+            if (!name.contains(":")) return;
+            String split = name.split(":")[0];
+            int stackSize = Methods.isInt(split) ? Integer.parseInt(split) : 0;
+
+            if (stackSize == 0) return;
+            Bukkit.getScheduler().scheduleSyncDelayedTask(instance,
+                    () -> instance.getEntityStackManager().addStack(entity, stackSize), 1L);
+        }
+
     }
 
     @EventHandler

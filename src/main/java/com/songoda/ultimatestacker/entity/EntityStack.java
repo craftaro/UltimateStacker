@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.UUID;
+
 public class EntityStack {
 
     private UUID entity;
@@ -35,10 +36,14 @@ public class EntityStack {
         if (!Setting.ENTITY_HOLOGRAMS.getBoolean()) return;
 
         Entity entity = getEntityByUniqueId(this.entity);
-        if (entity == null) return;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () -> {
+            Entity entit = getEntityByUniqueId(this.entity);
+            if (entit == null) return;
 
-        entity.setCustomNameVisible(!Setting.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
-        entity.setCustomName(Methods.compileEntityName(entity, amount));
+            entit.setCustomNameVisible(!Setting.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
+            entit.setCustomName(Methods.compileEntityName(entit, amount));
+        }, entity == null ? 1L : 0L);
+
     }
 
     public Entity getEntity() {

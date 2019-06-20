@@ -17,12 +17,9 @@ public class BreedListeners implements Listener {
 
     @EventHandler
     public void onBread(EntityBreedEvent event) {
-
         Bukkit.getScheduler().scheduleSyncDelayedTask(instance, () -> {
-            if (event.getFather() != null)
-                event.getFather().removeMetadata("breedCooldown", instance);
-            if (event.getMother() != null)
-                event.getMother().removeMetadata("breedCooldown", instance);
+            event.getFather().removeMetadata("breedCooldown", instance);
+            event.getMother().removeMetadata("breedCooldown", instance);
         }, 5 * 20 * 60);
         event.getFather().setMetadata("breedCooldown", new FixedMetadataValue(instance, true));
         event.getFather().removeMetadata("inLove", instance);

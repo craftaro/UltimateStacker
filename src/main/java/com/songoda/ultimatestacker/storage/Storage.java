@@ -31,10 +31,6 @@ public abstract class Storage {
     public abstract void prepareSaveItem(String group, StorageItem... items);
 
     public void updateData(UltimateStacker instance) {
-        for (EntityStack stack : instance.getEntityStackManager().getStacks().values()) {
-            prepareSaveItem("entities", new StorageItem("uuid", stack.getEntityUniqueId().toString()),
-                    new StorageItem("amount", stack.getAmount()));
-        }
 
         for (SpawnerStack stack : instance.getSpawnerStackManager().getStacks()) {
             prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),

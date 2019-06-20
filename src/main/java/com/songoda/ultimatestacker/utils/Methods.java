@@ -432,7 +432,7 @@ public class Methods {
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = Methods.convertToInvisibleString(amount + ":");
+        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
         return info + Methods.formatText(nameFormat).trim();
     }
 
@@ -443,7 +443,7 @@ public class Methods {
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = Methods.convertToInvisibleString(amount + ":");
+        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
 
         return info + Methods.formatText(nameFormat).trim();
     }
@@ -455,7 +455,7 @@ public class Methods {
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = Methods.convertToInvisibleString(amount + ":");
+        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
 
         return info + Methods.formatText(nameFormat).trim();
     }
@@ -464,7 +464,6 @@ public class Methods {
         if (player.getGameMode() == GameMode.CREATIVE) return;
 
         ItemStack item = player.getInventory().getItemInHand();
-        if (item == null) return;
 
         int result = item.getAmount() - amount;
         item.setAmount(result);
@@ -596,6 +595,14 @@ public class Methods {
             return "";
         StringBuilder hidden = new StringBuilder();
         for (char c : s.toCharArray()) hidden.append(ChatColor.COLOR_CHAR + "").append(c);
+        return hidden.toString();
+    }
+
+    public static String insertSemicolon(String s) {
+        if (s == null || s.equals(""))
+            return "";
+        StringBuilder hidden = new StringBuilder();
+        for (char c : s.toCharArray()) hidden.append(";").append(c);
         return hidden.toString();
     }
 

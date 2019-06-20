@@ -1,5 +1,7 @@
 package com.songoda.ultimatestacker.entity;
 
+import com.songoda.ultimatestacker.utils.Methods;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 
 import java.util.Collections;
@@ -25,8 +27,27 @@ public class EntityStackManager {
         return stacks.put(uuid, new EntityStack(uuid, amount));
     }
 
+    public EntityStack addSerializedStack(Entity entity, String customName) {
+        if (customName != null && customName.contains(String.valueOf(ChatColor.COLOR_CHAR))) {
+            String name = customName.replace(String.valueOf(ChatColor.COLOR_CHAR), "")
+                    .replace(";", "");
+            if (!name.contains(":")) return null;
+            String split = name.split(":")[0];
+            System.out.println(customName);
+            int amount = Methods.isInt(split) ? Integer.parseInt(split) : 0;
+            addStack(entity, amount);
+        }
+        return null;
+    }
+
+    public EntityStack addSerializedStack(Entity entity) {
+        return addSerializedStack(entity, entity.getCustomName());
+    }
+
     public EntityStack getStack(Entity entity) {
-        return getStack(entity.getUniqueId());
+        EntityStack stack = getStack(entity.getUniqueId());
+        if (stack == null) stack = addSerializedStack(entity);
+        return stack;
     }
 
     public EntityStack getStack(UUID uuid) {
@@ -34,6 +55,10 @@ public class EntityStackManager {
     }
 
     public boolean isStacked(Entity entity) {
+        boolean isStacked = isStacked(entity.getUniqueId());
+        if (!isStacked && addSerializedStack(entity) != null) {
+            return true;
+        }
         return isStacked(entity.getUniqueId());
     }
 

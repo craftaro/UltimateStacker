@@ -41,16 +41,10 @@ public class EntityListeners implements Listener {
         entity.setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
 
         if (event.getSpawnReason().name().equals("DROWNED")
-                && entity.getCustomName() != null
-                && entity.getCustomName().contains(String.valueOf(ChatColor.COLOR_CHAR))) {
-            String name = event.getEntity().getCustomName().replace(String.valueOf(ChatColor.COLOR_CHAR), "");
-            if (!name.contains(":")) return;
-            String split = name.split(":")[0];
-            int stackSize = Methods.isInt(split) ? Integer.parseInt(split) : 0;
-
-            if (stackSize == 0) return;
+                || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.LIGHTNING) {
+            String name = event.getEntity().getCustomName();
             Bukkit.getScheduler().scheduleSyncDelayedTask(instance,
-                    () -> instance.getEntityStackManager().addStack(entity, stackSize), 1L);
+                    () -> instance.getEntityStackManager().addSerializedStack(entity, name), 1L);
         }
 
     }

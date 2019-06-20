@@ -38,9 +38,9 @@ public class Reflection {
                 e.printStackTrace();
             }
             return creatureSpawner;
-        }else{
-            try{
-                if (clazzCraftCreatureSpawner==null) {
+        } else {
+            try {
+                if (clazzCraftCreatureSpawner == null) {
                     String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
                     clazzCraftCreatureSpawner = Class.forName("org.bukkit.craftbukkit." + ver + ".block.CraftCreatureSpawner");
                     clazzTileEntityMobSpawner = Class.forName("net.minecraft.server." + ver + ".TileEntityMobSpawner");
@@ -56,8 +56,8 @@ public class Reflection {
                 Object objcraftCreatureSpawner = clazzCraftCreatureSpawner.cast(creatureSpawner);
                 Object objTileEntityMobSpawner = fieldSpawner.get(objcraftCreatureSpawner);
                 Object objMobSpawnerAbstract = methodGetSpawner.invoke(objTileEntityMobSpawner);
-                fieldSpawnount.set(objMobSpawnerAbstract,count);
-                fieldMaxNearbyEntities.set(objMobSpawnerAbstract,max);
+                fieldSpawnount.set(objMobSpawnerAbstract, count);
+                fieldMaxNearbyEntities.set(objMobSpawnerAbstract, max);
 
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();

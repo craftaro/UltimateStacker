@@ -28,6 +28,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -136,20 +137,6 @@ public class UltimateStacker extends JavaPlugin {
         checkStorage();
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            if (storage.containsGroup("entities")) {
-                for (StorageRow row : storage.getRowsByGroup("entities")) {
-                    try {
-                        EntityStack stack = new EntityStack(
-                                UUID.fromString(row.getKey()),
-                                row.get("amount").asInt());
-
-                        this.entityStackManager.addStack(stack);
-                    } catch (Exception e) {
-                        console.sendMessage("Failed to load entity.");
-                        e.printStackTrace();
-                    }
-                }
-            }
             if (storage.containsGroup("spawners")) {
                 for (StorageRow row : storage.getRowsByGroup("spawners")) {
                     try {

@@ -38,7 +38,8 @@ public class EntityStack {
         Entity entity = getEntityByUniqueId(this.entity);
         Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () -> {
             Entity entit = getEntityByUniqueId(this.entity);
-            if (entit == null) return;
+            if (entit == null ||
+                    !UltimateStacker.getInstance().getEntityStackManager().isStacked(entity)) return;
 
             entit.setCustomNameVisible(!Setting.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
             entit.setCustomName(Methods.compileEntityName(entit, amount));

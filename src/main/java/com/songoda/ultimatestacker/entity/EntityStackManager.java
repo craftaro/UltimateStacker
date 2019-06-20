@@ -33,7 +33,6 @@ public class EntityStackManager {
                     .replace(";", "");
             if (!name.contains(":")) return null;
             String split = name.split(":")[0];
-            System.out.println(customName);
             int amount = Methods.isInt(split) ? Integer.parseInt(split) : 0;
             addStack(entity, amount);
         }

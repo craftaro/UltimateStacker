@@ -28,7 +28,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -37,7 +36,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class UltimateStacker extends JavaPlugin {
 
@@ -171,6 +169,9 @@ public class UltimateStacker extends JavaPlugin {
         pluginManager.registerEvents(new TameListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
 
+        if (Setting.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
+            pluginManager.registerEvents(new ClearLagListeners(this), this);
+
         // Register Hologram Plugin
         if (Setting.SPAWNER_HOLOGRAMS.getBoolean()) {
             if (pluginManager.isPluginEnabled("HolographicDisplays"))
@@ -226,8 +227,10 @@ public class UltimateStacker extends JavaPlugin {
         return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Setting.SPAWNERS_ENABLED.getBoolean();
     }
 
-    public Hologram getHologram() { return hologram; }
-    
+    public Hologram getHologram() {
+        return hologram;
+    }
+
     public ServerVersion getServerVersion() {
         return serverVersion;
     }

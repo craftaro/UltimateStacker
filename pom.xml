@@ -98,5 +98,10 @@
             <artifactId>stackmob</artifactId>
             <version>4</version>
         </dependency>
+        <dependency>
+            <groupId>me.minebuilders</groupId>
+            <artifactId>Clearlag</artifactId>
+            <version>3.0.6</version>
+        </dependency>
     </dependencies>
 </project>

@@ -17,7 +17,6 @@ public enum Setting {
     DISABLED_WORLDS("Main.Disabled Worlds", Arrays.asList("World1", "World2", "World3"),
             "Worlds that stacking doesn't happen in."),
 
-
     STACK_ENTITIES("Entities.Enabled", true,
             "Should entities be stacked?"),
 
@@ -43,6 +42,11 @@ public enum Setting {
     KILL_WHOLE_STACK_ON_DEATH("Entities.Kill Whole Stack On Death", false,
             "Should killing a stack of entities kill the whole stack or",
             "just one out of the stack?"),
+
+    CLEAR_LAG("Entities.Clear Lag", false,
+            "When enabled, the plugin will hook into ClearLag and extend the",
+            "clear task to include stacked entities from this plugin. If this is enabled",
+            "the built in task will not run."),
 
     INSTANT_KILL("Entities.Instant Kill", Arrays.asList("FALL", "DROWNING", "LAVA", "VOID"),
             "Events that will trigger an entire stack to be killed.",

@@ -91,68 +91,72 @@ public enum Setting {
             "if the entity originated from a spawner or not is wiped on",
             "server restart."),
 
-    STACK_ITEMS("Items.Enabled", true,
-            "Should items be stacked?"),
+    ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", true,
+            "Should entities only be stacked if they are touching the ground",
+            "Or is swimming?"),
 
-    ITEM_HOLOGRAMS("Items.Holograms Enabled", true,
-            "Should holograms be displayed above stacked items?"),
-    
-    MAX_STACK_ITEMS("Items.Max Stack Size", 512,
-            "The max stack size for items.",
-            "Currently this can only be set to a max of 120."),
+    STACK_ITEMS("Items.Enabled",true,
+                        "Should items be stacked?"),
 
-    NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} &6{AMT}x",
-            "The text displayed above a dropped item."),
+    ITEM_HOLOGRAMS("Items.Holograms Enabled",true,
+                           "Should holograms be displayed above stacked items?"),
 
-    SPAWNERS_ENABLED("Spawners.Enabled", true,
-            "Should spawners be stacked?"),
-    
-    SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,
-            "Should holograms be displayed above stacked spawners?"),
+    MAX_STACK_ITEMS("Items.Max Stack Size",512,
+                            "The max stack size for items.",
+                            "Currently this can only be set to a max of 120."),
 
-    MAX_STACK_SPAWNERS("Spawners.Max Stack Size", 5,
-            "What should the max a spawner can stack to be?"),
+    NAME_FORMAT_ITEM("Items.Name Format","&f{TYPE} &6{AMT}x",
+                             "The text displayed above a dropped item."),
 
-    SNEAK_FOR_STACK("Spawners.Sneak To Receive A Stacked Spawner", true,
-            "Toggle ability to receive a stacked spawner when breaking a spawner while sneaking."),
+    SPAWNERS_ENABLED("Spawners.Enabled",true,
+                             "Should spawners be stacked?"),
 
-    SPAWNERS_DONT_EXPLODE("Spawners.Prevent Spawners From Exploding", false,
-            "Should spawners not break when blown up?"),
+    SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled",true,
+                              "Should holograms be displayed above stacked spawners?"),
 
-    EXPLOSION_DROP_CHANCE_TNT("Spawners.Chance On TNT Explosion", "100%",
-            "Chance of a TNT explosion dropping a spawner."),
+    MAX_STACK_SPAWNERS("Spawners.Max Stack Size",5,
+                               "What should the max a spawner can stack to be?"),
 
-    EXPLOSION_DROP_CHANCE_CREEPER("Spawners.Chance On Creeper Explosion", "100%",
-            "Chance of a creeper explosion dropping a spawner."),
+    SNEAK_FOR_STACK("Spawners.Sneak To Receive A Stacked Spawner",true,
+                            "Toggle ability to receive a stacked spawner when breaking a spawner while sneaking."),
 
-    NAME_FORMAT_SPAWNER("Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
-            "The text displayed above a stacked spawner where {TYPE} refers to",
-            "The entities type and {AMT} is the amount currently stacked."),
+    SPAWNERS_DONT_EXPLODE("Spawners.Prevent Spawners From Exploding",false,
+                                  "Should spawners not break when blown up?"),
 
-    DATABASE_SUPPORT("Database.Activate Mysql Support", false,
-            "Should MySQL be used for data storage?"),
+    EXPLOSION_DROP_CHANCE_TNT("Spawners.Chance On TNT Explosion","100%",
+                                      "Chance of a TNT explosion dropping a spawner."),
 
-    DATABASE_IP("Database.IP", "127.0.0.1",
-            "MySQL IP"),
+    EXPLOSION_DROP_CHANCE_CREEPER("Spawners.Chance On Creeper Explosion","100%",
+                                          "Chance of a creeper explosion dropping a spawner."),
 
-    DATABASE_PORT("Database.Port", 3306,
-            "MySQL Port"),
+    NAME_FORMAT_SPAWNER("Spawners.Name Format","&f{TYPE} Spawner &6{AMT}x",
+                                "The text displayed above a stacked spawner where {TYPE} refers to",
+                                "The entities type and {AMT} is the amount currently stacked."),
 
-    DATABASE_NAME("Database.Database Name", "UltimateStacker",
-            "The database you are inserting data into."),
+    DATABASE_SUPPORT("Database.Activate Mysql Support",false,
+                             "Should MySQL be used for data storage?"),
 
-    DATABASE_PREFIX("Database.Prefix", "US-",
-            "The prefix for tables inserted into the database."),
+    DATABASE_IP("Database.IP","127.0.0.1",
+                        "MySQL IP"),
 
-    DATABASE_USERNAME("Database.Username", "PUT_USERNAME_HERE",
-            "MySQL Username"),
+    DATABASE_PORT("Database.Port",3306,
+                          "MySQL Port"),
 
-    DATABASE_PASSWORD("Database.Password", "PUT_PASSWORD_HERE",
-            "MySQL Password"),
+    DATABASE_NAME("Database.Database Name","UltimateStacker",
+                          "The database you are inserting data into."),
 
-    LANGUGE_MODE("System.Language Mode", "en_US",
-            "The enabled language file.",
-            "More language files (if available) can be found in the plugins data folder.");
+    DATABASE_PREFIX("Database.Prefix","US-",
+                            "The prefix for tables inserted into the database."),
+
+    DATABASE_USERNAME("Database.Username","PUT_USERNAME_HERE",
+                              "MySQL Username"),
+
+    DATABASE_PASSWORD("Database.Password","PUT_PASSWORD_HERE",
+                              "MySQL Password"),
+
+    LANGUGE_MODE("System.Language Mode","en_US",
+                         "The enabled language file.",
+                         "More language files (if available) can be found in the plugins data folder.");
 
     private String setting;
     private Object option;
@@ -219,4 +223,4 @@ public enum Setting {
     public double getDouble() {
         return UltimateStacker.getInstance().getConfig().getDouble(setting);
     }
-}
+    }

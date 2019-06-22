@@ -64,7 +64,10 @@ public class StackingTask extends BukkitRunnable {
 
                         || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
                         && !(initalEntity.hasMetadata("US_REASON")
-                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")))
+                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER"))
+
+                        || Setting.ONLY_STACK_ON_SURFACE.getBoolean()
+                        && (!initalEntity.isOnGround() && !initalEntity.getLocation().getBlock().isLiquid()))
                     continue;
 
                 EntityStack initialStack = stackManager.getStack(initalEntity);

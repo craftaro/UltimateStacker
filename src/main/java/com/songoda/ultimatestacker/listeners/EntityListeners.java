@@ -35,7 +35,7 @@ public class EntityListeners implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawn(CreatureSpawnEvent event) {
         LivingEntity entity = event.getEntity();
         entity.setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
@@ -49,7 +49,7 @@ public class EntityListeners implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEgg(ItemSpawnEvent event) {
         if (event.getEntity().getItemStack().getType() != Material.EGG) return;
 

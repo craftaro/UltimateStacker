@@ -35,7 +35,7 @@ public class BlockListeners implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawnerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
@@ -104,7 +104,7 @@ public class BlockListeners implements Listener {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 10L);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawnerPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
         Player player = event.getPlayer();
@@ -138,7 +138,7 @@ public class BlockListeners implements Listener {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 1L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
         if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;

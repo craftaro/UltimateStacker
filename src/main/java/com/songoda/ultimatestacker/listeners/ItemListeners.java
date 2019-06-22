@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
@@ -49,21 +50,22 @@ public class ItemListeners implements Listener {
         updateAmount(item, newAmount);
         event.getEntity().remove();
     }
-    @EventHandler
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
         event.setCancelled(true);
 
         updateInventory(event.getItem(), event.getInventory());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDispense(ItemSpawnEvent event) {
         if (!Setting.STACK_ITEMS.getBoolean()) return;
 
         updateAmount(event.getEntity(), event.getEntity().getItemStack().getAmount());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getAmount() < 32) return;
         event.setCancelled(true);

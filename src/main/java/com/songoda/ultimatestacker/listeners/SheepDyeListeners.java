@@ -9,6 +9,7 @@ import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.SheepDyeWoolEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
@@ -26,7 +27,7 @@ public class SheepDyeListeners implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onDye(SheepDyeWoolEvent event) {
         LivingEntity entity = event.getEntity();
 

@@ -118,6 +118,7 @@ public class EntityStack {
 
         killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
 
+        if (killed.getKiller() == null) return;
         UltimateStacker.getInstance().addExp(killed.getKiller(), this);
     }
 

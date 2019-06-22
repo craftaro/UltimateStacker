@@ -91,9 +91,9 @@ public enum Setting {
             "if the entity originated from a spawner or not is wiped on",
             "server restart."),
 
-    ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", true,
+    ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", false,
             "Should entities only be stacked if they are touching the ground",
-            "Or is swimming?"),
+            "or swimming?"),
 
     STACK_ITEMS("Items.Enabled",true,
                         "Should items be stacked?"),

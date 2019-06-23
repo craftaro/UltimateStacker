@@ -22,6 +22,17 @@ import java.util.stream.Collectors;
 
 public class Methods {
 
+    public static boolean canFly(LivingEntity entity) {
+        switch (entity.getType()) {
+            case GHAST:
+            case BLAZE:
+            case PHANTOM:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public static LivingEntity newEntity(LivingEntity toClone) {
         LivingEntity newEntity = (LivingEntity) toClone.getWorld().spawnEntity(toClone.getLocation(), toClone.getType());
         newEntity.setVelocity(toClone.getVelocity());
@@ -184,6 +195,9 @@ public class Methods {
                 .map(entity -> (LivingEntity) entity).collect(Collectors.toList());
 
         List<String> checks = Setting.STACK_CHECKS.getStringList();
+
+        if (Setting.ONLY_STACK_FLYING_DOWN.getBoolean() && Methods.canFly(initalEntity))
+            entityList.removeIf(entity -> entity.getLocation().getY() > initalEntity.getLocation().getY());
 
         for (String checkStr : checks) {
             Check check = Check.valueOf(checkStr);

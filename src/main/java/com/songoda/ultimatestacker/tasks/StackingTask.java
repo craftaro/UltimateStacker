@@ -55,44 +55,44 @@ public class StackingTask extends BukkitRunnable {
                         || !Setting.STACK_ENTITIES.getBoolean())
                     continue;
 
-                LivingEntity initalEntity = (LivingEntity) entityO;
+                LivingEntity initialEntity = (LivingEntity) entityO;
 
-                if (initalEntity.isDead()
-                        || !initalEntity.isValid()
-                        || initalEntity instanceof ArmorStand
-                        || initalEntity.hasMetadata("inLove")
+                if (initialEntity.isDead()
+                        || !initialEntity.isValid()
+                        || initialEntity instanceof ArmorStand
+                        || initialEntity.hasMetadata("inLove")
 
                         || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
-                        && !(initalEntity.hasMetadata("US_REASON")
-                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER"))
+                        && !(initialEntity.hasMetadata("US_REASON")
+                        && initialEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER"))
 
                         || Setting.ONLY_STACK_ON_SURFACE.getBoolean()
-                        && !canFly(initalEntity)
-                        && (!initalEntity.isOnGround() && !initalEntity.getLocation().getBlock().isLiquid()))
+                        && !Methods.canFly(initialEntity)
+                        && (!initialEntity.isOnGround() && !initialEntity.getLocation().getBlock().isLiquid()))
                     continue;
 
-                EntityStack initialStack = stackManager.getStack(initalEntity);
-                if (initialStack == null && initalEntity.getCustomName() != null) continue;
+                EntityStack initialStack = stackManager.getStack(initialEntity);
+                if (initialStack == null && initialEntity.getCustomName() != null) continue;
                 int amtToStack = initialStack != null ? initialStack.getAmount() : 1;
 
                 ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
 
-                if (!configurationSection.getBoolean("Mobs." + initalEntity.getType().name() + ".Enabled"))
+                if (!configurationSection.getBoolean("Mobs." + initialEntity.getType().name() + ".Enabled"))
                     continue;
 
                 int maxEntityStackSize = maxEntityStackSizeGlobal;
-                if (configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size") != -1)
-                    maxEntityStackSize = configurationSection.getInt("Mobs." + initalEntity.getType().name() + ".Max Stack Size");
+                if (configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size") != -1)
+                    maxEntityStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
 
-                List<LivingEntity> entityList = Methods.getSimilarEntitiesAroundEntity(initalEntity);
+                List<LivingEntity> entityList = Methods.getSimilarEntitiesAroundEntity(initialEntity);
                 entityList.removeIf(entity -> entity.hasMetadata("inLove")
                         || entity.hasMetadata("breedCooldown")
 
                         || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
-                        && !(initalEntity.hasMetadata("US_REASON")
-                        && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")));
+                        && !(initialEntity.hasMetadata("US_REASON")
+                        && initialEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")));
 
-                for (Entity entity : new ArrayList<>(entityList)) {
+                for (LivingEntity entity : new ArrayList<>(entityList)) {
                     if (removed.contains(entity.getUniqueId())) continue;
                     EntityStack stack = stackManager.getStack(entity);
                     if (stack == null && entity.getCustomName() != null) {
@@ -104,8 +104,19 @@ public class StackingTask extends BukkitRunnable {
                     if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
                         stack.addAmount(amtToStack);
                         stack.updateStack();
-                        removed.add(initalEntity.getUniqueId());
-                        initalEntity.remove();
+                        removed.add(initialEntity.getUniqueId());
+                        initialEntity.remove();
+
+                        continue nextEntity;
+                    } else if (stack == null
+                            && initialStack != null
+                            && (initialStack.getAmount() + 1) <= maxEntityStackSize
+                            && Methods.canFly(entity)
+                            && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
+                            && initialEntity.getLocation().getY() > entity.getLocation().getY()) {
+                        stackManager.addStack(entity, initialStack.getAmount() + 1);
+                        removed.add(initialEntity.getUniqueId());
+                        initialEntity.remove();
 
                         continue nextEntity;
                     }
@@ -120,7 +131,7 @@ public class StackingTask extends BukkitRunnable {
                         || minEntityStackAmount == 1 && entityList.size() == 0) continue;
 
                 //If stack was never found make a new one.
-                EntityStack stack = stackManager.addStack(new EntityStack(initalEntity, (entityList.size() + 1) >
+                EntityStack stack = stackManager.addStack(new EntityStack(initialEntity, (entityList.size() + 1) >
                         maxEntityStackSize ? maxEntityStackSize : entityList.size() + 1));
 
                 entityList.stream().filter(entity -> !stackManager.isStacked(entity)
@@ -136,14 +147,4 @@ public class StackingTask extends BukkitRunnable {
         }
     }
 
-    private boolean canFly(LivingEntity entity) {
-        switch (entity.getType()) {
-            case GHAST:
-            case BLAZE:
-            case PHANTOM:
-                return true;
-            default:
-                return false;
-        }
-    }
 }

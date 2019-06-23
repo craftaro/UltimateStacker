@@ -93,7 +93,7 @@ public enum Setting {
 
     ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", false,
             "Should entities only be stacked if they are touching the ground",
-            "or swimming?"),
+            "or swimming? This does not effect flying entities."),
 
     STACK_ITEMS("Items.Enabled",true,
                         "Should items be stacked?"),

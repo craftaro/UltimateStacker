@@ -67,6 +67,7 @@ public class StackingTask extends BukkitRunnable {
                         && initalEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER"))
 
                         || Setting.ONLY_STACK_ON_SURFACE.getBoolean()
+                        && !canFly(initalEntity)
                         && (!initalEntity.isOnGround() && !initalEntity.getLocation().getBlock().isLiquid()))
                     continue;
 
@@ -132,6 +133,17 @@ public class StackingTask extends BukkitRunnable {
             }
             entities.clear();
             removed.clear();
+        }
+    }
+
+    private boolean canFly(LivingEntity entity) {
+        switch (entity.getType()) {
+            case GHAST:
+            case BLAZE:
+            case PHANTOM:
+                return true;
+            default:
+                return false;
         }
     }
 }

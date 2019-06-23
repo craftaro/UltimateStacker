@@ -98,7 +98,7 @@ public enum Setting {
     ONLY_STACK_FLYING_DOWN("Entities.Only Stack Flying Down", true,
             "Should entities that fly only stack with entities that are lower on the",
             "Y axis. This is important for grinders so that flying entities don't continuously",
-            "to a higher up entity."),
+            "stack upwards to a higher up entity."),
 
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),

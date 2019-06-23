@@ -8,9 +8,9 @@ public enum Category {
             "They are used in GUI's to make paterns, change them up then open up a",
             "GUI to see how it works."),
 
-    ENTITY("Stacked Entity Settings."),
+    ENTITIES("Stacked Entity Settings."),
 
-    ITEM("Stacked Item Settings."),
+    ITEMS("Stacked Item Settings."),
 
     SPAWNERS("Stacked Spawner Settings."),
 

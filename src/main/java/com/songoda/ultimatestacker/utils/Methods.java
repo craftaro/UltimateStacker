@@ -450,18 +450,6 @@ public class Methods {
         return info + Methods.formatText(nameFormat).trim();
     }
 
-    public static String compileItemName(Material type, int amount) {
-        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig().getString("Items." + type.name() + ".Display Name"));
-
-        nameFormat = nameFormat.replace("{TYPE}", displayName);
-        nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
-
-        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
-
-        return info + Methods.formatText(nameFormat).trim();
-    }
-
     public static String compileEntityName(Entity entity, int amount) {
         String nameFormat = Setting.NAME_FORMAT_ENTITY.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getConfig().getString("Mobs." + entity.getType().name() + ".Display Name"));

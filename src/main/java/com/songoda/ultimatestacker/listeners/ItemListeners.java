@@ -4,6 +4,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
@@ -72,7 +73,7 @@ public class ItemListeners implements Listener {
 
         event.getPlayer().playSound(event.getPlayer().getLocation(),
                 instance.isServerVersionAtLeast(ServerVersion.V1_9) ? Sound.ENTITY_ITEM_PICKUP
-                        : Sound.valueOf("ITEM_PICKUP"), .2f, (float)(1 + Math.random()));
+                        : Sound.valueOf("ITEM_PICKUP"), .2f, (float) (1 + Math.random()));
 
         updateInventory(event.getItem(), event.getPlayer().getInventory());
     }
@@ -101,7 +102,7 @@ public class ItemListeners implements Listener {
     private void updateAmount(Item item, int newAmount) {
         Material material = item.getItemStack().getType();
         String name = Methods.convertToInvisibleString("IS") +
-                Methods.compileItemName(material, newAmount);
+                compileItemName(item.getItemStack(), newAmount);
 
         if (newAmount > 32) {
             item.setMetadata("US_AMT", new FixedMetadataValue(instance, newAmount));
@@ -113,6 +114,7 @@ public class ItemListeners implements Listener {
 
         if (instance.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
                 && Setting.ITEM_HOLOGRAMS.getBoolean()) {
+            if (newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
             item.setCustomName(name);
             item.setCustomNameVisible(true);
         }
@@ -124,5 +126,27 @@ public class ItemListeners implements Listener {
         } else {
             return item.getItemStack().getAmount();
         }
+    }
+
+    private String compileItemName(ItemStack item, int amount) {
+        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig()
+                .getString("Items." + item.getType().name() + ".Display Name"));
+
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+            displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+
+        nameFormat = nameFormat.replace("{TYPE}", displayName);
+        nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
+
+        if (amount == 1 && !Setting.SHOW_STACK_SIZE_SINGLE.getBoolean()) {
+            nameFormat = nameFormat.replaceAll("\\[.*?]", "");
+        } else {
+            nameFormat = nameFormat.replace("[", "").replace("]", "");
+        }
+
+        String info = Methods.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
+
+        return info + Methods.formatText(nameFormat).trim();
     }
 }

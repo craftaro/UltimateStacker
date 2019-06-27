@@ -35,7 +35,6 @@ public class EntityStack {
     public void updateStack() {
         if (!Setting.ENTITY_HOLOGRAMS.getBoolean()) return;
 
-        Entity entity = getEntityByUniqueId(this.entity);
         Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () -> {
             Entity entit = getEntityByUniqueId(this.entity);
             if (entit == null ||

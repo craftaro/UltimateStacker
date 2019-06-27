@@ -41,10 +41,8 @@ public class SpawnerListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
         if (!instance.spawnersEnabled() || !(event.getEntity() instanceof LivingEntity)) return;
-        Bukkit.broadcastMessage("doing a spawn");
 
         if (instance.getStackingTask().attemptAddToStack((LivingEntity) event.getEntity(), null)) {
-            Bukkit.broadcastMessage("Doing a stack");
             event.setCancelled(true);
         }
     }

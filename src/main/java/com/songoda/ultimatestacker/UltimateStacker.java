@@ -168,6 +168,7 @@ public class UltimateStacker extends JavaPlugin {
         pluginManager.registerEvents(new ItemListeners(this), this);
         pluginManager.registerEvents(new TameListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
+        pluginManager.registerEvents(new SpawnerListeners(this), this);
 
         if (Setting.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
             pluginManager.registerEvents(new ClearLagListeners(this), this);

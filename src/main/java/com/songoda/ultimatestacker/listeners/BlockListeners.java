@@ -187,11 +187,10 @@ public class BlockListeners implements Listener {
             block.getWorld().dropItemNaturally(block.getLocation(), Methods.getSpawnerItem(blockType, amt));
     }
 
-
     private int getSpawnerAmount(ItemStack item) {
         if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return 1;
         if (item.getItemMeta().getDisplayName().contains(":")) {
-            int amt = NumberUtils.toInt(item.getItemMeta().getDisplayName().replace("\u00A7", "").split(":")[0], 1);
+            int amt = NumberUtils.toInt(item.getItemMeta().getDisplayName().replace("\u00A7", "").replace(";", "").split(":")[0], 1);
             return amt == 0 ? 1 : amt;
         }
         return 1;

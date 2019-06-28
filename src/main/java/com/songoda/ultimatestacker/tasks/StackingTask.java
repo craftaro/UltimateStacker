@@ -117,6 +117,9 @@ public class StackingTask extends BukkitRunnable {
                 stack.addAmount(amtToStack);
                 stack.updateStack();
                 removed.add(initialEntity.getUniqueId());
+
+                fixHealth(entity, initialEntity);
+
                 initialEntity.remove();
 
                 return true;
@@ -128,6 +131,9 @@ public class StackingTask extends BukkitRunnable {
                     && initialEntity.getLocation().getY() > entity.getLocation().getY()) {
                 stackManager.addStack(entity, initialStack.getAmount() + 1);
                 removed.add(initialEntity.getUniqueId());
+
+                fixHealth(initialEntity, entity);
+
                 initialEntity.remove();
 
                 return true;
@@ -148,12 +154,20 @@ public class StackingTask extends BukkitRunnable {
 
         entityList.stream().filter(entity -> !stackManager.isStacked(entity)
                 && !removed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
+
+            fixHealth(initialEntity, entity);
+
             removed.add(entity.getUniqueId());
             entity.remove();
         });
 
         stack.updateStack();
         return false;
+    }
+
+    private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
+        if (Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
+            entity.setHealth(initialEntity.getHealth());
     }
 
 }

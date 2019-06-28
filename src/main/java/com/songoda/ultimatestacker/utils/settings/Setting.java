@@ -85,6 +85,9 @@ public enum Setting {
     KEEP_POTION("Entities.Keep Potion Effects", true,
             "Should potion effects persist to the next entity when an entity dies?"),
 
+    CARRY_OVER_LOWEST_HEALTH("Entities.Carry Over Lowest Health", true,
+            "Should the lowest health be carried over when stacked?"),
+
     ONLY_STACK_FROM_SPAWNERS("Entities.Only Stack From Spawners", false,
             "Should entities only be stacked if they originate from a spawner?",
             "It should be noted that the identifier that tells the plugin",

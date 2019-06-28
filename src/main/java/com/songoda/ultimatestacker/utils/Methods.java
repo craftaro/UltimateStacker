@@ -179,10 +179,10 @@ public class Methods {
 
         if (Setting.KEEP_FIRE.getBoolean())
             newEntity.setFireTicks(toClone.getFireTicks());
-         if (Setting.KEEP_POTION.getBoolean())
+        if (Setting.KEEP_POTION.getBoolean())
             newEntity.addPotionEffects(toClone.getActivePotionEffects());
 
-        return newEntity;
+            return newEntity;
     }
 
     public static List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity) {
@@ -368,7 +368,7 @@ public class Methods {
                 }
                 case PARROT_TYPE: {
                     if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)
-                            ||!(initalEntity instanceof Parrot)) break;
+                            || !(initalEntity instanceof Parrot)) break;
                     Parrot parrot = (Parrot) initalEntity;
                     entityList.removeIf(entity -> ((Parrot) entity).getVariant() != parrot.getVariant());
                     break;
@@ -502,10 +502,10 @@ public class Methods {
         ItemStack glass;
         if (rainbow) {
             glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
-                    Material.LEGACY_STAINED_GLASS_PANE :  Material.valueOf("STAINED_GLASS_PANE"), 1, (short) randomNum);
+                    Material.LEGACY_STAINED_GLASS_PANE : Material.valueOf("STAINED_GLASS_PANE"), 1, (short) randomNum);
         } else {
             glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
-                    Material.LEGACY_STAINED_GLASS_PANE :  Material.valueOf("STAINED_GLASS_PANE"), 1, (short) type);
+                    Material.LEGACY_STAINED_GLASS_PANE : Material.valueOf("STAINED_GLASS_PANE"), 1, (short) type);
         }
         ItemMeta glassmeta = glass.getItemMeta();
         glassmeta.setDisplayName("§l");
@@ -622,7 +622,6 @@ public class Methods {
             text = text.substring(0, 1).toUpperCase() + text.substring(1);
         return ChatColor.translateAlternateColorCodes('&', text);
     }
-
 
 
 }

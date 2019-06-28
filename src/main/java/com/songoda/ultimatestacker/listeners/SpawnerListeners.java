@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
+import java.util.Random;
 
 public class SpawnerListeners implements Listener {
 
@@ -45,7 +46,6 @@ public class SpawnerListeners implements Listener {
 
         if (instance.getStackingTask().attemptAddToStack((LivingEntity) event.getEntity(), null)) {
             Entity entity = event.getEntity();
-            if (entity.getType() == EntityType.FIREWORK) return;
             if (entity.getVehicle() != null) {
                 entity.getVehicle().remove();
                 entity.remove();
@@ -60,6 +60,7 @@ public class SpawnerListeners implements Listener {
                 }
             }
             entity.remove();
+
         }
     }
 }

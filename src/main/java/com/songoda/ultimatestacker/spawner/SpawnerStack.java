@@ -29,6 +29,7 @@ public class SpawnerStack {
         this.amount = amount;
 
         Bukkit.getScheduler().runTaskLater(UltimateStacker.getInstance(), () -> {
+            if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
             int count = 4 * amount;
             int maxNearby = amount > 6 ? amount + 3 : 6;
             CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();

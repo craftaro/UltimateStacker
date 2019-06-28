@@ -54,6 +54,7 @@ public class EntityStackManager {
     }
 
     public boolean isStacked(Entity entity) {
+        if (entity == null) return false;
         boolean isStacked = isStacked(entity.getUniqueId());
         if (!isStacked && addSerializedStack(entity) != null) {
             return true;

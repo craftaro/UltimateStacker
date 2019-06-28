@@ -61,7 +61,7 @@ public class Methods {
                 }
                 case SKELETON_TYPE: {
                     if (!(toClone instanceof Skeleton)
-                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)) break;
+                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) break;
                     ((Skeleton) newEntity).setSkeletonType(((Skeleton) toClone).getSkeletonType());
                     break;
                 }

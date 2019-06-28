@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -43,7 +44,22 @@ public class SpawnerListeners implements Listener {
         if (!instance.spawnersEnabled() || !(event.getEntity() instanceof LivingEntity)) return;
 
         if (instance.getStackingTask().attemptAddToStack((LivingEntity) event.getEntity(), null)) {
-            event.setCancelled(true);
+            Entity entity = event.getEntity();
+            if (entity.getType() == EntityType.FIREWORK) return;
+            if (entity.getVehicle() != null) {
+                entity.getVehicle().remove();
+                entity.remove();
+            }
+
+            if (instance.isServerVersionAtLeast(ServerVersion.V1_11)) {
+                if (entity.getPassengers().size() != 0) {
+                    for (Entity e : entity.getPassengers()) {
+                        e.remove();
+                    }
+                    entity.remove();
+                }
+            }
+            entity.remove();
         }
     }
 }

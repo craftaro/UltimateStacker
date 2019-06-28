@@ -74,11 +74,6 @@ public class StackingTask extends BukkitRunnable {
                 EntityStack initialStack = stackManager.getStack(initialEntity);
                 if (initialStack == null && initialEntity.getCustomName() != null) continue nextEntity;
 
-                ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
-
-                if (!configurationSection.getBoolean("Mobs." + initialEntity.getType().name() + ".Enabled"))
-                    continue nextEntity;
-
                 attemptAddToStack(initialEntity, initialStack);
             }
             entities.clear();
@@ -88,6 +83,10 @@ public class StackingTask extends BukkitRunnable {
 
     public boolean attemptAddToStack(LivingEntity initialEntity, EntityStack initialStack) {
         ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
+
+        if (!configurationSection.getBoolean("Mobs." + initialEntity.getType().name() + ".Enabled"))
+            return false;
+
         int minEntityStackAmount = Setting.MIN_STACK_ENTITIES.getInt();
         int amtToStack = initialStack != null ? initialStack.getAmount() : 1;
 

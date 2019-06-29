@@ -15,6 +15,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,8 +25,11 @@ public class EntityStack {
     private UUID entity;
     private int amount;
 
-    public EntityStack(Entity entity, int amount) {
+    private Deque<Double> health = new ArrayDeque<>();
+
+    public EntityStack(LivingEntity entity, int amount) {
         this(entity.getUniqueId(), amount);
+        health.add(entity.getHealth());
     }
 
     public EntityStack(UUID uuid, int amount) {
@@ -46,8 +51,8 @@ public class EntityStack {
 
     }
 
-    public Entity getEntity() {
-        Entity entity = getEntityByUniqueId(this.entity);
+    public LivingEntity getEntity() {
+        LivingEntity entity = getEntityByUniqueId(this.entity);
         if (entity == null) {
             UltimateStacker.getInstance().getEntityStackManager().removeStack(this.entity);
             return null;
@@ -87,14 +92,14 @@ public class EntityStack {
             updateStack();
     }
 
-    public Entity getEntityByUniqueId(UUID uniqueId) {
+    private LivingEntity getEntityByUniqueId(UUID uniqueId) {
         if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12))
-            return Bukkit.getEntity(uniqueId);
+            return (LivingEntity) Bukkit.getEntity(uniqueId);
 
         for (World world : Bukkit.getWorlds()) {
             for (Entity entity : world.getEntities()) {
                 if (entity.getUniqueId().equals(uniqueId))
-                    return entity;
+                    return (LivingEntity) entity;
             }
         }
 
@@ -125,6 +130,8 @@ public class EntityStack {
         UltimateStacker instance = UltimateStacker.getInstance();
         EntityStackManager stackManager = instance.getEntityStackManager();
         LivingEntity newEntity = Methods.newEntity(killed);
+
+        updateHealth(newEntity);
 
         newEntity.getEquipment().clear();
 
@@ -167,6 +174,27 @@ public class EntityStack {
             }
             handleSingleStackDeath(killed);
         }
+    }
+
+    public void updateHealth(LivingEntity entity) {
+        entity.setHealth(Setting.STACK_ENTITY_HEALTH.getBoolean()
+                && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
+    }
+
+    public void addHealth(double health) {
+        this.health.addLast(health);
+    }
+
+    public void mergeHealth(EntityStack stack) {
+        this.health.addAll(stack.getHealthDeque());
+    }
+
+    public Deque<Double> getHealthDeque() {
+        return new ArrayDeque<>(health);
+    }
+
+    public void setHealthDeque(Deque<Double> health) {
+        this.health = health;
     }
 
     @Override

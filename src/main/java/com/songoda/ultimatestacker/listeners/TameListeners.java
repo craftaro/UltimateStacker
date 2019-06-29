@@ -36,7 +36,7 @@ public class TameListeners implements Listener {
 
         if (stack.getAmount() <= 1) return;
 
-        Entity newEntity = Methods.newEntity((LivingEntity) tameable);
+        LivingEntity newEntity = Methods.newEntity((LivingEntity) tameable);
 
         instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);

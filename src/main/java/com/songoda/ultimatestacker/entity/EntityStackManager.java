@@ -24,7 +24,9 @@ public class EntityStackManager {
     }
 
     public EntityStack addStack(UUID uuid, int amount) {
-        return stacks.put(uuid, new EntityStack(uuid, amount));
+        EntityStack stack = new EntityStack(uuid, amount);
+        stacks.put(uuid, new EntityStack(uuid, amount));
+        return stack;
     }
 
     public EntityStack addSerializedStack(Entity entity, String customName) {

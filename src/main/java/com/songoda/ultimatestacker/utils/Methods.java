@@ -27,6 +27,7 @@ public class Methods {
             case GHAST:
             case BLAZE:
             case PHANTOM:
+            case BAT:
                 return true;
             default:
                 return false;
@@ -424,7 +425,7 @@ public class Methods {
 
         if (stack.getAmount() <= 1) return;
 
-        Entity newEntity = Methods.newEntity(entity);
+        LivingEntity newEntity = Methods.newEntity(entity);
 
         int newAmount = stack.getAmount() - 1;
         if (newAmount != 1)

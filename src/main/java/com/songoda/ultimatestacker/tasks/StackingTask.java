@@ -48,8 +48,7 @@ public class StackingTask extends BukkitRunnable {
             Collections.reverse(entities);
 
             for (Entity entityO : entities) {
-                if (entityO == null
-                        || !(entityO instanceof LivingEntity)
+                if (!(entityO instanceof LivingEntity)
                         || entityO instanceof Player
                         || !entityO.isValid()
                         || !Setting.STACK_ENTITIES.getBoolean())
@@ -116,9 +115,16 @@ public class StackingTask extends BukkitRunnable {
             if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
                 stack.addAmount(amtToStack);
                 stack.updateStack();
+
+                if (initialStack == null)
+                    stack.addHealth(initialEntity.getHealth());
+                else
+                    stack.mergeHealth(initialStack);
+
                 removed.add(initialEntity.getUniqueId());
 
                 fixHealth(entity, initialEntity);
+                updateHealth(stack);
 
                 initialEntity.remove();
 
@@ -129,11 +135,16 @@ public class StackingTask extends BukkitRunnable {
                     && Methods.canFly(entity)
                     && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
                     && initialEntity.getLocation().getY() > entity.getLocation().getY()) {
-                stackManager.addStack(entity, initialStack.getAmount() + 1);
+                EntityStack newStack = stackManager.addStack(entity, initialStack.getAmount() + 1);
+
+                newStack.setHealthDeque(initialStack.getHealthDeque());
+                newStack.addHealth(entity.getHealth());
                 removed.add(initialEntity.getUniqueId());
 
                 fixHealth(initialEntity, entity);
+                updateHealth(newStack);
 
+                stackManager.removeStack(initialEntity);
                 initialEntity.remove();
 
                 return true;
@@ -156,18 +167,25 @@ public class StackingTask extends BukkitRunnable {
                 && !removed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
 
             fixHealth(initialEntity, entity);
+            stack.addHealth(entity.getHealth());
 
             removed.add(entity.getUniqueId());
             entity.remove();
         });
+        updateHealth(stack);
 
         stack.updateStack();
         return false;
     }
 
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
-        if (Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
+        if (!Setting.STACK_ENTITY_HEALTH.getBoolean() && Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
             entity.setHealth(initialEntity.getHealth());
+    }
+
+    private void updateHealth(EntityStack stack) {
+        if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+            stack.updateHealth(stack.getEntity());
     }
 
 }

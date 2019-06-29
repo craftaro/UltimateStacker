@@ -85,8 +85,10 @@ public enum Setting {
     KEEP_POTION("Entities.Keep Potion Effects", true,
             "Should potion effects persist to the next entity when an entity dies?"),
 
-    CARRY_OVER_LOWEST_HEALTH("Entities.Carry Over Lowest Health", true,
-            "Should the lowest health be carried over when stacked?"),
+    CARRY_OVER_LOWEST_HEALTH("Entities.Carry Over Lowest Health", false,
+            "Should the lowest health be carried over when stacked?",
+            "This should not be used in collaboration with 'Stack Entity Health'.",
+            "If it is used this setting will be overrode."),
 
     ONLY_STACK_FROM_SPAWNERS("Entities.Only Stack From Spawners", false,
             "Should entities only be stacked if they originate from a spawner?",
@@ -94,9 +96,15 @@ public enum Setting {
             "if the entity originated from a spawner or not is wiped on",
             "server restart."),
 
-    ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", false,
+    ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", true,
             "Should entities only be stacked if they are touching the ground",
             "or swimming? This does not effect flying entities."),
+
+    STACK_ENTITY_HEALTH("Main.Stack Entity Health", true,
+            "Should entity health be stacked? When enabled Entity stacks will",
+            "remember the health of all entities inside of the stack. This",
+            "works the best with 'Only Stack On Surface enabled' as entities",
+            "falling out of grinders may stack before hitting the ground."),
 
     ONLY_STACK_FLYING_DOWN("Entities.Only Stack Flying Down", true,
             "Should entities that fly only stack with entities that are lower on the",

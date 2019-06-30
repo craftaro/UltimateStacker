@@ -33,7 +33,7 @@ public class ItemListeners implements Listener {
     public void onMerge(ItemMergeEvent event) {
         int maxItemStackSize = Setting.MAX_STACK_ITEMS.getInt();
         if (!Setting.STACK_ITEMS.getBoolean()) return;
-        
+
         event.setCancelled(true);
 
         Item item = event.getTarget();

@@ -54,6 +54,8 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
+        int amount = getActualAmount(event.getItem());
+        if (amount <= 32) return;
         event.setCancelled(true);
 
         updateInventory(event.getItem(), event.getInventory());

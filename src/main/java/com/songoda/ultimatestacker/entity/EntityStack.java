@@ -186,15 +186,7 @@ public class EntityStack {
     }
 
     public void mergeHealth(EntityStack stack) {
-        this.health.addAll(stack.getHealthDeque());
-    }
-
-    public Deque<Double> getHealthDeque() {
-        return new ArrayDeque<>(health);
-    }
-
-    public void setHealthDeque(Deque<Double> health) {
-        this.health = health;
+        this.health.addAll(stack.health);
     }
 
     @Override

@@ -117,14 +117,15 @@ public class StackingTask extends BukkitRunnable {
                 stack.updateStack();
 
                 if (initialStack == null)
-                    stack.addHealth(initialEntity.getHealth());
+                    stack.addHealth(entity.getHealth());
                 else
                     stack.mergeHealth(initialStack);
 
                 removed.add(initialEntity.getUniqueId());
 
                 fixHealth(entity, initialEntity);
-                updateHealth(stack);
+                if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+                    entity.setHealth(initialEntity.getHealth());
 
                 initialEntity.remove();
 
@@ -137,12 +138,14 @@ public class StackingTask extends BukkitRunnable {
                     && initialEntity.getLocation().getY() > entity.getLocation().getY()) {
                 EntityStack newStack = stackManager.addStack(entity, initialStack.getAmount() + 1);
 
-                newStack.setHealthDeque(initialStack.getHealthDeque());
-                newStack.addHealth(entity.getHealth());
+                newStack.mergeHealth(initialStack);
+
+                newStack.addHealth(initialEntity.getHealth());
                 removed.add(initialEntity.getUniqueId());
 
                 fixHealth(initialEntity, entity);
-                updateHealth(newStack);
+                if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+                    entity.setHealth(entity.getHealth());
 
                 stackManager.removeStack(initialEntity);
                 initialEntity.remove();

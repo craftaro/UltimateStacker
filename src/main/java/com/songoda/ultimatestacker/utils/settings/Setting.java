@@ -103,7 +103,7 @@ public enum Setting {
             "Should entities only be stacked if they are touching the ground",
             "or swimming? This does not effect flying entities."),
 
-    STACK_ENTITY_HEALTH("Main.Stack Entity Health", true,
+    STACK_ENTITY_HEALTH("Entities.Stack Entity Health", true,
             "Should entity health be stacked? When enabled Entity stacks will",
             "remember the health of all entities inside of the stack. This",
             "works the best with 'Only Stack On Surface enabled' as entities",

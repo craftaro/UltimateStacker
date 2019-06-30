@@ -168,7 +168,7 @@ public class EntityStack {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for (String s : reasons) {
                     if (!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, items, droppedExp);
+                    handleWholeStackDeath(killed, items, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
                     return;
                 }
             }

@@ -60,6 +60,9 @@ public enum Setting {
             "FALLING_BLOCK, THORNS, DRAGON_BREATH, CUSTOM",
             "FLY_INTO_WALL, HOT_FLOOR, CRAMMING, DRYOUT"),
 
+    NO_EXP_INSTANT_KILL("Entities.No Exp For Instant Kills", false,
+            "Should no experience be dropped when an instant kill is performed?"),
+
     STACK_CHECKS("Entities.Stack Checks", Arrays.asList(Check.values()).stream()
             .filter(Check::isEnabledByDefault).map(Check::name).collect(Collectors.toList()),
             "These are checks that are processed before an entity is stacked.",

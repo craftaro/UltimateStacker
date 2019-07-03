@@ -99,6 +99,10 @@ public enum Setting {
             "if the entity originated from a spawner or not is wiped on",
             "server restart."),
 
+    CARRY_OVER_METADATA_ON_DEATH("Entities.Carry Over Metadata On Death", true,
+            "With this enabled any metadata assigned from supported plugins such",
+            "as EpicSpawners and mcMMO will be preserved when the entity is killed."),
+
     ONLY_STACK_ON_SURFACE("Entities.Only Stack On Surface", true,
             "Should entities only be stacked if they are touching the ground",
             "or swimming? This does not effect flying entities."),
@@ -251,4 +255,5 @@ public enum Setting {
     public double getDouble() {
         return UltimateStacker.getInstance().getConfig().getDouble(setting);
     }
+
 }

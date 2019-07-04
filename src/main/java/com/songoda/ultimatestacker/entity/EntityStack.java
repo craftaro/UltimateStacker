@@ -184,6 +184,7 @@ public class EntityStack {
     }
 
     public void updateHealth(LivingEntity entity) {
+        if (entity == null) return;
         entity.setHealth(Setting.STACK_ENTITY_HEALTH.getBoolean()
                 && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
     }

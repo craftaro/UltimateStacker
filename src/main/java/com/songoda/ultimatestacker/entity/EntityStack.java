@@ -137,20 +137,16 @@ public class EntityStack {
         newEntity.getEquipment().clear();
 
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
+            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersionAtLeast(ServerVersion.V1_13)
+                    ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
 
         if (Setting.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
-            if (Bukkit.getPluginManager().isPluginEnabled("EpicSpawners"))
-                if (killed.hasMetadata("ES"))
-                    newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
+            if (killed.hasMetadata("ES"))
+                newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
 
-            if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
-                String entityMetadataKey = "mcMMO: Spawned Entity";
-                if (killed.hasMetadata(entityMetadataKey)) {
-                    Bukkit.broadcastMessage("test");
-                    newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
-                }
-            }
+            String entityMetadataKey = "mcMMO: Spawned Entity";
+            if (killed.hasMetadata(entityMetadataKey))
+                newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
         }
 
         EntityStack entityStack = stackManager.updateStack(killed, newEntity);

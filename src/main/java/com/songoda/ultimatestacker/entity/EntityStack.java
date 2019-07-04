@@ -146,13 +146,11 @@ public class EntityStack {
 
             if (Bukkit.getPluginManager().isPluginEnabled("mcMMO")) {
                 String entityMetadataKey = "mcMMO: Spawned Entity";
-                if (killed.hasMetadata(entityMetadataKey))
+                if (killed.hasMetadata(entityMetadataKey)) {
+                    Bukkit.broadcastMessage("test");
                     newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
-
+                }
             }
-
-            if (killed.hasMetadata("ES"))
-                newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
         }
 
         EntityStack entityStack = stackManager.updateStack(killed, newEntity);

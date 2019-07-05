@@ -69,7 +69,7 @@ public enum Setting {
             "You can add and remove from the list at will.",
             "The acceptable check options are:",
             "SPAWN_REASON, NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
-            "CAN_BREED, IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
+            "IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
             "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEERED",
             "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",
             "HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",

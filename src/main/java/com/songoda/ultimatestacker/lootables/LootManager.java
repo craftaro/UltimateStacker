@@ -312,6 +312,13 @@ public class LootManager {
                                             .setAllowLootingEnchant(false).build())
                             .build()));
 
+            // Add Llama.
+            addLootable(new Lootable(EntityType.LLAMA,
+                    new LootBuilder()
+                            .setMaterial(Material.LEATHER)
+                            .setMin(0)
+                            .setMax(2).build()));
+
             // Add Zombie Horse.
             addLootable(new Lootable(EntityType.ZOMBIE_HORSE,
                     new LootBuilder()

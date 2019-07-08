@@ -125,7 +125,8 @@ public class StackingTask extends BukkitRunnable {
 
                 fixHealth(entity, initialEntity);
                 if (Setting.STACK_ENTITY_HEALTH.getBoolean())
-                    entity.setHealth(initialEntity.getHealth());
+                    entity.setHealth(entity.getMaxHealth() < initialEntity.getHealth()
+                            ? entity.getMaxHealth() : initialEntity.getHealth());
 
                 initialEntity.remove();
 

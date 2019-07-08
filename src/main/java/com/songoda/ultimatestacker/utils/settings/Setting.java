@@ -39,6 +39,9 @@ public enum Setting {
     HOLOGRAMS_ON_LOOK_ENTITY("Entities.Only Show Holograms On Look", false,
             "Only show nametags above an entities head when looking directly at them."),
 
+    CUSTOM_DROPS("Entities.Custom Drops", true,
+            "Should custom drops be enabled?"),
+
     KILL_WHOLE_STACK_ON_DEATH("Entities.Kill Whole Stack On Death", false,
             "Should killing a stack of entities kill the whole stack or",
             "just one out of the stack?"),
@@ -135,7 +138,7 @@ public enum Setting {
     NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} [&6{AMT}x]",
             "The text displayed above a dropped item."),
 
-    SHOW_STACK_SIZE_SINGLE("Items.Show Stack Size For Single,", false,
+    SHOW_STACK_SIZE_SINGLE("Items.Show Stack Size For Single", false,
             "When enabled stack sizes for a stack with a single item will",
             "not display the stack size. The stack size will be added",
             "for stacks containing two or more items."),

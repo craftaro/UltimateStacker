@@ -8,6 +8,7 @@ import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
+import com.songoda.ultimatestacker.lootables.LootManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
@@ -50,6 +51,7 @@ public class UltimateStacker extends JavaPlugin {
     private SettingsManager settingsManager;
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
+    private LootManager lootManager;
     private CommandManager commandManager;
     private StackingTask stackingTask;
     private Hologram hologram;
@@ -89,6 +91,11 @@ public class UltimateStacker extends JavaPlugin {
         this.settingsManager.setupConfig();
 
         this.commandManager = new CommandManager(this);
+
+        this.lootManager = new LootManager();
+
+        lootManager.createDefaultLootables();
+        lootManager.loadLootables();
 
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
@@ -168,7 +175,6 @@ public class UltimateStacker extends JavaPlugin {
         pluginManager.registerEvents(new ItemListeners(this), this);
         pluginManager.registerEvents(new TameListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
-        pluginManager.registerEvents(new SpawnerListeners(this), this);
 
         if (Setting.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
             pluginManager.registerEvents(new ClearLagListeners(this), this);
@@ -258,6 +264,10 @@ public class UltimateStacker extends JavaPlugin {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public LootManager getLootManager() {
+        return lootManager;
     }
 
     public EntityStackManager getEntityStackManager() {

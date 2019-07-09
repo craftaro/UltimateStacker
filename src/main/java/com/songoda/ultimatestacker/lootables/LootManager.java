@@ -96,6 +96,7 @@ public class LootManager {
     }
 
     public void loadLootables() {
+        registeredLootables.clear();
         File dir = new File(lootablesDir);
         File[] directoryListing = dir.listFiles();
         if (directoryListing != null) {

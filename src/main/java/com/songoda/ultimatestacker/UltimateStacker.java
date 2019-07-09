@@ -228,6 +228,7 @@ public class UltimateStacker extends JavaPlugin {
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
         this.references = new References();
         this.settingsManager.reloadConfig();
+        this.getLootManager().loadLootables();
     }
 
     public boolean spawnersEnabled() {

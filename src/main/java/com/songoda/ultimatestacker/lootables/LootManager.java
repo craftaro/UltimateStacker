@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
@@ -95,7 +94,8 @@ public class LootManager {
                 toDrop.add(new Drop(item));
             }
             if (command != null) {
-                toDrop.add(new Drop(command));
+                for (int i = 0; i < amount; i++)
+                    toDrop.add(new Drop(command));
             }
         }
         return toDrop;

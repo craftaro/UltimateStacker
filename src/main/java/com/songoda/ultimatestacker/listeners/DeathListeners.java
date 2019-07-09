@@ -28,6 +28,7 @@ public class DeathListeners implements Listener {
         List<ItemStack> items = Setting.CUSTOM_DROPS.getBoolean()
                 ? instance.getLootManager().getDrops(event.getEntity()) : new ArrayList<>();
 
+        boolean custom = false;
         if (items.size() != 0) {
             event.getDrops().clear();
 
@@ -35,12 +36,13 @@ public class DeathListeners implements Listener {
                 if (item == null) continue;
                 event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
             }
+            custom = true;
         } else
             items = event.getDrops();
 
 
         if (instance.getEntityStackManager().isStacked(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())
-                    .onDeath(event.getEntity(), items, event.getDroppedExp());
+                    .onDeath(event.getEntity(), items, custom, event.getDroppedExp());
     }
 }

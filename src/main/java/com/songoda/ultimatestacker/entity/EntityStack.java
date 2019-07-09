@@ -107,7 +107,7 @@ public class EntityStack {
         return null;
     }
 
-    private void handleWholeStackDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
+    private void handleWholeStackDeath(LivingEntity killed, List<ItemStack> items, boolean custom, int droppedExp) {
         Location killedLocation = killed.getLocation();
         for (int i = 1; i < amount; i++) {
             if (i == 1) {
@@ -116,6 +116,8 @@ public class EntityStack {
                     items.removeIf(it -> it.isSimilar(item));
                 }
             }
+            if (custom)
+                items = UltimateStacker.getInstance().getLootManager().getDrops(killed);
             for (ItemStack item : items) {
                 killedLocation.getWorld().dropItemNaturally(killedLocation, item);
             }
@@ -160,13 +162,13 @@ public class EntityStack {
         }
     }
 
-    public void onDeath(LivingEntity killed, List<ItemStack> items, int droppedExp) {
+    public void onDeath(LivingEntity killed, List<ItemStack> items, boolean custom, int droppedExp) {
         killed.setCustomName(null);
         killed.setCustomNameVisible(true);
         killed.setCustomName(Methods.formatText("&7"));
 
         if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && getAmount() != 1) {
-            handleWholeStackDeath(killed, items, droppedExp);
+            handleWholeStackDeath(killed, items, custom, droppedExp);
         } else if (getAmount() != 1) {
             List<String> reasons = Setting.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
@@ -175,7 +177,7 @@ public class EntityStack {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for (String s : reasons) {
                     if (!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, items, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
+                    handleWholeStackDeath(killed, items, custom, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
                     return;
                 }
             }

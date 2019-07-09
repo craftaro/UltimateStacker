@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.entity;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.lootables.Drop;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
@@ -107,19 +108,20 @@ public class EntityStack {
         return null;
     }
 
-    private void handleWholeStackDeath(LivingEntity killed, List<ItemStack> items, boolean custom, int droppedExp) {
+    private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp) {
         Location killedLocation = killed.getLocation();
         for (int i = 1; i < amount; i++) {
             if (i == 1) {
-                items.removeIf(it -> it.isSimilar(killed.getEquipment().getItemInHand()));
+                drops.removeIf(it -> it.getItemStack() != null
+                        && it.getItemStack().isSimilar(killed.getEquipment().getItemInHand()));
                 for (ItemStack item : killed.getEquipment().getArmorContents()) {
-                    items.removeIf(it -> it.isSimilar(item));
+                    drops.removeIf(it -> it.getItemStack() != null && it.getItemStack().isSimilar(item));
                 }
             }
             if (custom)
-                items = UltimateStacker.getInstance().getLootManager().getDrops(killed);
-            for (ItemStack item : items) {
-                killedLocation.getWorld().dropItemNaturally(killedLocation, item);
+                drops = UltimateStacker.getInstance().getLootManager().getDrops(killed);
+            for (Drop drop : drops) {
+                Methods.processDrop(killed, drop);
             }
         }
 
@@ -162,13 +164,13 @@ public class EntityStack {
         }
     }
 
-    public void onDeath(LivingEntity killed, List<ItemStack> items, boolean custom, int droppedExp) {
+    public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp) {
         killed.setCustomName(null);
         killed.setCustomNameVisible(true);
         killed.setCustomName(Methods.formatText("&7"));
 
         if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && getAmount() != 1) {
-            handleWholeStackDeath(killed, items, custom, droppedExp);
+            handleWholeStackDeath(killed, drops, custom, droppedExp);
         } else if (getAmount() != 1) {
             List<String> reasons = Setting.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
@@ -177,7 +179,7 @@ public class EntityStack {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for (String s : reasons) {
                     if (!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, items, custom, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
+                    handleWholeStackDeath(killed, drops, custom, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
                     return;
                 }
             }

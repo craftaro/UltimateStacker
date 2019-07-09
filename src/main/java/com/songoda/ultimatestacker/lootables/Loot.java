@@ -12,6 +12,10 @@ import java.util.Random;
 public class Loot {
 
     // Material used for this drop.
+    @SerializedName("Command")
+    private String command;
+
+    // Material used for this drop.
     @SerializedName("Type")
     private Material material;
 
@@ -63,6 +67,14 @@ public class Loot {
 
     public void setMaterial(Material material) {
         this.material = material;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public void setCommand(String command) {
+        this.command = command;
     }
 
     public Short getData() {

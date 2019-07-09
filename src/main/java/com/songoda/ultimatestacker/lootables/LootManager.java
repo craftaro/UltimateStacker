@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
@@ -26,8 +27,8 @@ public class LootManager {
         return registeredLootables.put(lootable.getType(), lootable);
     }
 
-    public List<ItemStack> getDrops(LivingEntity entity) {
-        List<ItemStack> toDrop = new ArrayList<>();
+    public List<Drop> getDrops(LivingEntity entity) {
+        List<Drop> toDrop = new ArrayList<>();
         if (entity instanceof Ageable && !((Ageable) entity).isAdult()
                 || !registeredLootables.containsKey(entity.getType())) return toDrop;
 
@@ -45,8 +46,8 @@ public class LootManager {
         return toDrop;
     }
 
-    private List<ItemStack> runLoot(LivingEntity entity, Loot loot, int rerollChance, int looting) {
-        List<ItemStack> toDrop = new ArrayList<>();
+    private List<Drop> runLoot(LivingEntity entity, Loot loot, int rerollChance, int looting) {
+        List<Drop> toDrop = new ArrayList<>();
         if (loot.runChance(looting) || ((Math.random() * 100) - rerollChance < 0 || rerollChance == 100)
                 && loot.runChance(looting)) {
 
@@ -65,10 +66,10 @@ public class LootManager {
                     toDrop.addAll(runLoot(entity, childLoot.get(i), rerollChance, looting));
                 }
             }
-
-            if (loot.getMaterial() == null) return toDrop;
-
             Material material = loot.getMaterial();
+            String command = loot.getCommand();
+
+            if (material == null && command == null) return toDrop;
 
             short data = loot.getData() != null ? loot.getData() : 0;
 
@@ -87,10 +88,15 @@ public class LootManager {
             int amount = loot.getAmountToDrop(looting);
             if (amount == 0) return toDrop;
 
-            ItemStack item = new ItemStack(loot.getBurnedMaterial() != null && entity.getFireTicks() != -1
-                    ? loot.getBurnedMaterial() : material, amount);
-            item.setDurability(data);
-            toDrop.add(item);
+            if (material != null) {
+                ItemStack item = new ItemStack(loot.getBurnedMaterial() != null && entity.getFireTicks() != -1
+                        ? loot.getBurnedMaterial() : material, amount);
+                item.setDurability(data);
+                toDrop.add(new Drop(item));
+            }
+            if (command != null) {
+                toDrop.add(new Drop(command));
+            }
         }
         return toDrop;
     }

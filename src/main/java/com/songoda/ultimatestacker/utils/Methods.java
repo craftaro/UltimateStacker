@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.utils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.lootables.Drop;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -31,6 +32,21 @@ public class Methods {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public static void processDrop(LivingEntity entity, Drop drop) {
+        if (drop == null) return;
+
+        if (drop.getItemStack() != null)
+            entity.getWorld().dropItemNaturally(entity.getLocation(), drop.getItemStack());
+        if (drop.getCommand() != null) {
+            String command = drop.getCommand();
+            if (entity.getKiller() != null) {
+                command = command.replace("%player%", entity.getKiller().getName());
+            }
+            if (!command.contains("%player%"))
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
     }
 
@@ -183,7 +199,7 @@ public class Methods {
         if (Setting.KEEP_POTION.getBoolean())
             newEntity.addPotionEffects(toClone.getActivePotionEffects());
 
-            return newEntity;
+        return newEntity;
     }
 
     public static List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity) {

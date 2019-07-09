@@ -1,11 +1,9 @@
 package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.lootables.Drop;
+import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.settings.Setting;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Pig;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,24 +23,26 @@ public class DeathListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
-        List<ItemStack> items = Setting.CUSTOM_DROPS.getBoolean()
+        List<Drop> drops = Setting.CUSTOM_DROPS.getBoolean()
                 ? instance.getLootManager().getDrops(event.getEntity()) : new ArrayList<>();
 
         boolean custom = false;
-        if (items.size() != 0) {
+        if (drops.size() != 0) {
             event.getDrops().clear();
 
-            for (ItemStack item : items) {
-                if (item == null) continue;
-                event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), item);
+            for (Drop drop : drops) {
+                if (drop == null) continue;
+                Methods.processDrop(event.getEntity(), drop);
             }
             custom = true;
-        } else
-            items = event.getDrops();
+        } else {
+            for (ItemStack item : event.getDrops())
+                drops.add(new Drop(item));
+        }
 
 
         if (instance.getEntityStackManager().isStacked(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())
-                    .onDeath(event.getEntity(), items, custom, event.getDroppedExp());
+                    .onDeath(event.getEntity(), drops, custom, event.getDroppedExp());
     }
 }

@@ -164,6 +164,6 @@ public class Loot {
 
     public int getChildDropCount() {
         if (childDropCountMin == null || childDropCountMax == null) return 0;
-        return new Random().nextInt(childDropCountMax - childDropCountMax) + childDropCountMin;
+        return new Random().nextInt(childDropCountMax - min + 1) + childDropCountMin;
     }
 }

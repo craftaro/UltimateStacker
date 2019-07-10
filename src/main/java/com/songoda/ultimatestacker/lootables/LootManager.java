@@ -51,8 +51,7 @@ public class LootManager {
                 && loot.runChance(looting)) {
 
             if (loot.getOnlyDropFor().size() != 0
-                    && entity.getKiller() != null
-                    && loot.getOnlyDropFor().stream().noneMatch(type -> type == entity.getKiller().getType()))
+                    && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType()))
                 return toDrop;
 
             if (loot.getChildLoot().size() > 0) {

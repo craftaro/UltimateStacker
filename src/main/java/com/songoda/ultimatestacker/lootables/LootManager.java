@@ -236,6 +236,15 @@ public class LootManager {
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
 
+        if (plugin.isServerVersionAtLeast(ServerVersion.V1_12)) {
+            // Add Parrot.
+            addLootable(new Lootable(EntityType.PARROT,
+                    new LootBuilder()
+                            .setMaterial(Material.FEATHER)
+                            .setMin(1)
+                            .setMax(2).build()));
+        }
+
 
         Loot fish1 = plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
                 .addChildLoot(new LootBuilder()
@@ -790,8 +799,7 @@ public class LootManager {
                         .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                                 ? Material.GUNPOWDER : Material.valueOf("SULPHUR"))
                         .setMin(0)
-                        .setMax(2)
-                        .setBurnedMaterial(Material.COOKED_CHICKEN).build()));
+                        .setMax(2).build()));
 
         // Add Zombie Pigman
         addLootable(new Lootable(EntityType.PIG_ZOMBIE,
@@ -807,13 +815,6 @@ public class LootManager {
                         .setMaterial(Material.GOLD_INGOT)
                         .setChance(2.5)
                         .addOnlyDropFors(EntityType.PLAYER).build()));
-
-        // Add Parrot.
-        addLootable(new Lootable(EntityType.CHICKEN,
-                new LootBuilder()
-                        .setMaterial(Material.FEATHER)
-                        .setMin(1)
-                        .setMax(2).build()));
 
         // Add Wither.
         addLootable(new Lootable(EntityType.WITHER,

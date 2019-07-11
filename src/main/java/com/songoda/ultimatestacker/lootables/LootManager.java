@@ -20,7 +20,7 @@ public class LootManager {
 
     private final Map<EntityType, Lootable> registeredLootables = new HashMap<>();
 
-    private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + "/lootables";
+    private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + File.separator + "lootables";
 
     public Lootable addLootable(Lootable lootable) {
         return registeredLootables.put(lootable.getType(), lootable);

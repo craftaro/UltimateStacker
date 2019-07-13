@@ -12,6 +12,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -22,6 +23,58 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Methods {
+
+    public static void updateItemAmount(Item item, int newAmount) {
+        UltimateStacker plugin = UltimateStacker.getInstance();
+        Material material = item.getItemStack().getType();
+        String name = Methods.convertToInvisibleString("IS") +
+                compileItemName(item.getItemStack(), newAmount);
+
+        if (newAmount > 32) {
+            item.setMetadata("US_AMT", new FixedMetadataValue(plugin, newAmount));
+            item.getItemStack().setAmount(32);
+        } else {
+            item.removeMetadata("US_AMT", plugin);
+            item.getItemStack().setAmount(newAmount);
+        }
+
+        if (plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
+                && Setting.ITEM_HOLOGRAMS.getBoolean()) {
+            if (newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
+            item.setCustomName(name);
+            item.setCustomNameVisible(true);
+        }
+    }
+
+    public static int getActualItemAmount(Item item) {
+        if (item.hasMetadata("US_AMT")) {
+            return item.getMetadata("US_AMT").get(0).asInt();
+        } else {
+            return item.getItemStack().getAmount();
+        }
+    }
+
+    public static String compileItemName(ItemStack item, int amount) {
+        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig()
+                .getString("Items." + item.getType().name() + ".Display Name"));
+
+        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+            displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+
+        nameFormat = nameFormat.replace("{TYPE}", displayName);
+        nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
+
+        if (amount == 1 && !Setting.SHOW_STACK_SIZE_SINGLE.getBoolean()) {
+            nameFormat = nameFormat.replaceAll("\\[.*?]", "");
+        } else {
+            nameFormat = nameFormat.replace("[", "").replace("]", "");
+        }
+
+        String info = Methods.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
+
+        return info + Methods.formatText(nameFormat).trim();
+    }
 
     public static boolean canFly(LivingEntity entity) {
         switch (entity.getType()) {

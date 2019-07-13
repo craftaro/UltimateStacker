@@ -43,18 +43,18 @@ public class ItemListeners implements Listener {
 
         if (max == -1) max = 1;
 
-        int newAmount = getActualAmount(event.getEntity())
-                + getActualAmount(item);
+        int newAmount = Methods.getActualItemAmount(event.getEntity())
+                + Methods.getActualItemAmount(item);
 
         if (newAmount > max) return;
 
-        updateAmount(item, newAmount);
+        Methods.updateItemAmount(item, newAmount);
         event.getEntity().remove();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
-        int amount = getActualAmount(event.getItem());
+        int amount = Methods.getActualItemAmount(event.getItem());
         if (amount <= 32) return;
         event.setCancelled(true);
 
@@ -65,7 +65,7 @@ public class ItemListeners implements Listener {
     public void onDispense(ItemSpawnEvent event) {
         if (!Setting.STACK_ITEMS.getBoolean()) return;
 
-        updateAmount(event.getEntity(), event.getEntity().getItemStack().getAmount());
+        Methods.updateItemAmount(event.getEntity(), event.getEntity().getItemStack().getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -81,7 +81,7 @@ public class ItemListeners implements Listener {
     }
 
     private void updateInventory(Item item, Inventory inventory) {
-        int amount = getActualAmount(item);
+        int amount = Methods.getActualItemAmount(item);
 
         while (amount > 0) {
             int subtract = Math.min(amount, 64);
@@ -98,57 +98,6 @@ public class ItemListeners implements Listener {
         if (amount <= 0)
             item.remove();
         else
-            updateAmount(item, amount);
-    }
-
-    private void updateAmount(Item item, int newAmount) {
-        Material material = item.getItemStack().getType();
-        String name = Methods.convertToInvisibleString("IS") +
-                compileItemName(item.getItemStack(), newAmount);
-
-        if (newAmount > 32) {
-            item.setMetadata("US_AMT", new FixedMetadataValue(instance, newAmount));
-            item.getItemStack().setAmount(32);
-        } else {
-            item.removeMetadata("US_AMT", instance);
-            item.getItemStack().setAmount(newAmount);
-        }
-
-        if (instance.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
-                && Setting.ITEM_HOLOGRAMS.getBoolean()) {
-            if (newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
-            item.setCustomName(name);
-            item.setCustomNameVisible(true);
-        }
-    }
-
-    private int getActualAmount(Item item) {
-        if (item.hasMetadata("US_AMT")) {
-            return item.getMetadata("US_AMT").get(0).asInt();
-        } else {
-            return item.getItemStack().getAmount();
-        }
-    }
-
-    private String compileItemName(ItemStack item, int amount) {
-        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig()
-                .getString("Items." + item.getType().name() + ".Display Name"));
-
-        if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-            displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
-
-        nameFormat = nameFormat.replace("{TYPE}", displayName);
-        nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
-
-        if (amount == 1 && !Setting.SHOW_STACK_SIZE_SINGLE.getBoolean()) {
-            nameFormat = nameFormat.replaceAll("\\[.*?]", "");
-        } else {
-            nameFormat = nameFormat.replace("[", "").replace("]", "");
-        }
-
-        String info = Methods.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
-
-        return info + Methods.formatText(nameFormat).trim();
+            Methods.updateItemAmount(item, amount);
     }
 }

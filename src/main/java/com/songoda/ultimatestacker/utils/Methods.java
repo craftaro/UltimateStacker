@@ -9,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,6 +24,27 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Methods {
+
+    public static void updateInventory(Item item, Inventory inventory) {
+        int amount = Methods.getActualItemAmount(item);
+
+        while (amount > 0) {
+            int subtract = Math.min(amount, 64);
+            amount -= subtract;
+            ItemStack newItem = item.getItemStack().clone();
+            newItem.setAmount(subtract);
+            Map<Integer, ItemStack> result = inventory.addItem(newItem);
+            if (result.get(0) != null) {
+                amount += result.get(0).getAmount();
+                break;
+            }
+        }
+
+        if (amount <= 0)
+            item.remove();
+        else
+            Methods.updateItemAmount(item, amount);
+    }
 
     public static void updateItemAmount(Item item, int newAmount) {
         UltimateStacker plugin = UltimateStacker.getInstance();

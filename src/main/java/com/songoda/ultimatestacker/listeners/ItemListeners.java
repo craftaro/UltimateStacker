@@ -58,7 +58,7 @@ public class ItemListeners implements Listener {
         if (amount <= 32) return;
         event.setCancelled(true);
 
-        updateInventory(event.getItem(), event.getInventory());
+        Methods.updateInventory(event.getItem(), event.getInventory());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -77,27 +77,7 @@ public class ItemListeners implements Listener {
                 instance.isServerVersionAtLeast(ServerVersion.V1_9) ? Sound.ENTITY_ITEM_PICKUP
                         : Sound.valueOf("ITEM_PICKUP"), .2f, (float) (1 + Math.random()));
 
-        updateInventory(event.getItem(), event.getPlayer().getInventory());
+        Methods.updateInventory(event.getItem(), event.getPlayer().getInventory());
     }
 
-    private void updateInventory(Item item, Inventory inventory) {
-        int amount = Methods.getActualItemAmount(item);
-
-        while (amount > 0) {
-            int subtract = Math.min(amount, 64);
-            amount -= subtract;
-            ItemStack newItem = item.getItemStack().clone();
-            newItem.setAmount(subtract);
-            Map<Integer, ItemStack> result = inventory.addItem(newItem);
-            if (result.get(0) != null) {
-                amount += result.get(0).getAmount();
-                break;
-            }
-        }
-
-        if (amount <= 0)
-            item.remove();
-        else
-            Methods.updateItemAmount(item, amount);
-    }
 }

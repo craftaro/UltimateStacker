@@ -4,6 +4,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -62,8 +63,15 @@ public class ItemListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onDispense(ItemSpawnEvent event) {
+    public void onExist(ItemSpawnEvent event) {
         if (!Setting.STACK_ITEMS.getBoolean()) return;
+
+        ItemStack itemStack = event.getEntity().getItemStack();
+
+        if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() &&
+                StringUtils.substring(itemStack.getItemMeta().getDisplayName(), 0, 3).equals("***")) {
+            return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
+        }
 
         Methods.updateItemAmount(event.getEntity(), event.getEntity().getItemStack().getAmount());
     }

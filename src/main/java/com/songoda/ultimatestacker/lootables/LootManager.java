@@ -211,8 +211,10 @@ public class LootManager {
                             .setMaterial(Material.BONE_MEAL)
                             .setChance(5).build(),
                     new LootBuilder()
-                            .setMaterial(Material.RABBIT_FOOT)
-                            .setChance(10)
+                            .setMaterial(Material.BONE)
+                            .setMin(1)
+                            .setMax(2)
+                            .setChance(25)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
 
             // Add Dolphin.

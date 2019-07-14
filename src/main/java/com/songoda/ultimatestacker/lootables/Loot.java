@@ -3,12 +3,10 @@ package com.songoda.ultimatestacker.lootables;
 import com.google.gson.annotations.SerializedName;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Loot {
 
@@ -26,11 +24,15 @@ public class Loot {
 
     // The override for the item name.
     @SerializedName("Name")
-    private String nameOverride = null;
+    private String name = null;
 
     // The override for the item lore.
     @SerializedName("Lore")
-    private List<String> loreOverride = null;
+    private List<String> lore = null;
+
+    // The override for the item enchantments.
+    @SerializedName("Enchantments")
+    private Map<String, Integer> enchants = null;
 
     // Material used if entity died on fire.
     @SerializedName("Burned Type")
@@ -94,24 +96,37 @@ public class Loot {
         this.data = data;
     }
 
-    public String getNameOverride() {
-        return Methods.formatText(nameOverride);
+    public String getName() {
+        return Methods.formatText(name);
     }
 
-    public void setNameOverride(String nameOverride) {
-        this.nameOverride = nameOverride;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public List<String> getLoreOverride() {
+    public List<String> getLore() {
+        if (lore == null) return null;
         List<String> lore = new ArrayList<>();
-        for (String line : loreOverride)
+        for (String line : this.lore)
             lore.add(Methods.formatText(line));
 
         return lore;
     }
 
-    public void setLoreOverride(List<String> loreOverride) {
-        this.loreOverride = new ArrayList<>(loreOverride);
+    public void setLore(List<String> lore) {
+        this.lore = new ArrayList<>(lore);
+    }
+
+    public Map<Enchantment, Integer> getEnchants() {
+        if (enchants == null) return null;
+        Map<Enchantment, Integer> enchants = new HashMap<>();
+        for (Map.Entry<String, Integer> entry : this.enchants.entrySet())
+            enchants.put(Enchantment.getByName(entry.getKey()), entry.getValue());
+        return enchants;
+    }
+
+    public void setEnchants(Map<String, Integer> enchants) {
+        this.enchants = enchants;
     }
 
     public Material getBurnedMaterial() {

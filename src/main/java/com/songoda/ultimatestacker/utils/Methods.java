@@ -715,5 +715,20 @@ public class Methods {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
+    public static class Tuple<key, value> {
+        public final key x;
+        public final value y;
+        public Tuple(key x, value y) {
+            this.x = x;
+            this.y = y;
+        }
 
+        public key getKey() {
+            return this.x;
+        }
+
+        public value getValue() {
+            return this.y;
+        }
+    }
 }

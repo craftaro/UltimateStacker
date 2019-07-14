@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -95,12 +96,15 @@ public class LootManager {
                 ItemMeta meta = item.getItemMeta() == null ? Bukkit.getItemFactory().getItemMeta(loot.getMaterial())
                         : item.getItemMeta();
 
-                if (loot.getNameOverride() != null)
-                    meta.setDisplayName(loot.getNameOverride());
+                if (loot.getName() != null)
+                    meta.setDisplayName(loot.getName());
 
-                if (loot.getLoreOverride() != null)
-                    meta.setLore(loot.getLoreOverride());
+                if (loot.getLore() != null)
+                    meta.setLore(loot.getLore());
                 item.setItemMeta(meta);
+
+                if (loot.getEnchants() != null)
+                    item.addEnchantments(loot.getEnchants());
 
                 toDrop.add(new Drop(item));
             }

@@ -1,10 +1,13 @@
 package com.songoda.ultimatestacker.lootables;
 
 
+import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class LootBuilder {
 
@@ -28,13 +31,21 @@ public final class LootBuilder {
         return this;
     }
 
-    public LootBuilder setNameOverride(String name) {
-        this.loot.setNameOverride(name);
+    public LootBuilder setName(String name) {
+        this.loot.setName(name);
         return this;
     }
 
-    public LootBuilder addLoreOverrides(String... lore) {
-        this.loot.setLoreOverride(Arrays.asList(lore));
+    public LootBuilder addLore(String... lore) {
+        this.loot.setLore(Arrays.asList(lore));
+        return this;
+    }
+
+    public LootBuilder addEnchants(Methods.Tuple... tuples) {
+        Map<String, Integer> enchants = new HashMap<>();
+        for (Methods.Tuple tuple : tuples)
+            enchants.put((String)tuple.getKey(), (int)tuple.getValue());
+        this.loot.setEnchants(enchants);
         return this;
     }
 

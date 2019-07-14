@@ -135,8 +135,13 @@ public enum Setting {
             "The max stack size for items.",
             "Currently this can only be set to a max of 120."),
 
-    NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} [&6{AMT}x]",
+    NAME_FORMAT_ITEM("Items.Name Format", "&f{TYPE} &r[&6{AMT}x]",
             "The text displayed above a dropped item."),
+
+    NAME_FORMAT_RESET("Items.Name Format Reset", true,
+            "Should color codes in dropped item names be removed?",
+            "This is added only because it looks smoother in game. This is only visual and",
+            "doesn't actually effect the item."),
 
     SHOW_STACK_SIZE_SINGLE("Items.Show Stack Size For Single", false,
             "When enabled stack sizes for a stack with a single item will",

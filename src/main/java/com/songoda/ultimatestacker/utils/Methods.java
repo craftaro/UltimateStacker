@@ -82,7 +82,8 @@ public class Methods {
                 .getString("Items." + item.getType().name() + ".Display Name"));
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-            displayName = ChatColor.stripColor(item.getItemMeta().getDisplayName());
+            displayName = Setting.NAME_FORMAT_RESET.getBoolean() ?
+                    ChatColor.stripColor(item.getItemMeta().getDisplayName()) : item.getItemMeta().getDisplayName();
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));

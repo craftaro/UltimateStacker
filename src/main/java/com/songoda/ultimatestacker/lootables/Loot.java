@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.lootables;
 
 import com.google.gson.annotations.SerializedName;
+import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
@@ -22,6 +23,14 @@ public class Loot {
     // Data value for old crappy versions of Minecraft.
     @SerializedName("Data")
     private Short data;
+
+    // The override for the item name.
+    @SerializedName("Name")
+    private String nameOverride = null;
+
+    // The override for the item lore.
+    @SerializedName("Lore")
+    private List<String> loreOverride = null;
 
     // Material used if entity died on fire.
     @SerializedName("Burned Type")
@@ -83,6 +92,26 @@ public class Loot {
 
     public void setData(Short data) {
         this.data = data;
+    }
+
+    public String getNameOverride() {
+        return Methods.formatText(nameOverride);
+    }
+
+    public void setNameOverride(String nameOverride) {
+        this.nameOverride = nameOverride;
+    }
+
+    public List<String> getLoreOverride() {
+        List<String> lore = new ArrayList<>();
+        for (String line : loreOverride)
+            lore.add(Methods.formatText(line));
+
+        return lore;
+    }
+
+    public void setLoreOverride(List<String> loreOverride) {
+        this.loreOverride = new ArrayList<>(loreOverride);
     }
 
     public Material getBurnedMaterial() {

@@ -4,6 +4,8 @@ package com.songoda.ultimatestacker.lootables;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
+import java.util.Arrays;
+
 public final class LootBuilder {
 
     private final Loot loot;
@@ -23,6 +25,16 @@ public final class LootBuilder {
 
     public LootBuilder setData(short data) {
         this.loot.setData(data);
+        return this;
+    }
+
+    public LootBuilder setNameOverride(String name) {
+        this.loot.setNameOverride(name);
+        return this;
+    }
+
+    public LootBuilder addLoreOverrides(String... lore) {
+        this.loot.setLoreOverride(Arrays.asList(lore));
         return this;
     }
 

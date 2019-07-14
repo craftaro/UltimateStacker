@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
@@ -12,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Sheep;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.*;
 import java.util.*;
@@ -90,6 +92,16 @@ public class LootManager {
                 ItemStack item = new ItemStack(loot.getBurnedMaterial() != null && entity.getFireTicks() != -1
                         ? loot.getBurnedMaterial() : material, amount);
                 item.setDurability(data);
+                ItemMeta meta = item.getItemMeta() == null ? Bukkit.getItemFactory().getItemMeta(loot.getMaterial())
+                        : item.getItemMeta();
+
+                if (loot.getNameOverride() != null)
+                    meta.setDisplayName(loot.getNameOverride());
+
+                if (loot.getLoreOverride() != null)
+                    meta.setLore(loot.getLoreOverride());
+                item.setItemMeta(meta);
+
                 toDrop.add(new Drop(item));
             }
             if (command != null) {

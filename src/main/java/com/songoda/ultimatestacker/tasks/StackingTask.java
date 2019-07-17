@@ -192,7 +192,6 @@ public class StackingTask extends BukkitRunnable {
             instance.getEntityStackManager().addStack(Methods.newEntity(entity), i > 25 ? 25 : i);
         }
         entity.remove();
-
     }
 
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {

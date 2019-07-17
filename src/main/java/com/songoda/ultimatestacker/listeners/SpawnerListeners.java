@@ -20,7 +20,7 @@ public class SpawnerListeners implements Listener {
 
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
-        if (!Setting.STACK_ENTITIES.getBoolean()) return;
+        if (!Setting.STACK_ENTITIES.getBoolean() || !instance.spawnersEnabled()) return;
         SpawnerStackManager spawnerStackManager = instance.getSpawnerStackManager();
         if (!spawnerStackManager.isSpawner(event.getSpawner().getLocation())) return;
 

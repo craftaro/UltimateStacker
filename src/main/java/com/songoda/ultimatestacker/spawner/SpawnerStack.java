@@ -3,9 +3,12 @@ package com.songoda.ultimatestacker.spawner;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Reflection;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.CreatureSpawner;
+
+import java.util.Random;
 
 public class SpawnerStack {
 
@@ -30,7 +33,7 @@ public class SpawnerStack {
 
         Bukkit.getScheduler().runTaskLater(UltimateStacker.getInstance(), () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
-            int count = 4 * amount;
+            int count = Setting.STACK_ENTITIES.getBoolean() ? 1 : calculateSpawnCount();
             int maxNearby = amount > 6 ? amount + 3 : 6;
             CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
             if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) {
@@ -54,5 +57,14 @@ public class SpawnerStack {
                 + "Z:" + location.getBlockZ()
                 + "}"
                 + "}";
+    }
+
+    public int calculateSpawnCount() {
+        Random random = new Random();
+        int count = 0;
+        for (int i = 0; i < getAmount(); i ++) {
+            count += random.nextInt(3 - 1 + 1) + 1;
+        }
+        return count;
     }
 }

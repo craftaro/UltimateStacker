@@ -182,6 +182,19 @@ public class StackingTask extends BukkitRunnable {
         return false;
     }
 
+    public void attemptSplit(EntityStack stack, LivingEntity entity) {
+        int stackSize = stack.getAmount();
+        int maxEntityStackAmount = Setting.MAX_STACK_ENTITIES.getInt();
+
+        if (stackSize <= maxEntityStackAmount) return;
+
+        for (int i = stackSize; i > 0; i -= maxEntityStackAmount) {
+            instance.getEntityStackManager().addStack(Methods.newEntity(entity), i > 25 ? 25 : i);
+        }
+        entity.remove();
+
+    }
+
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
         if (!Setting.STACK_ENTITY_HEALTH.getBoolean() && Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
             entity.setHealth(initialEntity.getHealth());
@@ -191,5 +204,4 @@ public class StackingTask extends BukkitRunnable {
         if (Setting.STACK_ENTITY_HEALTH.getBoolean())
             stack.updateHealth(stack.getEntity());
     }
-
 }

@@ -55,6 +55,7 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
+        if (!Setting.STACK_ITEMS.getBoolean()) return;
         int amount = Methods.getActualItemAmount(event.getItem());
         if (amount <= 32) return;
         event.setCancelled(true);
@@ -78,6 +79,7 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
+        if (!Setting.STACK_ITEMS.getBoolean()) return;
         if (event.getItem().getItemStack().getAmount() < 32) return;
         event.setCancelled(true);
 

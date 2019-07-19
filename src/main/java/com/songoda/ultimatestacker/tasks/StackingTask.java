@@ -240,16 +240,24 @@ public class StackingTask extends BukkitRunnable {
             stack.updateHealth(stack.getEntity());
     }
 
-    public void attemptSplit(EntityStack stack, LivingEntity entity) {
+
+    public boolean attemptSplit(EntityStack stack, LivingEntity livingEntity) {
         int stackSize = stack.getAmount();
-        int maxEntityStackAmount = Setting.MAX_STACK_ENTITIES.getInt();
+        int maxEntityStackAmount = getEntityStackSize(livingEntity);
 
-        if (stackSize <= maxEntityStackAmount) return;
+        if (stackSize <= maxEntityStackAmount) return false;
+        
+        for (int i = stackSize; i > 0; i -= maxEntityStackAmount)
+            this.processed.add(instance.getEntityStackManager()
+                    .addStack(Methods.newEntity(livingEntity), i > maxEntityStackAmount ? maxEntityStackAmount : i).getEntityUniqueId());
 
-        for (int i = stackSize; i > 0; i -= maxEntityStackAmount) {
-            instance.getEntityStackManager().addStack(Methods.newEntity(entity), i > 25 ? 25 : i);
-        }
-        entity.remove();
+        // Remove our entities stack from the stack manager.
+        stackManager.removeStack(livingEntity);
+
+        // Remove our entity and mark it as processed.
+        livingEntity.remove();
+        processed.add(livingEntity.getUniqueId());
+        return true;
     }
 
 

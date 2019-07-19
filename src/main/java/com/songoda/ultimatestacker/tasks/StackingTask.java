@@ -246,7 +246,7 @@ public class StackingTask extends BukkitRunnable {
         int maxEntityStackAmount = getEntityStackSize(livingEntity);
 
         if (stackSize <= maxEntityStackAmount) return false;
-        
+
         for (int i = stackSize; i > 0; i -= maxEntityStackAmount)
             this.processed.add(instance.getEntityStackManager()
                     .addStack(Methods.newEntity(livingEntity), i > maxEntityStackAmount ? maxEntityStackAmount : i).getEntityUniqueId());

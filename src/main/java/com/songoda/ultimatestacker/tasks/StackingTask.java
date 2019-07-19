@@ -10,14 +10,15 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -25,8 +26,10 @@ public class StackingTask extends BukkitRunnable {
 
     private EntityStackManager stackManager;
 
+    ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
 
-    private List<UUID> removed = new ArrayList<>();
+    private List<UUID> processed = new ArrayList<>();
+
 
     public StackingTask(UltimateStacker instance) {
         this.instance = instance;
@@ -38,148 +41,203 @@ public class StackingTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        // Gather disabled worlds.
         List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
 
-        nextEntity:
+        // Should entities be stacked?
+        if (!Setting.STACK_ENTITIES.getBoolean()) return;
+
+        // Loop through each world.
         for (World world : Bukkit.getWorlds()) {
+            // If world is disabled then continue to the next world.
             if (disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr))) continue;
 
-            List<Entity> entities = world.getEntities();
+            // Get the loaded entities from the current world, reverse them and make sure they are stackable.
+            List<Entity> entities = new ArrayList<>(world.getEntities()).stream()
+                    .filter(this::isEntityStackable).collect(Collectors.toList());
             Collections.reverse(entities);
 
-            for (Entity entityO : entities) {
-                if (!(entityO instanceof LivingEntity)
-                        || entityO instanceof Player
-                        || !entityO.isValid()
-                        || !Setting.STACK_ENTITIES.getBoolean())
-                    continue nextEntity;
+            // Loop through the entities.
+            for (Entity entity : entities) {
+                // Make sure our entity has not already been processed.
+                // Skip it if it has been.
+                if (this.processed.contains(entity.getUniqueId())) continue;
 
-                LivingEntity initialEntity = (LivingEntity) entityO;
+                // Cast our entity to living entity.
+                LivingEntity livingEntity = (LivingEntity) entity;
 
-                if (initialEntity.isDead()
-                        || !initialEntity.isValid()
-                        || initialEntity instanceof ArmorStand
-                        || initialEntity.hasMetadata("inLove")
+                // Process the entity.
+                this.processEntity(livingEntity);
 
-                        || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
-                        && !(initialEntity.hasMetadata("US_REASON")
-                        && initialEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER"))
-
-                        || Setting.ONLY_STACK_ON_SURFACE.getBoolean()
-                        && !Methods.canFly(initialEntity)
-                        && (!initialEntity.isOnGround() && !initialEntity.getLocation().getBlock().isLiquid()))
-                    continue nextEntity;
-
-                EntityStack initialStack = stackManager.getStack(initialEntity);
-                if (initialStack == null && initialEntity.getCustomName() != null) continue nextEntity;
-
-                attemptAddToStack(initialEntity, initialStack);
             }
-            entities.clear();
-            removed.clear();
         }
+        processed.clear();
     }
 
-    public boolean attemptAddToStack(LivingEntity initialEntity, EntityStack initialStack) {
-        ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
+    private boolean isEntityStackable(Entity entity) {
+        // Make sure we have the correct entity type and that it is valid.
+        if (!entity.isValid()
+                || !(entity instanceof LivingEntity)
+                || entity instanceof HumanEntity
+                || entity instanceof ArmorStand
 
-        if (!configurationSection.getBoolean("Mobs." + initialEntity.getType().name() + ".Enabled"))
-            return false;
-
-        int minEntityStackAmount = Setting.MIN_STACK_ENTITIES.getInt();
-        int amtToStack = initialStack != null ? initialStack.getAmount() : 1;
-
-        List<LivingEntity> entityList = Methods.getSimilarEntitiesAroundEntity(initialEntity);
-        entityList.removeIf(entity -> entity.hasMetadata("inLove")
+                // Make sure the entity is not in love.
+                || entity.hasMetadata("inLove")
+                // Or in breeding cooldown.
                 || entity.hasMetadata("breedCooldown")
 
+                // If only stack from spawners is enabled make sure the entity spawned from a spawner.
                 || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
-                && !(initialEntity.hasMetadata("US_REASON")
-                && initialEntity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")));
+                && !(entity.hasMetadata("US_REASON")
+                && entity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")))
+            return false;
 
+        // Cast our entity to living entity.
+        LivingEntity livingEntity = (LivingEntity) entity;
 
-        int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
-        if (configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size") != -1)
-            maxEntityStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
+        // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
+        return !Setting.ONLY_STACK_ON_SURFACE.getBoolean()
+                || Methods.canFly(livingEntity)
+                || (livingEntity.isOnGround() || livingEntity.getLocation().getBlock().isLiquid());
 
+    }
 
-        for (LivingEntity entity : new ArrayList<>(entityList)) {
-            if (removed.contains(entity.getUniqueId())) continue;
-            EntityStack stack = stackManager.getStack(entity);
-            if (stack == null && entity.getCustomName() != null) {
-                entityList.remove(entity);
-                continue;
-            }
+    private void processEntity(LivingEntity livingEntity) {
+        // Get the stack from the entity. It should be noted that this value will
+        // be null if our entity is not a stack.
+        EntityStack stack = instance.getEntityStackManager().getStack(livingEntity);
 
-            //If a stack was found add 1 to this stack.
-            if (stack != null && (stack.getAmount() + amtToStack) <= maxEntityStackSize) {
-                stack.addAmount(amtToStack);
-                stack.updateStack();
+        // Is this entity stacked?
+        boolean isStack = stack != null;
 
-                if (initialStack == null)
-                    stack.addHealth(entity.getHealth());
+        // The amount that is stackable.
+        int amountToStack = isStack ? stack.getAmount() : 1;
+
+        // Attempt to split our stack. If the split is successful then skip this entity.
+        if (isStack && attemptSplit(stack, livingEntity)) return;
+
+        // If this entity is named or disabled then skip it.
+        if (!isStack && livingEntity.getCustomName() != null
+                || !configurationSection.getBoolean("Mobs." + livingEntity.getType().name() + ".Enabled"))
+            return;
+
+        // Get the minimum stack size.
+        int minEntityStackSize = Setting.MIN_STACK_ENTITIES.getInt();
+        // Get the maximum stack size for this entity.
+        int maxEntityStackSize = getEntityStackSize(livingEntity);
+
+        // Get similar entities around our entity and make sure those entities are both compatible and stackable.
+        List<LivingEntity> stackableFriends = Methods.getSimilarEntitiesAroundEntity(livingEntity)
+                .stream().filter(this::isEntityStackable).collect(Collectors.toList());
+
+        // Loop through our similar stackable entities.
+        for (LivingEntity entity : stackableFriends) {
+            // Make sure the entity has not already been processed.
+            if (this.processed.contains(entity.getUniqueId())) continue;
+
+            // Get this entities friendStack.
+            EntityStack friendStack = stackManager.getStack(entity);
+
+            // Check to see if this entity is stacked and friendStack plus
+            // our amount to stack is not above our max friendStack size
+            // for this entity.
+            if (friendStack != null && (friendStack.getAmount() + amountToStack) <= maxEntityStackSize) {
+
+                // Add one to the found friendStack.
+                friendStack.addAmount(amountToStack);
+
+                // Add our entities health to the friendStacks health.
+                friendStack.addHealth(entity.getHealth());
+
+                // Fix the friendStacks health.
+                if (!isStack)
+                    friendStack.addHealth(entity.getHealth());
                 else
-                    stack.mergeHealth(initialStack);
+                    friendStack.mergeHealth(stack);
 
-                removed.add(initialEntity.getUniqueId());
 
-                fixHealth(entity, initialEntity);
+                fixHealth(entity, livingEntity);
                 if (Setting.STACK_ENTITY_HEALTH.getBoolean())
-                    entity.setHealth(entity.getMaxHealth() < initialEntity.getHealth()
-                            ? entity.getMaxHealth() : initialEntity.getHealth());
+                    entity.setHealth(entity.getMaxHealth() < livingEntity.getHealth()
+                            ? entity.getMaxHealth() : livingEntity.getHealth());
 
-                initialEntity.remove();
 
-                return true;
-            } else if (stack == null
-                    && initialStack != null
-                    && (initialStack.getAmount() + 1) <= maxEntityStackSize
+                // Remove our entity and mark it as processed.
+                livingEntity.remove();
+                processed.add(livingEntity.getUniqueId());
+
+                return;
+            } else if (friendStack == null
+                    && isStack
+                    && (stack.getAmount() + 1) <= maxEntityStackSize
                     && Methods.canFly(entity)
                     && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
-                    && initialEntity.getLocation().getY() > entity.getLocation().getY()) {
-                EntityStack newStack = stackManager.addStack(entity, initialStack.getAmount() + 1);
+                    && livingEntity.getLocation().getY() > entity.getLocation().getY()) {
 
-                newStack.mergeHealth(initialStack);
+                // If entity has a custom name skip it.
+                if (entity.getCustomName() != null) continue;
 
-                newStack.addHealth(initialEntity.getHealth());
-                removed.add(initialEntity.getUniqueId());
+                // Create a new stack with the current stacks amount and add one to it.
+                EntityStack newStack = stackManager.addStack(entity, stack.getAmount() + 1);
 
-                fixHealth(initialEntity, entity);
+                // Fix the entities health.
+                newStack.mergeHealth(stack);
+                newStack.addHealth(livingEntity.getHealth());
+                fixHealth(livingEntity, entity);
                 if (Setting.STACK_ENTITY_HEALTH.getBoolean())
                     entity.setHealth(entity.getHealth());
 
-                stackManager.removeStack(initialEntity);
-                initialEntity.remove();
+                // Remove our entities stack from the stack manager.
+                stackManager.removeStack(livingEntity);
 
-                return true;
+                // Remove our entity and mark it as processed.
+                livingEntity.remove();
+                processed.add(livingEntity.getUniqueId());
+
+                return;
             }
         }
 
-        if (initialStack != null) return false;
+        // If our entity is stacked then skip this entity.
+        if (isStack) return;
 
-        entityList.removeIf(stackManager::isStacked);
+        // Remove all stacked entities from our stackable friends.
+        stackableFriends.removeIf(stackManager::isStacked);
 
-        if (entityList.size() < minEntityStackAmount - 1
-                || minEntityStackAmount > maxEntityStackSize
-                || minEntityStackAmount == 1 && entityList.size() == 0) return false;
+        // If there are none or not enough stackable friends left to create a new entity,
+        // the stack sizes overlap then skip this entity.
+        if (stackableFriends.isEmpty()
+                || stackableFriends.size() < minEntityStackSize - 1
+                || minEntityStackSize > maxEntityStackSize) return;
 
-        //If stack was never found make a new one.
-        EntityStack stack = stackManager.addStack(new EntityStack(initialEntity, (entityList.size() + 1) >
-                maxEntityStackSize ? maxEntityStackSize : entityList.size() + 1));
+        // If a stack was never found create a new one.
+        EntityStack newStack = stackManager.addStack(new EntityStack(livingEntity, (stackableFriends.size() + 1) >
+                maxEntityStackSize ? maxEntityStackSize : stackableFriends.size() + 1));
 
-        entityList.stream().filter(entity -> !stackManager.isStacked(entity)
-                && !removed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
+        // Loop through the unstacked and unprocessed stackable friends while not creating
+        // a stack larger than the maximum.
+        stackableFriends.stream().filter(entity -> !stackManager.isStacked(entity)
+                && !this.processed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
 
-            fixHealth(initialEntity, entity);
-            stack.addHealth(entity.getHealth());
+            // Fix the entities health.
+            fixHealth(livingEntity, entity);
+            newStack.addHealth(entity.getHealth());
 
-            removed.add(entity.getUniqueId());
+            // Remove our entity and mark it as processed.
             entity.remove();
+            processed.add(entity.getUniqueId());
         });
-        updateHealth(stack);
 
-        stack.updateStack();
-        return false;
+        // Update our stacks health.
+        updateHealth(newStack);
+
+        // Update our stack.
+        newStack.updateStack();
+    }
+
+    private void updateHealth(EntityStack stack) {
+        if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+            stack.updateHealth(stack.getEntity());
     }
 
     public void attemptSplit(EntityStack stack, LivingEntity entity) {
@@ -194,13 +252,18 @@ public class StackingTask extends BukkitRunnable {
         entity.remove();
     }
 
+
+
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
         if (!Setting.STACK_ENTITY_HEALTH.getBoolean() && Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
             entity.setHealth(initialEntity.getHealth());
     }
 
-    private void updateHealth(EntityStack stack) {
-        if (Setting.STACK_ENTITY_HEALTH.getBoolean())
-            stack.updateHealth(stack.getEntity());
+    private int getEntityStackSize(LivingEntity initialEntity) {
+        int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
+        if (configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size") != -1)
+            maxEntityStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
+        return maxEntityStackSize;
     }
+
 }

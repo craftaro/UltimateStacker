@@ -31,7 +31,8 @@ public enum Setting {
             "The max amount of entities in a single stack."),
 
     MIN_STACK_ENTITIES("Entities.Min Stack Amount", 5,
-            "The minimum amount required before a stack can be formed."),
+            "The minimum amount required before a stack can be formed.",
+            "Do not set this to lower than 2."),
 
     ENTITY_HOLOGRAMS("Entities.Holograms Enabled", true,
             "Should holograms be displayed above stacked entities?"),

@@ -52,13 +52,14 @@ public class StackingTask extends BukkitRunnable {
             // If world is disabled then continue to the next world.
             if (disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr))) continue;
 
-            // Get the loaded entities from the current world, reverse them and make sure they are stackable.
-            List<Entity> entities = new ArrayList<>(world.getEntities()).stream()
-                    .filter(this::isEntityStackable).collect(Collectors.toList());
+            // Get the loaded entities from the current world and reverse them.
+            List<Entity> entities = new ArrayList<>(world.getEntities());
             Collections.reverse(entities);
 
             // Loop through the entities.
             for (Entity entity : entities) {
+                // Check to see if entity is stackable.
+                if (!isEntityStackable(entity)) continue;
                 // Make sure our entity has not already been processed.
                 // Skip it if it has been.
                 if (this.processed.contains(entity.getUniqueId())) continue;

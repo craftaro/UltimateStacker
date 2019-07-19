@@ -55,9 +55,9 @@ public class CommandRemoveAll extends AbstractCommand {
         if (type.equalsIgnoreCase("items") && amountRemoved == 1) type = "Item";
 
         if (amountRemoved == 0) {
-            sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7No stacked " + type + " exist that could be removed."));
+            instance.getLocale().newMessage("&7No stacked " + type + " exist that could be removed.").sendPrefixedMessage(sender);
         } else {
-            sender.sendMessage(Methods.formatText(instance.getReferences().getPrefix() + "&7Removed &6" + amountRemoved + " stacked " + Methods.formatText(type.toLowerCase(), true) + " &7Successfully."));
+            instance.getLocale().newMessage("&7Removed &6" + amountRemoved + " stacked " + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
         }
         return ReturnType.SUCCESS;
     }

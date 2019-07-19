@@ -33,7 +33,7 @@ public class CommandGive extends AbstractCommand {
         }
 
         if (type == null) {
-            sender.sendMessage(instance.getReferences().getPrefix() + Methods.formatText(instance.getReferences().getPrefix() + "&7The entity StackType &6" + args[2] + " &7does not exist. Try one of these:"));
+            instance.getLocale().newMessage("&7The entity StackType &6" + args[2] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {
@@ -47,11 +47,15 @@ public class CommandGive extends AbstractCommand {
             if (!args[1].trim().toLowerCase().equals("all")) {
                 Player player = Bukkit.getOfflinePlayer(args[1]).getPlayer();
                 player.getInventory().addItem(itemStack);
-                player.sendMessage(Methods.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
+                instance.getLocale().getMessage("command.give.success")
+                        .processPlaceholder("type", Methods.compileSpawnerName(type, amt))
+                        .sendPrefixedMessage(player);
             } else {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.getInventory().addItem(itemStack);
-                    player.sendMessage(Methods.formatText(instance.getLocale().getMessage("command.give.success", Methods.compileSpawnerName(type, amt))));
+                    instance.getLocale().getMessage("command.give.success")
+                            .processPlaceholder("type", Methods.compileSpawnerName(type, amt))
+                            .sendPrefixedMessage(player);
                 }
             }
         }

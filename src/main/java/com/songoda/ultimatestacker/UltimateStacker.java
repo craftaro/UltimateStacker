@@ -20,6 +20,7 @@ import com.songoda.ultimatestacker.utils.ConfigWrapper;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Metrics;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.locale.Locale;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import com.songoda.ultimatestacker.utils.settings.SettingsManager;
 import com.songoda.ultimatestacker.utils.updateModules.LocaleModule;
@@ -41,7 +42,6 @@ import java.util.List;
 public class UltimateStacker extends JavaPlugin {
 
     private static UltimateStacker INSTANCE;
-    private References references;
 
     private ConfigWrapper mobFile = new ConfigWrapper(this, "", "mobs.yml");
     private ConfigWrapper itemFile = new ConfigWrapper(this, "", "items.yml");
@@ -124,17 +124,14 @@ public class UltimateStacker extends JavaPlugin {
         spawnerFile.getConfig().options().copyDefaults(true);
         spawnerFile.saveConfig();
 
-        String langMode = getConfig().getString("System.Language Mode");
-        Locale.init(this);
-        Locale.saveDefaultLocale("en_US");
-        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode", langMode));
+        new Locale(this, "en_US");
+        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode"));
 
         //Running Songoda Updater
         Plugin plugin = new Plugin(this, 16);
         plugin.addModule(new LocaleModule());
         SongodaUpdate.load(plugin);
 
-        this.references = new References();
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager();
         this.stackingTask = new StackingTask(this);
@@ -221,13 +218,11 @@ public class UltimateStacker extends JavaPlugin {
     }
 
     public void reload() {
-        String langMode = getConfig().getString("System.Language Mode");
-        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode", langMode));
+        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode"));
         this.locale.reloadMessages();
         this.mobFile = new ConfigWrapper(this, "", "mobs.yml");
         this.itemFile = new ConfigWrapper(this, "", "items.yml");
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
-        this.references = new References();
         this.settingsManager.reloadConfig();
         this.getLootManager().loadLootables();
     }
@@ -254,10 +249,6 @@ public class UltimateStacker extends JavaPlugin {
 
     public boolean isServerVersionAtLeast(ServerVersion version) {
         return serverVersion.ordinal() >= version.ordinal();
-    }
-
-    public References getReferences() {
-        return references;
     }
 
     public Locale getLocale() {

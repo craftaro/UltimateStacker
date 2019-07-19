@@ -22,7 +22,7 @@ public class LocaleModule implements Module {
 
                 if (file.get("type").equals("locale")) {
                     InputStream in = new URL((String) file.get("link")).openStream();
-                    UltimateStacker.getInstance().getLocale().saveDefaultLocale(in, (String) file.get("name"));
+                    UltimateStacker.getInstance().getLocale().saveLocale(in, (String) file.get("name"));
                 }
             }
         } catch (IOException e) {

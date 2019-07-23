@@ -2,142 +2,27 @@ package com.songoda.ultimatestacker.lootables;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
+import com.songoda.lootables.Lootables;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Ageable;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Sheep;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.loot.Lootable;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 public class LootManager {
 
-    private final Map<EntityType, Lootable> registeredLootables = new HashMap<>();
+    private final Lootables instance;
+
+    public LootManager() {
+        this.instance = new Lootables();
+    }
 
     private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + File.separator + "lootables";
-
-    public Lootable addLootable(Lootable lootable) {
-        return registeredLootables.put(lootable.getType(), lootable);
-    }
-
-    public List<Drop> getDrops(LivingEntity entity) {
-        List<Drop> toDrop = new ArrayList<>();
-        if (entity instanceof Ageable && !((Ageable) entity).isAdult()
-                || !registeredLootables.containsKey(entity.getType())) return toDrop;
-
-        Lootable lootable = registeredLootables.get(entity.getType());
-        int looting = entity.getKiller() != null
-                && entity.getKiller().getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)
-                ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
-                : 0;
-
-        int rerollChance = looting / (looting + 1);
-
-        for (Loot loot : lootable.getRegisteredLoot())
-            toDrop.addAll(runLoot(entity, loot, rerollChance, looting));
-
-        return toDrop;
-    }
-
-    private List<Drop> runLoot(LivingEntity entity, Loot loot, int rerollChance, int looting) {
-        List<Drop> toDrop = new ArrayList<>();
-        if (loot.runChance(looting) || ((Math.random() * 100) - rerollChance < 0 || rerollChance == 100)
-                && loot.runChance(looting)) {
-
-            if (loot.getOnlyDropFor().size() != 0
-                    && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType()))
-                return toDrop;
-
-            if (loot.getChildLoot().size() > 0) {
-                List<Loot> childLoot = loot.getChildLoot();
-                Collections.shuffle(childLoot);
-
-                int amt = loot.getChildDropCount();
-
-                for (int i = 0; i < amt; i++) {
-                    toDrop.addAll(runLoot(entity, childLoot.get(i), rerollChance, looting));
-                }
-            }
-            Material material = loot.getMaterial();
-            String command = loot.getCommand();
-
-            if (material == null && command == null) return toDrop;
-
-            short data = loot.getData() != null ? loot.getData() : 0;
-
-            if (entity.getType() == EntityType.SHEEP
-                    && material == (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
-                    ? Material.WHITE_WOOL : Material.valueOf("WOOL"))
-                    && ((Sheep) entity).getColor() != null) {
-                if (((Sheep) entity).isSheared()) return null;
-                if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13))
-                    material = Material.valueOf(((Sheep) entity).getColor() + "_WOOL");
-                else
-                    data = ((Sheep) entity).getColor().getWoolData();
-
-            }
-
-            int amount = loot.getAmountToDrop(looting);
-            if (amount == 0) return toDrop;
-
-            if (material != null) {
-                ItemStack item = new ItemStack(loot.getBurnedMaterial() != null && entity.getFireTicks() != -1
-                        ? loot.getBurnedMaterial() : material, amount);
-                item.setDurability(data);
-                ItemMeta meta = item.getItemMeta() == null ? Bukkit.getItemFactory().getItemMeta(loot.getMaterial())
-                        : item.getItemMeta();
-
-                if (loot.getName() != null)
-                    meta.setDisplayName(loot.getName());
-
-                if (loot.getLore() != null)
-                    meta.setLore(loot.getLore());
-                item.setItemMeta(meta);
-
-                if (loot.getEnchants() != null)
-                    item.addEnchantments(loot.getEnchants());
-
-                toDrop.add(new Drop(item));
-            }
-            if (command != null) {
-                for (int i = 0; i < amount; i++)
-                    toDrop.add(new Drop(command));
-            }
-        }
-        return toDrop;
-    }
-
-    public void loadLootables() {
-        registeredLootables.clear();
-        File dir = new File(lootablesDir);
-        File[] directoryListing = dir.listFiles();
-        if (directoryListing != null) {
-            for (File file : directoryListing) {
-                if (!file.getName().endsWith(".json")) continue;
-                try {
-                    Gson gson = new Gson();
-                    JsonReader reader = new JsonReader(new FileReader(file.getPath()));
-
-                    Lootable lootable = gson.fromJson(reader, Lootable.class);
-
-                    if (lootable.getRegisteredLoot().size() != 0)
-                        addLootable(lootable);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 
     public void createDefaultLootables() {
         UltimateStacker plugin = UltimateStacker.getInstance();

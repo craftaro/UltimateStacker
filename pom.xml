@@ -33,6 +33,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.songoda:songodaupdater</include>
+                                    <include>com.songoda:Lootables</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -71,6 +72,11 @@
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>songodaupdater</artifactId>
+            <version>1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.songoda</groupId>
+            <artifactId>Lootables</artifactId>
             <version>1</version>
         </dependency>
         <dependency>

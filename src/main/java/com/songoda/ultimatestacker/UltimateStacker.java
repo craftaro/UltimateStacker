@@ -8,7 +8,7 @@ import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
-import com.songoda.ultimatestacker.lootables.LootManager;
+import com.songoda.ultimatestacker.lootables.LootablesManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
@@ -51,7 +51,7 @@ public class UltimateStacker extends JavaPlugin {
     private SettingsManager settingsManager;
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
-    private LootManager lootManager;
+    private LootablesManager lootablesManager;
     private CommandManager commandManager;
     private StackingTask stackingTask;
     private Hologram hologram;
@@ -92,10 +92,10 @@ public class UltimateStacker extends JavaPlugin {
 
         this.commandManager = new CommandManager(this);
 
-        this.lootManager = new LootManager();
+        this.lootablesManager = new LootablesManager();
+        this.lootablesManager.createDefaultLootables();
+        this.getLootablesManager().getLootManager().loadLootables();
 
-        lootManager.createDefaultLootables();
-        lootManager.loadLootables();
 
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
@@ -224,7 +224,7 @@ public class UltimateStacker extends JavaPlugin {
         this.itemFile = new ConfigWrapper(this, "", "items.yml");
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
         this.settingsManager.reloadConfig();
-        this.getLootManager().loadLootables();
+        this.getLootablesManager().getLootManager().loadLootables();
     }
 
     public boolean spawnersEnabled() {
@@ -259,8 +259,8 @@ public class UltimateStacker extends JavaPlugin {
         return commandManager;
     }
 
-    public LootManager getLootManager() {
-        return lootManager;
+    public LootablesManager getLootablesManager() {
+        return lootablesManager;
     }
 
     public EntityStackManager getEntityStackManager() {

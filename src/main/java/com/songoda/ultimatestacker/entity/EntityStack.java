@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.entity;
 
+import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.lootables.Drop;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
@@ -119,7 +119,7 @@ public class EntityStack {
                 }
             }
             if (custom)
-                drops = UltimateStacker.getInstance().getLootManager().getDrops(killed);
+                drops = UltimateStacker.getInstance().getLootablesManager().getDrops(killed);
             for (Drop drop : drops) {
                 Methods.processDrop(killed, drop);
             }

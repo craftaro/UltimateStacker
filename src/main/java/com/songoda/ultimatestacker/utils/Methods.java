@@ -1,9 +1,9 @@
 package com.songoda.ultimatestacker.utils;
 
+import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.lootables.Drop;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.*;
 import org.bukkit.block.Block;

@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.lootables.Drop;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.event.EventHandler;
@@ -23,11 +23,10 @@ public class DeathListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
-        List<Drop> drops = Setting.CUSTOM_DROPS.getBoolean()
-                ? instance.getLootManager().getDrops(event.getEntity()) : new ArrayList<>();
+        List<Drop> drops = instance.getLootablesManager().getDrops(event.getEntity());
 
         boolean custom = false;
-        if (drops.size() != 0) {
+        if (Setting.CUSTOM_DROPS.getBoolean()) {
             event.getDrops().clear();
 
             for (Drop drop : drops) {

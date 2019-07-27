@@ -7,7 +7,23 @@ author: songoda
 api-version: 1.13
 commands:
   UltimateStacker:
-    description: I have no idea.
+    description: Reloads the configuration file
     default: true
     aliases: [us]
-    usage: /<command> [reload]
+    usage: /ultimatestacker reload
+permissions:
+  ultimatestacker.*:
+    description: Inherits all plugin permissions
+    children:
+      ultimatestacker.admin: true
+      ultimatestacker.spawner.silktouch: true
+      ultimatestacker.spawner.nosilkdrop: true
+  ultimatestacker.admin:
+    description: Allows players to edit settings, reload files and other admin commands
+    default: op
+  ultimatestacker.spawner.silktouch:
+    description: Allows the player to pick up spawners using silk touch
+    default: op
+  ultimatestacker.spawner.nosilkdrop:
+    description: Allows the player to receive spawners from mining with a non-silk touched pick
+    default: op

@@ -217,7 +217,8 @@ public class Methods {
                     break;
                 }
                 case OCELOT_TYPE: {
-                    if (!(toClone instanceof Ocelot)) break;
+                    if (!(toClone instanceof Ocelot)
+                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_14)) break;
                     ((Ocelot) newEntity).setCatType(((Ocelot) toClone).getCatType());
                 }
                 case CAT_TYPE: {
@@ -719,6 +720,7 @@ public class Methods {
     public static class Tuple<key, value> {
         public final key x;
         public final value y;
+
         public Tuple(key x, value y) {
             this.x = x;
             this.y = y;

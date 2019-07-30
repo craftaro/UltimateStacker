@@ -212,14 +212,19 @@ public class StackingTask extends BukkitRunnable {
                 || minEntityStackSize > maxEntityStackSize) return;
 
         // If a stack was never found create a new one.
-        EntityStack newStack = stackManager.addStack(new EntityStack(livingEntity, (stackableFriends.size() + 1) >
-                maxEntityStackSize ? maxEntityStackSize : stackableFriends.size() + 1));
+        EntityStack newStack = stackManager.addStack(new EntityStack(livingEntity,
+                Math.min((stackableFriends.size() + 1), maxEntityStackSize)));
 
         // Loop through the unstacked and unprocessed stackable friends while not creating
         // a stack larger than the maximum.
         stackableFriends.stream().filter(entity -> !stackManager.isStacked(entity)
                 && !this.processed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
 
+            // Make sure we're not naming some poor kids pet.
+            if (entity.getCustomName() != null) {
+                processed.add(livingEntity.getUniqueId());
+                return;
+            }
             // Fix the entities health.
             fixHealth(livingEntity, entity);
             newStack.addHealth(entity.getHealth());
@@ -260,7 +265,6 @@ public class StackingTask extends BukkitRunnable {
         processed.add(livingEntity.getUniqueId());
         return true;
     }
-
 
 
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {

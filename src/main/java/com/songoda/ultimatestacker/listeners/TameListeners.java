@@ -3,7 +3,6 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Tameable;
@@ -17,30 +16,30 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class TameListeners implements Listener {
 
-    private UltimateStacker instance;
+    private UltimateStacker plugin;
 
-    public TameListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public TameListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onTame(EntityTameEvent event) {
         Entity entity = event.getEntity();
 
-        EntityStackManager stackManager = instance.getEntityStackManager();
+        EntityStackManager stackManager = plugin.getEntityStackManager();
         if (!stackManager.isStacked(entity)) return;
 
         Tameable tameable = (Tameable) entity;
 
-        EntityStack stack = instance.getEntityStackManager().getStack(entity);
+        EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 
         if (stack.getAmount() <= 1) return;
 
-        LivingEntity newEntity = Methods.newEntity((LivingEntity) tameable);
+        LivingEntity newEntity = plugin.getEntityUtils().newEntity((LivingEntity) tameable);
 
-        instance.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
+        plugin.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);
-        instance.getEntityStackManager().removeStack(entity);
+        plugin.getEntityStackManager().removeStack(entity);
         entity.setVelocity(getRandomVector());
     }
 

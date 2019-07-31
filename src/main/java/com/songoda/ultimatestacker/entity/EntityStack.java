@@ -28,6 +28,7 @@ public class EntityStack {
     private int amount;
 
     private Deque<Double> health = new ArrayDeque<>();
+    UltimateStacker plugin = UltimateStacker.getInstance();
 
     public EntityStack(LivingEntity entity, int amount) {
         this(entity.getUniqueId(), amount);
@@ -132,16 +133,15 @@ public class EntityStack {
     }
 
     private void handleSingleStackDeath(LivingEntity killed) {
-        UltimateStacker instance = UltimateStacker.getInstance();
-        EntityStackManager stackManager = instance.getEntityStackManager();
-        LivingEntity newEntity = Methods.newEntity(killed);
+        EntityStackManager stackManager = plugin.getEntityStackManager();
+        LivingEntity newEntity = plugin.getEntityUtils().newEntity(killed);
 
         updateHealth(newEntity);
 
         newEntity.getEquipment().clear();
 
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(instance.isServerVersionAtLeast(ServerVersion.V1_13)
+            newEntity.getEquipment().setItemInHand(new ItemStack(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                     ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
 
         if (Setting.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {

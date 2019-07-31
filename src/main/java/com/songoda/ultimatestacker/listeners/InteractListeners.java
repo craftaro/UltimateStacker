@@ -12,20 +12,16 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.SheepDyeWoolEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.util.Vector;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 public class InteractListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public InteractListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public InteractListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -36,11 +32,11 @@ public class InteractListeners implements Listener {
 
         ItemStack item = player.getInventory().getItemInHand();
 
-        if (!instance.getEntityStackManager().isStacked(entity)) return;
+        if (!plugin.getEntityStackManager().isStacked(entity)) return;
 
         if (item.getType() != Material.NAME_TAG && !correctFood(item, entity)) return;
 
-        EntityStack stack = instance.getEntityStackManager().getStack(entity);
+        EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 
         if (stack.getAmount() <= 1
                 || item.getType() == Material.NAME_TAG
@@ -54,7 +50,7 @@ public class InteractListeners implements Listener {
         else if (entity instanceof Ageable && !((Ageable) entity).isAdult())
             return;
 
-        Methods.splitFromStack(entity);
+        plugin.getEntityUtils().splitFromStack(entity);
 
         if (item.getType() == Material.NAME_TAG) {
             entity.setCustomName(item.getItemMeta().getDisplayName());
@@ -63,24 +59,24 @@ public class InteractListeners implements Listener {
                     && !((Ageable) entity).isAdult()) {
                 return;
             }
-            entity.setMetadata("inLove", new FixedMetadataValue(instance, true));
+            entity.setMetadata("inLove", new FixedMetadataValue(plugin, true));
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(instance, () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 if (entity.isDead()) return;
-                entity.removeMetadata("inLove", instance);
+                entity.removeMetadata("inLove", plugin);
             }, 20 * 20);
         }
     }
 
     private boolean correctFood(ItemStack is, Entity entity) {
-        boolean is13 = instance.isServerVersionAtLeast(ServerVersion.V1_13);
+        boolean is13 = plugin.isServerVersionAtLeast(ServerVersion.V1_13);
         Material type = is.getType();
         switch (entity.getType().name()) {
             case "COW":
             case "SHEEP":
                 return type == Material.WHEAT;
             case "PIG":
-                return type == Material.CARROT || (instance.isServerVersionAtLeast(ServerVersion.V1_8) && type == Material.BEETROOT) || type == Material.POTATO;
+                return type == Material.CARROT || (plugin.isServerVersionAtLeast(ServerVersion.V1_8) && type == Material.BEETROOT) || type == Material.POTATO;
             case "CHICKEN":
                 return type == (is13 ? Material.WHEAT_SEEDS : Material.valueOf("SEEDS"))
                         || type == Material.MELON_SEEDS

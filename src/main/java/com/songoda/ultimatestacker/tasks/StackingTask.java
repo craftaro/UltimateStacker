@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
     private EntityStackManager stackManager;
 
@@ -30,13 +30,15 @@ public class StackingTask extends BukkitRunnable {
 
     private List<UUID> processed = new ArrayList<>();
 
+    private int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
+    private int minEntityStackSize = Setting.MIN_STACK_ENTITIES.getInt();
 
-    public StackingTask(UltimateStacker instance) {
-        this.instance = instance;
-        this.stackManager = instance.getEntityStackManager();
+    public StackingTask(UltimateStacker plugin) {
+        this.plugin = plugin;
+        this.stackManager = plugin.getEntityStackManager();
 
         // Start stacking task.
-        runTaskTimer(instance, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
+        runTaskTimer(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override
@@ -106,7 +108,7 @@ public class StackingTask extends BukkitRunnable {
     private void processEntity(LivingEntity livingEntity) {
         // Get the stack from the entity. It should be noted that this value will
         // be null if our entity is not a stack.
-        EntityStack stack = instance.getEntityStackManager().getStack(livingEntity);
+        EntityStack stack = plugin.getEntityStackManager().getStack(livingEntity);
 
         // Is this entity stacked?
         boolean isStack = stack != null;
@@ -122,13 +124,11 @@ public class StackingTask extends BukkitRunnable {
                 || !configurationSection.getBoolean("Mobs." + livingEntity.getType().name() + ".Enabled"))
             return;
 
-        // Get the minimum stack size.
-        int minEntityStackSize = Setting.MIN_STACK_ENTITIES.getInt();
         // Get the maximum stack size for this entity.
         int maxEntityStackSize = getEntityStackSize(livingEntity);
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
-        List<LivingEntity> stackableFriends = Methods.getSimilarEntitiesAroundEntity(livingEntity)
+        List<LivingEntity> stackableFriends = plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity)
                 .stream().filter(this::isEntityStackable).collect(Collectors.toList());
 
         // Loop through our similar stackable entities.
@@ -254,8 +254,8 @@ public class StackingTask extends BukkitRunnable {
         if (stackSize <= maxEntityStackAmount) return false;
 
         for (int i = stackSize; i > 0; i -= maxEntityStackAmount)
-            this.processed.add(instance.getEntityStackManager()
-                    .addStack(Methods.newEntity(livingEntity), i > maxEntityStackAmount ? maxEntityStackAmount : i).getEntityUniqueId());
+            this.processed.add(plugin.getEntityStackManager()
+                    .addStack(plugin.getEntityUtils().newEntity(livingEntity), Math.min(i, maxEntityStackAmount)).getEntityUniqueId());
 
         // Remove our entities stack from the stack manager.
         stackManager.removeStack(livingEntity);
@@ -273,7 +273,6 @@ public class StackingTask extends BukkitRunnable {
     }
 
     private int getEntityStackSize(LivingEntity initialEntity) {
-        int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
         if (configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size") != -1)
             maxEntityStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
         return maxEntityStackSize;

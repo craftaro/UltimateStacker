@@ -16,10 +16,7 @@ import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
-import com.songoda.ultimatestacker.utils.ConfigWrapper;
-import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.Metrics;
-import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.*;
 import com.songoda.ultimatestacker.utils.locale.Locale;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import com.songoda.ultimatestacker.utils.settings.SettingsManager;
@@ -56,6 +53,8 @@ public class UltimateStacker extends JavaPlugin {
     private StackingTask stackingTask;
     private Hologram hologram;
 
+    private EntityUtils entityUtils;
+
     private List<StackerHook> stackerHooks = new ArrayList<>();
 
     private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
@@ -91,6 +90,8 @@ public class UltimateStacker extends JavaPlugin {
         this.settingsManager.setupConfig();
 
         this.commandManager = new CommandManager(this);
+
+        this.entityUtils = new EntityUtils();
 
         this.lootablesManager = new LootablesManager();
         this.lootablesManager.createDefaultLootables();
@@ -220,6 +221,12 @@ public class UltimateStacker extends JavaPlugin {
     public void reload() {
         this.locale = Locale.getLocale(getConfig().getString("System.Language Mode"));
         this.locale.reloadMessages();
+
+        this.entityUtils = new EntityUtils();
+
+        this.stackingTask.cancel();
+        this.stackingTask = new StackingTask(this);
+
         this.mobFile = new ConfigWrapper(this, "", "mobs.yml");
         this.itemFile = new ConfigWrapper(this, "", "items.yml");
         this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
@@ -289,5 +296,9 @@ public class UltimateStacker extends JavaPlugin {
 
     public ConfigWrapper getSpawnerFile() {
         return spawnerFile;
+    }
+
+    public EntityUtils getEntityUtils() {
+        return entityUtils;
     }
 }

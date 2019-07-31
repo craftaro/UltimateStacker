@@ -6,6 +6,7 @@ import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
@@ -60,8 +61,10 @@ public class StackingTask extends BukkitRunnable {
 
             // Loop through the entities.
             for (Entity entity : entities) {
+                // Get entity location to pass around as its faster this way.
+                Location location = entity.getLocation();
                 // Check to see if entity is stackable.
-                if (!isEntityStackable(entity)) continue;
+                if (!isEntityStackable(entity, location)) continue;
                 // Make sure our entity has not already been processed.
                 // Skip it if it has been.
                 if (this.processed.contains(entity.getUniqueId())) continue;
@@ -70,14 +73,14 @@ public class StackingTask extends BukkitRunnable {
                 LivingEntity livingEntity = (LivingEntity) entity;
 
                 // Process the entity.
-                this.processEntity(livingEntity);
+                this.processEntity(livingEntity, location);
 
             }
         }
         processed.clear();
     }
 
-    private boolean isEntityStackable(Entity entity) {
+    private boolean isEntityStackable(Entity entity, Location location) {
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
                 || !(entity instanceof LivingEntity)
@@ -101,11 +104,11 @@ public class StackingTask extends BukkitRunnable {
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
         return !Setting.ONLY_STACK_ON_SURFACE.getBoolean()
                 || Methods.canFly(livingEntity)
-                || (livingEntity.isOnGround() || livingEntity.getLocation().getBlock().isLiquid());
+                || (livingEntity.isOnGround() || location.getBlock().isLiquid());
 
     }
 
-    private void processEntity(LivingEntity livingEntity) {
+    private void processEntity(LivingEntity livingEntity, Location location) {
         // Get the stack from the entity. It should be noted that this value will
         // be null if our entity is not a stack.
         EntityStack stack = plugin.getEntityStackManager().getStack(livingEntity);
@@ -128,8 +131,8 @@ public class StackingTask extends BukkitRunnable {
         int maxEntityStackSize = getEntityStackSize(livingEntity);
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
-        List<LivingEntity> stackableFriends = plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity)
-                .stream().filter(this::isEntityStackable).collect(Collectors.toList());
+        List<LivingEntity> stackableFriends = plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity, location)
+                .stream().filter(entity -> isEntityStackable(entity, location)).collect(Collectors.toList());
 
         // Loop through our similar stackable entities.
         for (LivingEntity entity : stackableFriends) {
@@ -173,7 +176,7 @@ public class StackingTask extends BukkitRunnable {
                     && (stack.getAmount() + 1) <= maxEntityStackSize
                     && Methods.canFly(entity)
                     && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
-                    && livingEntity.getLocation().getY() > entity.getLocation().getY()) {
+                    && location.getY() > entity.getLocation().getY()) {
 
                 // Create a new stack with the current stacks amount and add one to it.
                 EntityStack newStack = stackManager.addStack(entity, stack.getAmount() + 1);

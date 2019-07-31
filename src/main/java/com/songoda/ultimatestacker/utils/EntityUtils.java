@@ -5,13 +5,12 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.utils.settings.Setting;
-import org.bukkit.Axis;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.*;
-import org.bukkit.util.BoundingBox;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -175,11 +174,45 @@ public class EntityUtils {
         return newEntity;
     }
 
-    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity) {
-        //Create a list of all entities around the initial entity of the same type.
-        List<LivingEntity> entityList = initalEntity.getNearbyEntities(searchRadius, searchRadius, searchRadius)
+    private List<LivingEntity> getNearbyEntities(Location location, double radius) {
+        List<LivingEntity> entities = new ArrayList<>();
+        for (Chunk chunk : getNearbyChunks(location, radius)) {
+            for (Entity e : chunk.getEntities()) {
+                if (!(e instanceof LivingEntity) || location.distance(e.getLocation()) >= radius) continue;
+                entities.add((LivingEntity) e);
+            }
+        }
+        return entities;
+    }
+
+    private List<Chunk> getNearbyChunks(Location location, double radius) {
+        World world = location.getWorld();
+        if (world == null) return new ArrayList<>();
+
+        Chunk firstChunk = location.getChunk();
+        List<Chunk> chunks = Lists.newArrayList();
+        chunks.add(firstChunk);
+        int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
+        int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
+        int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
+        int maxZ = (int) Math.floor(((location.getZ() + radius) + 2.0D) / 16.0D);
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
+                Chunk chunk = world.getChunkAt(x, z);
+                if (chunk.isLoaded() && !chunks.contains(chunk))
+                    chunks.add(chunk);
+            }
+        }
+        return chunks;
+    }
+
+    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity, Location location) {
+        // Create a list of all entities around the initial entity of the same type.
+        List<LivingEntity> entityList = getNearbyEntities(location, searchRadius)
                 .stream().filter(entity -> entity.getType() == initalEntity.getType() && entity != initalEntity)
-                .map(entity -> (LivingEntity) entity).collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedList::new));
 
         if (stackFlyingDown && Methods.canFly(initalEntity))
             entityList.removeIf(entity -> entity.getLocation().getY() > initalEntity.getLocation().getY());

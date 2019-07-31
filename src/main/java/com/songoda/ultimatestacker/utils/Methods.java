@@ -66,7 +66,7 @@ public class Methods {
     }
 
     public static int getActualItemAmount(Item item) {
-        if (item.hasMetadata("US_AMT")) {
+        if (item.getItemStack().getAmount() > 32 && item.hasMetadata("US_AMT")) {
             return item.getMetadata("US_AMT").get(0).asInt();
         } else {
             return item.getItemStack().getAmount();

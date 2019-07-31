@@ -175,9 +175,6 @@ public class StackingTask extends BukkitRunnable {
                     && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
                     && livingEntity.getLocation().getY() > entity.getLocation().getY()) {
 
-                // If entity has a custom name skip it.
-                if (entity.getCustomName() != null) continue;
-
                 // Create a new stack with the current stacks amount and add one to it.
                 EntityStack newStack = stackManager.addStack(entity, stack.getAmount() + 1);
 
@@ -223,6 +220,7 @@ public class StackingTask extends BukkitRunnable {
             // Make sure we're not naming some poor kids pet.
             if (entity.getCustomName() != null) {
                 processed.add(livingEntity.getUniqueId());
+                newStack.addAmount(-1);
                 return;
             }
             // Fix the entities health.

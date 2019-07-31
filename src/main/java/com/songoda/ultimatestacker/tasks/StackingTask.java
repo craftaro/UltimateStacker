@@ -44,16 +44,13 @@ public class StackingTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        // Gather disabled worlds.
-        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
-
         // Should entities be stacked?
         if (!Setting.STACK_ENTITIES.getBoolean()) return;
 
         // Loop through each world.
         for (World world : Bukkit.getWorlds()) {
             // If world is disabled then continue to the next world.
-            if (disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr))) continue;
+            if (isWorldDisabled(world)) continue;
 
             // Get the loaded entities from the current world and reverse them.
             List<Entity> entities = new ArrayList<>(world.getEntities());
@@ -78,6 +75,11 @@ public class StackingTask extends BukkitRunnable {
             }
         }
         processed.clear();
+    }
+
+    public boolean isWorldDisabled(World world) {
+        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
+        return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
     private boolean isEntityStackable(Entity entity, Location location) {

@@ -12,22 +12,24 @@ import org.bukkit.event.entity.SpawnerSpawnEvent;
 
 public class SpawnerListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public SpawnerListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public SpawnerListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
-        if (!Setting.STACK_ENTITIES.getBoolean() || !instance.spawnersEnabled()) return;
-        SpawnerStackManager spawnerStackManager = instance.getSpawnerStackManager();
+        if (!Setting.STACK_ENTITIES.getBoolean()
+                || !plugin.spawnersEnabled()
+                || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;
+        SpawnerStackManager spawnerStackManager = plugin.getSpawnerStackManager();
         if (!spawnerStackManager.isSpawner(event.getSpawner().getLocation())) return;
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(event.getSpawner().getLocation());
 
-        EntityStack stack = instance.getEntityStackManager().addStack(event.getEntity().getUniqueId(), spawnerStack.calculateSpawnCount());
+        EntityStack stack = plugin.getEntityStackManager().addStack(event.getEntity().getUniqueId(), spawnerStack.calculateSpawnCount());
 
-        instance.getStackingTask().attemptSplit(stack, (LivingEntity)event.getEntity());
+        plugin.getStackingTask().attemptSplit(stack, (LivingEntity) event.getEntity());
     }
 }

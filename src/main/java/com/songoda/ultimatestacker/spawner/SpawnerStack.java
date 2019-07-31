@@ -29,11 +29,13 @@ public class SpawnerStack {
     }
 
     public void setAmount(int amount) {
+        UltimateStacker plugin = UltimateStacker.getInstance();
         this.amount = amount;
 
-        Bukkit.getScheduler().runTaskLater(UltimateStacker.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
-            int count = Setting.STACK_ENTITIES.getBoolean() ? 1 : calculateSpawnCount();
+            int count = Setting.STACK_ENTITIES.getBoolean()
+                    && !plugin.getStackingTask().isWorldDisabled(location.getWorld()) ? 1 : calculateSpawnCount();
             int maxNearby = amount > 6 ? amount + 3 : 6;
             CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
             if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) {

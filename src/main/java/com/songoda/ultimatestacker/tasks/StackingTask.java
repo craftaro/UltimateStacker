@@ -15,10 +15,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
@@ -74,7 +71,9 @@ public class StackingTask extends BukkitRunnable {
 
             }
         }
-        processed.clear();
+        // Clear caches in preparation for the next run.
+        this.processed.clear();
+        plugin.getEntityUtils().clearChunkCache();
     }
 
     public boolean isWorldDisabled(World world) {
@@ -134,7 +133,8 @@ public class StackingTask extends BukkitRunnable {
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
         List<LivingEntity> stackableFriends = plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity, location)
-                .stream().filter(entity -> isEntityStackable(entity, location)).collect(Collectors.toList());
+                .stream().filter(entity -> isEntityStackable(entity, location))
+                .collect(Collectors.toCollection(LinkedList::new));
 
         // Loop through our similar stackable entities.
         for (LivingEntity entity : stackableFriends) {

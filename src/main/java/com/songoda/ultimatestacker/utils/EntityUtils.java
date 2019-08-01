@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.utils;
 
-import com.google.common.collect.Lists;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -10,9 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EntityUtils {
@@ -22,6 +19,53 @@ public class EntityUtils {
     private boolean keepFire = Setting.KEEP_FIRE.getBoolean();
     private boolean keepPotion = Setting.KEEP_POTION.getBoolean();
     private int searchRadius = Setting.SEARCH_RADIUS.getInt();
+
+    private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
+
+    public void clearChunkCache() {
+        this.cachedChunks.clear();
+    }
+
+
+    private Set<CachedChunk> getNearbyChunks(Location location, double radius) {
+        World world = location.getWorld();
+        Set<CachedChunk> chunks = new HashSet<>();
+        if (world == null) return chunks;
+
+        Chunk firstChunk = location.getChunk();
+        chunks.add(new CachedChunk(firstChunk));
+        int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
+        int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
+        int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
+        int maxZ = (int) Math.floor(((location.getZ() + radius) + 2.0D) / 16.0D);
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
+                chunks.add(new CachedChunk(world.getName(), x, z));
+            }
+        }
+        return chunks;
+    }
+
+    private List<LivingEntity> getNearbyEntities(Location location, double radius) {
+        List<LivingEntity> entities = new ArrayList<>();
+        for (CachedChunk chunk : getNearbyChunks(location, radius)) {
+            Entity[] entityArray;
+            if (cachedChunks.containsKey(chunk)) {
+                entityArray = cachedChunks.get(chunk);
+            } else {
+                entityArray = chunk.getChunk().getEntities();
+                cachedChunks.put(chunk, entityArray);
+            }
+            for (Entity e : entityArray) {
+                if (!(e instanceof LivingEntity)
+                        || location.distance(e.getLocation()) >= radius) continue;
+                entities.add((LivingEntity) e);
+            }
+        }
+        return entities;
+    }
 
     public LivingEntity newEntity(LivingEntity toClone) {
         LivingEntity newEntity = (LivingEntity) toClone.getWorld().spawnEntity(toClone.getLocation(), toClone.getType());
@@ -172,40 +216,6 @@ public class EntityUtils {
             newEntity.addPotionEffects(toClone.getActivePotionEffects());
 
         return newEntity;
-    }
-
-    private List<LivingEntity> getNearbyEntities(Location location, double radius) {
-        List<LivingEntity> entities = new ArrayList<>();
-        for (Chunk chunk : getNearbyChunks(location, radius)) {
-            for (Entity e : chunk.getEntities()) {
-                if (!(e instanceof LivingEntity) || location.distance(e.getLocation()) >= radius) continue;
-                entities.add((LivingEntity) e);
-            }
-        }
-        return entities;
-    }
-
-    private List<Chunk> getNearbyChunks(Location location, double radius) {
-        World world = location.getWorld();
-        if (world == null) return new ArrayList<>();
-
-        Chunk firstChunk = location.getChunk();
-        List<Chunk> chunks = Lists.newArrayList();
-        chunks.add(firstChunk);
-        int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
-        int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
-        int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
-        int maxZ = (int) Math.floor(((location.getZ() + radius) + 2.0D) / 16.0D);
-
-        for (int x = minX; x <= maxX; ++x) {
-            for (int z = minZ; z <= maxZ; ++z) {
-                if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
-                Chunk chunk = world.getChunkAt(x, z);
-                if (chunk.isLoaded() && !chunks.contains(chunk))
-                    chunks.add(chunk);
-            }
-        }
-        return chunks;
     }
 
     public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity, Location location) {

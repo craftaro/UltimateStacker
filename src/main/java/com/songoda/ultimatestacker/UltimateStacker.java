@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker;
 
 import com.songoda.ultimatestacker.command.CommandManager;
+import com.songoda.ultimatestacker.database.*;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.hologram.Hologram;
@@ -13,7 +14,6 @@ import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
 import com.songoda.ultimatestacker.storage.StorageRow;
-import com.songoda.ultimatestacker.storage.types.StorageMysql;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.*;
@@ -33,6 +33,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,22 +54,22 @@ public class UltimateStacker extends JavaPlugin {
     private StackingTask stackingTask;
     private Hologram hologram;
 
+    private DatabaseConnector databaseConnector;
+    private DataMigrationManager dataMigrationManager;
+    private DataManager dataManager;
+
     private EntityUtils entityUtils;
 
     private List<StackerHook> stackerHooks = new ArrayList<>();
 
     private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
-    private Storage storage;
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
     }
 
     public void onDisable() {
-        this.saveToFile();
-        this.storage.closeConnection();
-        if (hologram != null)
-            this.hologram.unloadHolograms();
+        this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
 
         ConsoleCommandSender console = Bukkit.getConsoleSender();
         console.sendMessage(Methods.formatText("&a============================="));
@@ -137,31 +138,6 @@ public class UltimateStacker extends JavaPlugin {
         this.entityStackManager = new EntityStackManager();
         this.stackingTask = new StackingTask(this);
 
-        checkStorage();
-
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            if (storage.containsGroup("spawners")) {
-                for (StorageRow row : storage.getRowsByGroup("spawners")) {
-                    try {
-                        Location location = Methods.unserializeLocation(row.getKey());
-
-                        SpawnerStack stack = new SpawnerStack(
-                                location,
-                                row.get("amount").asInt());
-
-                        this.spawnerStackManager.addSpawner(stack);
-                    } catch (Exception e) {
-                        console.sendMessage("Failed to load spawner.");
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-            // Save data initially so that if the person reloads again fast they don't lose all their data.
-            this.saveToFile();
-            if (hologram != null)
-                hologram.loadHolograms();
-        }, 10);
         PluginManager pluginManager = Bukkit.getPluginManager();
         if (isServerVersionAtLeast(ServerVersion.V1_10))
             pluginManager.registerEvents(new BreedListeners(this), this);
@@ -189,10 +165,67 @@ public class UltimateStacker extends JavaPlugin {
             stackerHooks.add(new JobsHook());
         }
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::saveToFile, 6000, 6000);
-
         // Starting Metrics
         new Metrics(this);
+
+        // Legacy Data
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            File folder = getDataFolder();
+            File dataFile = new File(folder, "data.yml");
+
+            if (dataFile.exists()) {
+                Storage storage = new StorageYaml(this);
+                if (storage.containsGroup("spawners")) {
+                    for (StorageRow row : storage.getRowsByGroup("spawners")) {
+                        try {
+                            Location location = Methods.unserializeLocation(row.getKey());
+
+                            SpawnerStack stack = new SpawnerStack(
+                                    location,
+                                    row.get("amount").asInt());
+
+                            getDataManager().createSpawner(stack);
+                        } catch (Exception e) {
+                            console.sendMessage("Failed to load spawner.");
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                dataFile.delete();
+            }
+        }, 10);
+
+        // Database stuff, go!
+        try {
+            if (Setting.MYSQL_ENABLED.getBoolean()) {
+                String hostname = Setting.MYSQL_HOSTNAME.getString();
+                int port = Setting.MYSQL_PORT.getInt();
+                String database = Setting.MYSQL_DATABASE.getString();
+                String username = Setting.MYSQL_USERNAME.getString();
+                String password = Setting.MYSQL_PASSWORD.getString();
+                boolean useSSL = Setting.MYSQL_USE_SSL.getBoolean();
+
+                this.databaseConnector = new MySQLConnector(this, hostname, port, database, username, password, useSSL);
+                this.getLogger().info("Data handler connected using MySQL.");
+            } else {
+                this.databaseConnector = new SQLiteConnector(this);
+                this.getLogger().info("Data handler connected using SQLite.");
+            }
+        } catch (Exception ex) {
+            this.getLogger().severe("Fatal error trying to connect to database. Please make sure all your connection settings are correct and try again. Plugin has been disabled.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
+
+        this.dataManager = new DataManager(this.databaseConnector, this);
+        this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager);
+        this.dataMigrationManager.runMigrations();
+
+        Bukkit.getScheduler().runTaskLater(this, () -> {
+            this.dataManager.getSpawners((spawners) -> {
+                this.spawnerStackManager.addSpawners(spawners);
+                this.hologram.loadHolograms();
+            });
+        }, 20L);
 
         console.sendMessage(Methods.formatText("&a============================="));
     }
@@ -201,21 +234,6 @@ public class UltimateStacker extends JavaPlugin {
         for (StackerHook stackerHook : stackerHooks) {
             stackerHook.applyExperience(player, stack);
         }
-    }
-
-    private void checkStorage() {
-        if (getConfig().getBoolean("Database.Activate Mysql Support")) {
-            this.storage = new StorageMysql(this);
-        } else {
-            this.storage = new StorageYaml(this);
-        }
-    }
-
-    private void saveToFile() {
-        this.storage.closeConnection();
-        checkStorage();
-
-        storage.doSave();
     }
 
     public void reload() {
@@ -300,5 +318,13 @@ public class UltimateStacker extends JavaPlugin {
 
     public EntityUtils getEntityUtils() {
         return entityUtils;
+    }
+
+    public DatabaseConnector getDatabaseConnector() {
+        return databaseConnector;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
     }
 }

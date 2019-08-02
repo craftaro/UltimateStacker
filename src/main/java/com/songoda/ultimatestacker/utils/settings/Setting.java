@@ -174,30 +174,17 @@ public enum Setting {
             "The text displayed above a stacked spawner where {TYPE} refers to",
             "The entities type and {AMT} is the amount currently stacked."),
 
-    DATABASE_SUPPORT("Database.Activate Mysql Support", false,
-            "Should MySQL be used for data storage?"),
-
-    DATABASE_IP("Database.IP", "127.0.0.1",
-            "MySQL IP"),
-
-    DATABASE_PORT("Database.Port", 3306,
-            "MySQL Port"),
-
-    DATABASE_NAME("Database.Database Name", "UltimateStacker",
-            "The database you are inserting data into."),
-
-    DATABASE_PREFIX("Database.Prefix", "US-",
-            "The prefix for tables inserted into the database."),
-
-    DATABASE_USERNAME("Database.Username", "PUT_USERNAME_HERE",
-            "MySQL Username"),
-
-    DATABASE_PASSWORD("Database.Password", "PUT_PASSWORD_HERE",
-            "MySQL Password"),
-
     LANGUGE_MODE("System.Language Mode", "en_US",
             "The enabled language file.",
-            "More language files (if available) can be found in the plugins data folder.");
+            "More language files (if available) can be found in the plugins data folder."),
+
+    MYSQL_ENABLED("MySQL.Enabled", false, "Set to 'true' to use MySQL instead of SQLite for data storage."),
+    MYSQL_HOSTNAME("MySQL.Hostname", "localhost"),
+    MYSQL_PORT("MySQL.Port", 3306),
+    MYSQL_DATABASE("MySQL.Database", "your-database"),
+    MYSQL_USERNAME("MySQL.Username", "user"),
+    MYSQL_PASSWORD("MySQL.Password", "pass"),
+    MYSQL_USE_SSL("MySQL.Use SSL", false);
 
     private String setting;
     private Object option;

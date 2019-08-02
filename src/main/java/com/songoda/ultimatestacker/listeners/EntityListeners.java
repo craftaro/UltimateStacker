@@ -28,22 +28,22 @@ import java.util.List;
 
 public class EntityListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public EntityListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public EntityListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawn(CreatureSpawnEvent event) {
         LivingEntity entity = event.getEntity();
-        entity.setMetadata("US_REASON", new FixedMetadataValue(instance, event.getSpawnReason().name()));
+        entity.setMetadata("US_REASON", new FixedMetadataValue(plugin, event.getSpawnReason().name()));
 
         if (event.getSpawnReason().name().equals("DROWNED")
                 || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.LIGHTNING) {
             String name = event.getEntity().getCustomName();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(instance,
-                    () -> instance.getEntityStackManager().addSerializedStack(entity, name), 1L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+                    () -> plugin.getEntityStackManager().addSerializedStack(entity, name), 1L);
         }
 
     }
@@ -60,7 +60,7 @@ public class EntityListeners implements Listener {
 
         Entity entity = entities.get(0);
 
-        EntityStackManager stackManager = instance.getEntityStackManager();
+        EntityStackManager stackManager = plugin.getEntityStackManager();
 
         if (!stackManager.isStacked(entity)) return;
 
@@ -74,19 +74,19 @@ public class EntityListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBlow(EntityExplodeEvent event) {
-        if (!instance.spawnersEnabled()) return;
+        if (!plugin.spawnersEnabled()) return;
 
         List<Block> destroyed = event.blockList();
         Iterator<Block> it = destroyed.iterator();
         List<Block> toCancel = new ArrayList<>();
         while (it.hasNext()) {
             Block block = it.next();
-            if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")))
+            if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")))
                 continue;
 
             Location spawnLocation = block.getLocation();
 
-            SpawnerStack spawner = instance.getSpawnerStackManager().getSpawner(block);
+            SpawnerStack spawner = plugin.getSpawnerStackManager().getSpawner(block);
 
             if (Setting.SPAWNERS_DONT_EXPLODE.getBoolean())
                 toCancel.add(block);
@@ -104,9 +104,10 @@ public class EntityListeners implements Listener {
                     ItemStack item = Methods.getSpawnerItem(blockType, spawner.getAmount());
                     spawnLocation.getWorld().dropItemNaturally(spawnLocation.clone().add(.5, 0, .5), item);
 
-                    instance.getSpawnerStackManager().removeSpawner(spawnLocation);
-                    if (instance.getHologram() != null)
-                        instance.getHologram().remove(spawner);
+                    SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(spawnLocation);
+                    plugin.getDataManager().deleteSpawner(spawnerStack);
+                    if (plugin.getHologram() != null)
+                        plugin.getHologram().remove(spawner);
                 }
             }
 

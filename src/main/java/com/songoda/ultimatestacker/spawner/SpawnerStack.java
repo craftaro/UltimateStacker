@@ -6,6 +6,7 @@ import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 
 import java.util.Random;
@@ -20,10 +21,6 @@ public class SpawnerStack {
         setAmount(amount);
     }
 
-    public Location getLocation() {
-        return location.clone();
-    }
-
     public int getAmount() {
         return amount;
     }
@@ -31,6 +28,7 @@ public class SpawnerStack {
     public void setAmount(int amount) {
         UltimateStacker plugin = UltimateStacker.getInstance();
         this.amount = amount;
+        plugin.getDataManager().updateSpawner(this);
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
@@ -46,6 +44,26 @@ public class SpawnerStack {
             }
             creatureSpawner.update();
         }, 1L);
+    }
+
+    public Location getLocation() {
+        return location.clone();
+    }
+
+    public int getX() {
+        return location.getBlockX();
+    }
+
+    public int getY() {
+        return location.getBlockY();
+    }
+
+    public int getZ() {
+        return location.getBlockZ();
+    }
+
+    public World getWorld() {
+        return location.getWorld();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.spawner;
 
+import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
@@ -10,10 +11,14 @@ import java.util.Map;
 
 public class SpawnerStackManager {
 
-    private static final Map<Location, SpawnerStack> registeredSpawners = new HashMap<>();
+    private  final Map<Location, SpawnerStack> registeredSpawners = new HashMap<>();
+
+    public void addSpawners(Map<Location, SpawnerStack> spawners) {
+        this.registeredSpawners.putAll(spawners);
+    }
 
     public SpawnerStack addSpawner(SpawnerStack spawnerStack) {
-        registeredSpawners.put(roundLocation(spawnerStack.getLocation()), spawnerStack);
+        this.registeredSpawners.put(roundLocation(spawnerStack.getLocation()), spawnerStack);
         return spawnerStack;
     }
 
@@ -22,10 +27,12 @@ public class SpawnerStackManager {
     }
 
     public SpawnerStack getSpawner(Location location) {
-        if (!registeredSpawners.containsKey(roundLocation(location))) {
-            return addSpawner(new SpawnerStack(roundLocation(location), 1));
+        if (!this.registeredSpawners.containsKey(roundLocation(location))) {
+            SpawnerStack spawnerStack = addSpawner(new SpawnerStack(roundLocation(location), 1));
+            UltimateStacker.getInstance().getDataManager().createSpawner(spawnerStack);
+            return spawnerStack;
         }
-        return registeredSpawners.get(location);
+        return this.registeredSpawners.get(location);
     }
 
     public SpawnerStack getSpawner(Block block) {
@@ -33,11 +40,11 @@ public class SpawnerStackManager {
     }
 
     public boolean isSpawner(Location location) {
-        return registeredSpawners.get(location) != null;
+        return this.registeredSpawners.get(location) != null;
     }
 
     public Collection<SpawnerStack> getStacks() {
-        return Collections.unmodifiableCollection(registeredSpawners.values());
+        return Collections.unmodifiableCollection(this.registeredSpawners.values());
     }
 
     private Location roundLocation(Location location) {

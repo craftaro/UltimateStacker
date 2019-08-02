@@ -29,10 +29,10 @@ import java.util.List;
 
 public class BlockListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public BlockListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public BlockListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -42,14 +42,14 @@ public class BlockListeners implements Listener {
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
         if (block == null
-                || block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
-                || item.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                || block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                || item.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
-        if (!instance.spawnersEnabled()) return;
+        if (!plugin.spawnersEnabled()) return;
 
         BlockStateMeta bsm = (BlockStateMeta) item.getItemMeta();
         CreatureSpawner cs = (CreatureSpawner) bsm.getBlockState();
@@ -57,7 +57,7 @@ public class BlockListeners implements Listener {
         EntityType itemType = cs.getSpawnedType();
 
         int itemAmount = getSpawnerAmount(item);
-        int specific = instance.getSpawnerFile().getConfig().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
+        int specific = plugin.getSpawnerFile().getConfig().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
         int maxStackSize = specific == -1 ? Setting.MAX_STACK_SPAWNERS.getInt() : specific;
 
         cs = (CreatureSpawner) block.getState();
@@ -67,7 +67,7 @@ public class BlockListeners implements Listener {
         event.setCancelled(true);
 
         if (itemType == blockType) {
-            SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(block);
+            SpawnerStack stack = plugin.getSpawnerStackManager().getSpawner(block);
             if (player.isSneaking()) return;
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (stack.getAmount() == maxStackSize) return;
@@ -93,15 +93,15 @@ public class BlockListeners implements Listener {
                 }
 
                 stack.setAmount(stack.getAmount() + itemAmount);
-                if (instance.getHologram() != null) {
-                    instance.getHologram().update(stack);
+                if (plugin.getHologram() != null) {
+                    plugin.getHologram().update(stack);
                 }
                 Methods.takeItem(player, itemAmount);
             }
         }
 
-        if (instance.getHologram() != null)
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 10L);
+        if (plugin.getHologram() != null)
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.getHologram().processChange(block), 10L);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -110,8 +110,8 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
 
         if (!event.isCancelled()) {
-            if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
-                    || !instance.spawnersEnabled())
+            if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                    || !plugin.spawnersEnabled())
                 return;
 
             CreatureSpawner cs = (CreatureSpawner) block.getState();
@@ -125,25 +125,26 @@ public class BlockListeners implements Listener {
                 return;
             }
 
-            SpawnerStack stack = instance.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), amount));
+            SpawnerStack stack = plugin.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), amount));
+            plugin.getDataManager().createSpawner(stack);
 
             cs.setSpawnedType(cs2.getSpawnedType());
             cs.update();
 
-            if (instance.getHologram() != null)
-                instance.getHologram().add(stack);
+            if (plugin.getHologram() != null)
+                plugin.getHologram().add(stack);
         }
 
-        if (instance.getHologram() != null)
-            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(instance, () -> instance.getHologram().processChange(block), 1L);
+        if (plugin.getHologram() != null)
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.getHologram().processChange(block), 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() != (instance.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
+        if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))) return;
 
-        if (!instance.spawnersEnabled()) return;
+        if (!plugin.spawnersEnabled()) return;
         event.setExpToDrop(0);
 
         CreatureSpawner cs = (CreatureSpawner) block.getState();
@@ -153,7 +154,7 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInHand();
 
-        SpawnerStack stack = instance.getSpawnerStackManager().getSpawner(block);
+        SpawnerStack stack = plugin.getSpawnerStackManager().getSpawner(block);
 
         event.setCancelled(true);
 
@@ -174,13 +175,14 @@ public class BlockListeners implements Listener {
 
         if (remove) {
             event.setCancelled(false);
-            if (instance.getHologram() != null)
-                instance.getHologram().remove(stack);
-            instance.getSpawnerStackManager().removeSpawner(block.getLocation());
+            if (plugin.getHologram() != null)
+                plugin.getHologram().remove(stack);
+            SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(block.getLocation());
+            plugin.getDataManager().deleteSpawner(spawnerStack);
         } else {
             stack.setAmount(stack.getAmount() - 1);
-            if (instance.getHologram() != null)
-                instance.getHologram().update(stack);
+            if (plugin.getHologram() != null)
+                plugin.getHologram().update(stack);
         }
 
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))

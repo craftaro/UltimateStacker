@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.entity;
 
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.DropUtils;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
@@ -17,10 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EntityStack {
 
@@ -111,6 +109,7 @@ public class EntityStack {
 
     private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp) {
         Location killedLocation = killed.getLocation();
+        List<Drop> preStackedDrops = new ArrayList<>();
         for (int i = 1; i < amount; i++) {
             if (i == 1) {
                 drops.removeIf(it -> it.getItemStack() != null
@@ -120,11 +119,11 @@ public class EntityStack {
                 }
             }
             if (custom)
-                drops = UltimateStacker.getInstance().getLootablesManager().getDrops(killed);
-            for (Drop drop : drops) {
-                Methods.processDrop(killed, drop);
-            }
+                drops = plugin.getLootablesManager().getDrops(killed);
+            preStackedDrops.addAll(drops);
         }
+        if (!preStackedDrops.isEmpty())
+            DropUtils.processStackedDrop(killed, preStackedDrops);
 
         killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
 

@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.utils.DropUtils;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class DeathListeners implements Listener {
 
             for (Drop drop : drops) {
                 if (drop == null) continue;
-                Methods.processDrop(event.getEntity(), drop);
+                DropUtils.processDrop(event.getEntity(), drop);
             }
             custom = true;
         } else {

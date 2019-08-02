@@ -14,10 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Methods {
@@ -106,21 +103,6 @@ public class Methods {
                 return true;
             default:
                 return false;
-        }
-    }
-
-    public static void processDrop(LivingEntity entity, Drop drop) {
-        if (drop == null) return;
-
-        if (drop.getItemStack() != null)
-            entity.getWorld().dropItemNaturally(entity.getLocation(), drop.getItemStack());
-        if (drop.getCommand() != null) {
-            String command = drop.getCommand();
-            if (entity.getKiller() != null) {
-                command = command.replace("%player%", entity.getKiller().getName());
-            }
-            if (!command.contains("%player%"))
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }
     }
 

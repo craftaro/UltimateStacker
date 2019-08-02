@@ -51,14 +51,11 @@ public class DataManager {
 
     public void updateSpawner(SpawnerStack spawnerStack) {
         this.async(() -> this.databaseConnector.connect(connection -> {
-            String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE world = ? AND x = ? AND y = ? and z = ?";
+            String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE id = ?";
             try (PreparedStatement statement = connection.prepareStatement(updateSpawner)) {
                 statement.setInt(1, spawnerStack.getAmount());
 
-                statement.setString(2, spawnerStack.getWorld().getName());
-                statement.setInt(3, spawnerStack.getX());
-                statement.setInt(4, spawnerStack.getY());
-                statement.setInt(5, spawnerStack.getZ());
+                statement.setInt(2, spawnerStack.getId());
                 statement.executeUpdate();
             }
         }));
@@ -67,7 +64,8 @@ public class DataManager {
 
     public void createSpawner(SpawnerStack spawnerStack) {
         this.async(() -> this.databaseConnector.connect(connection -> {
-            String createSpawner = "INSERT INTO " + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ? , ?)";
+
+            String createSpawner = "INSERT INTO " + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSpawner)) {
                 statement.setInt(1, spawnerStack.getAmount());
 
@@ -77,17 +75,16 @@ public class DataManager {
                 statement.setInt(5, spawnerStack.getZ());
                 statement.executeUpdate();
             }
+            int spawnerId = this.lastInsertedId(connection);
+            this.sync(() -> spawnerStack.setId(spawnerId));
         }));
     }
 
     public void deleteSpawner(SpawnerStack spawnerStack) {
         this.async(() -> this.databaseConnector.connect(connection -> {
-            String deleteSpawner = "DELETE FROM " + this.getTablePrefix() + "spawners WHERE world = ? AND x = ? AND y = ? and z = ?";
+            String deleteSpawner = "DELETE FROM " + this.getTablePrefix() + "spawners WHERE id = ?";
             try (PreparedStatement statement = connection.prepareStatement(deleteSpawner)) {
-                statement.setString(1, spawnerStack.getWorld().getName());
-                statement.setInt(2, spawnerStack.getX());
-                statement.setInt(3, spawnerStack.getY());
-                statement.setInt(4, spawnerStack.getZ());
+                statement.setInt(1, spawnerStack.getId());
                 statement.executeUpdate();
             }
         }));
@@ -103,6 +100,8 @@ public class DataManager {
                 ResultSet result = statement.executeQuery(selectSpawners);
                 while (result.next()) {
 
+                    int spawnerId = result.getInt("id");
+
                     int amount = result.getInt("amount");
 
                     String world = result.getString("world");
@@ -112,6 +111,7 @@ public class DataManager {
                     Location location = new Location(Bukkit.getWorld(world), x, y, z);
 
                     SpawnerStack spawnerStack = new SpawnerStack(location, amount);
+                    spawnerStack.setId(spawnerId);
                     spawners.put(location, spawnerStack);
                 }
             }

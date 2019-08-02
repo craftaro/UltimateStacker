@@ -21,6 +21,7 @@ public class _1_InitialMigration extends DataMigration {
         // Create plugin settings table
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE " + tablePrefix + "spawners (" +
+                    "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "amount INTEGER NOT NULL," +
                     "world TEXT NOT NULL, " +
                     "x DOUBLE NOT NULL, " +

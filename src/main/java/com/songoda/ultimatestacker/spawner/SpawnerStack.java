@@ -13,6 +13,8 @@ import java.util.Random;
 
 public class SpawnerStack {
 
+    private int id;
+
     private final Location location;
     private int amount = 1;
 
@@ -46,6 +48,23 @@ public class SpawnerStack {
         }, 1L);
     }
 
+    public int calculateSpawnCount() {
+        Random random = new Random();
+        int count = 0;
+        for (int i = 0; i < getAmount(); i ++) {
+            count += random.nextInt(3 - 1 + 1) + 1;
+        }
+        return count;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public Location getLocation() {
         return location.clone();
     }
@@ -77,14 +96,5 @@ public class SpawnerStack {
                 + "Z:" + location.getBlockZ()
                 + "}"
                 + "}";
-    }
-
-    public int calculateSpawnCount() {
-        Random random = new Random();
-        int count = 0;
-        for (int i = 0; i < getAmount(); i ++) {
-            count += random.nextInt(3 - 1 + 1) + 1;
-        }
-        return count;
     }
 }

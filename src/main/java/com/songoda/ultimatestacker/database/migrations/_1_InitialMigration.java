@@ -18,7 +18,7 @@ public class _1_InitialMigration extends DataMigration {
     public void migrate(Connection connection, String tablePrefix) throws SQLException {
         String autoIncrement = UltimateStacker.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
-        // Create plugin settings table
+        // Create spawners table
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE " + tablePrefix + "spawners (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +

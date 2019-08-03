@@ -30,15 +30,11 @@ public class DataManager {
 
     public void bulkUpdateSpawners(Collection<SpawnerStack> spawnerStacks) {
         this.databaseConnector.connect(connection -> {
-            String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE world = ? AND x = ? AND y = ? and z = ?";
+            String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE id = ?";
             try (PreparedStatement statement = connection.prepareStatement(updateSpawner)) {
                 for (SpawnerStack spawnerStack : spawnerStacks) {
                     statement.setInt(1, spawnerStack.getAmount());
-
-                    statement.setString(5, spawnerStack.getWorld().getName());
-                    statement.setInt(6, spawnerStack.getX());
-                    statement.setInt(7, spawnerStack.getY());
-                    statement.setInt(8, spawnerStack.getZ());
+                    statement.setInt(2, spawnerStack.getId());
                     statement.executeUpdate();
                     statement.addBatch();
                 }
@@ -54,7 +50,6 @@ public class DataManager {
             String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE id = ?";
             try (PreparedStatement statement = connection.prepareStatement(updateSpawner)) {
                 statement.setInt(1, spawnerStack.getAmount());
-
                 statement.setInt(2, spawnerStack.getId());
                 statement.executeUpdate();
             }

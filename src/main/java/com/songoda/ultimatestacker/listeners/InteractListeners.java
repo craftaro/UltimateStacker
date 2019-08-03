@@ -76,7 +76,7 @@ public class InteractListeners implements Listener {
             case "SHEEP":
                 return type == Material.WHEAT;
             case "PIG":
-                return type == Material.CARROT || (plugin.isServerVersionAtLeast(ServerVersion.V1_8) && type == Material.BEETROOT) || type == Material.POTATO;
+                return type == Material.CARROT || (plugin.isServerVersionAtLeast(ServerVersion.V1_9) && type == Material.BEETROOT) || type == Material.POTATO;
             case "CHICKEN":
                 return type == (is13 ? Material.WHEAT_SEEDS : Material.valueOf("SEEDS"))
                         || type == Material.MELON_SEEDS

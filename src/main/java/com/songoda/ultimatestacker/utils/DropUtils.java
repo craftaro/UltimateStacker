@@ -16,14 +16,8 @@ public class DropUtils {
 
         if (drop.getItemStack() != null)
             dropItems(entity, Collections.singletonList(drop.getItemStack()));
-        if (drop.getCommand() != null) {
-            String command = drop.getCommand();
-            if (entity.getKiller() != null) {
-                command = command.replace("%player%", entity.getKiller().getName());
-            }
-            if (!command.contains("%player%"))
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        }
+        if (drop.getCommand() != null)
+            runCommands(entity, Collections.singletonList(drop.getCommand()));
     }
 
     public static void processStackedDrop(LivingEntity entity, List<Drop> drops) {
@@ -46,9 +40,8 @@ public class DropUtils {
                 if (!success)
                     items.add(droppedItem);
             }
-            if (drop.getCommand() != null) {
+            if (drop.getCommand() != null)
                 commands.add(drop.getCommand());
-            }
         }
         if (!items.isEmpty())
             dropItems(entity, items);
@@ -63,9 +56,8 @@ public class DropUtils {
 
     private static void runCommands(LivingEntity entity, List<String> commands) {
         for (String command : commands) {
-            if (entity.getKiller() != null) {
+            if (entity.getKiller() != null)
                 command = command.replace("%player%", entity.getKiller().getName());
-            }
             if (!command.contains("%player%"))
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
         }

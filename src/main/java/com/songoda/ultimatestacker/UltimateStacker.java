@@ -223,7 +223,8 @@ public class UltimateStacker extends JavaPlugin {
         Bukkit.getScheduler().runTaskLater(this, () -> {
             this.dataManager.getSpawners((spawners) -> {
                 this.spawnerStackManager.addSpawners(spawners);
-                this.hologram.loadHolograms();
+                if (hologram != null)
+                    this.hologram.loadHolograms();
             });
         }, 20L);
 

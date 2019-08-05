@@ -59,7 +59,7 @@ public class EntityUtils {
                 cachedChunks.put(chunk, entityArray);
             }
             for (Entity e : entityArray) {
-                if (e.getWorld() == location.getWorld()
+                if (e.getWorld() != location.getWorld()
                         || !(e instanceof LivingEntity)
                         || location.distanceSquared(e.getLocation()) >= radius * radius) continue;
                 entities.add((LivingEntity) e);

@@ -14,7 +14,7 @@ public enum Category {
 
     SPAWNERS("Stacked Spawner Settings."),
 
-    DATABASE("Settings regarding the Database."),
+    MySQL("Settings regarding the Database."),
 
     SYSTEM("System related settings.");
 

@@ -18,6 +18,7 @@ public class EntityUtils {
     private boolean stackFlyingDown = Setting.ONLY_STACK_FLYING_DOWN.getBoolean();
     private boolean keepFire = Setting.KEEP_FIRE.getBoolean();
     private boolean keepPotion = Setting.KEEP_POTION.getBoolean();
+    private boolean stackWholeChunk = Setting.STACK_WHOLE_CHUNK.getBoolean();
     private int searchRadius = Setting.SEARCH_RADIUS.getInt();
 
     private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
@@ -34,6 +35,9 @@ public class EntityUtils {
 
         Chunk firstChunk = location.getChunk();
         chunks.add(new CachedChunk(firstChunk));
+
+        if (stackWholeChunk) return chunks;
+
         int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
         int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
         int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
@@ -61,7 +65,7 @@ public class EntityUtils {
             for (Entity e : entityArray) {
                 if (e.getWorld() != location.getWorld()
                         || !(e instanceof LivingEntity)
-                        || location.distanceSquared(e.getLocation()) >= radius * radius) continue;
+                        || (!stackWholeChunk && location.distanceSquared(e.getLocation()) >= radius * radius)) continue;
                 entities.add((LivingEntity) e);
             }
         }

@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 public class EntityUtils {
 
+    UltimateStacker plugin = UltimateStacker.getInstance();
+
     private List<String> checks = Setting.STACK_CHECKS.getStringList();
     private boolean stackFlyingDown = Setting.ONLY_STACK_FLYING_DOWN.getBoolean();
     private boolean keepFire = Setting.KEEP_FIRE.getBoolean();
@@ -28,7 +30,7 @@ public class EntityUtils {
     }
 
 
-    private Set<CachedChunk> getNearbyChunks(Location location, double radius) {
+    private Set<CachedChunk> getNearbyChunks(Location location, double radius, boolean singleChunk) {
         World world = location.getWorld();
         Set<CachedChunk> chunks = new HashSet<>();
         if (world == null) return chunks;
@@ -36,7 +38,7 @@ public class EntityUtils {
         Chunk firstChunk = location.getChunk();
         chunks.add(new CachedChunk(firstChunk));
 
-        if (stackWholeChunk) return chunks;
+        if (singleChunk) return chunks;
 
         int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
         int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
@@ -52,9 +54,9 @@ public class EntityUtils {
         return chunks;
     }
 
-    private List<LivingEntity> getNearbyEntities(Location location, double radius) {
+    private List<LivingEntity> getNearbyEntities(Location location, double radius, boolean singleChunk) {
         List<LivingEntity> entities = new ArrayList<>();
-        for (CachedChunk chunk : getNearbyChunks(location, radius)) {
+        for (CachedChunk chunk : getNearbyChunks(location, radius, singleChunk)) {
             Entity[] entityArray;
             if (cachedChunks.containsKey(chunk)) {
                 entityArray = cachedChunks.get(chunk);
@@ -65,11 +67,20 @@ public class EntityUtils {
             for (Entity e : entityArray) {
                 if (e.getWorld() != location.getWorld()
                         || !(e instanceof LivingEntity)
-                        || (!stackWholeChunk && location.distanceSquared(e.getLocation()) >= radius * radius)) continue;
+                        || (!singleChunk && location.distanceSquared(e.getLocation()) >= radius * radius)) continue;
                 entities.add((LivingEntity) e);
             }
         }
         return entities;
+    }
+
+    public int getSimilarStacksInChunk(LivingEntity entity) {
+        int count = 0;
+        for (LivingEntity e : getNearbyEntities(entity.getLocation(), -1, true)) {
+            if (plugin.getEntityStackManager().isStacked(e))
+                count++;
+        }
+        return count;
     }
 
     public LivingEntity newEntity(LivingEntity toClone) {
@@ -85,7 +96,7 @@ public class EntityUtils {
                     break;
                 }
                 case NERFED: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) break;
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_9)) break;
                     if (!toClone.hasAI()) newEntity.setAI(false);
                 }
                 case IS_TAMED: {
@@ -98,7 +109,7 @@ public class EntityUtils {
                 }
                 case SKELETON_TYPE: {
                     if (!(toClone instanceof Skeleton)
-                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)) break;
+                            || plugin.isServerVersionAtLeast(ServerVersion.V1_12)) break;
                     ((Skeleton) newEntity).setSkeletonType(((Skeleton) toClone).getSkeletonType());
                     break;
                 }
@@ -113,13 +124,13 @@ public class EntityUtils {
                     break;
                 }
                 case LLAMA_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_11)
                             || !(toClone instanceof Llama)) break;
                     ((Llama) newEntity).setColor(((Llama) toClone).getColor());
                     break;
                 }
                 case LLAMA_STRENGTH: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_11)
                             || !(toClone instanceof Llama)) break;
                     ((Llama) newEntity).setStrength(((Llama) toClone).getStrength());
                     break;
@@ -135,7 +146,7 @@ public class EntityUtils {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_11)
                             || !(toClone instanceof AbstractHorse)) break;
                     ((AbstractHorse) newEntity).setJumpStrength(((AbstractHorse) toClone).getJumpStrength());
                     break;
@@ -162,11 +173,11 @@ public class EntityUtils {
                 }
                 case OCELOT_TYPE: {
                     if (!(toClone instanceof Ocelot)
-                            || UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_14)) break;
+                            || plugin.isServerVersionAtLeast(ServerVersion.V1_14)) break;
                     ((Ocelot) newEntity).setCatType(((Ocelot) toClone).getCatType());
                 }
                 case CAT_TYPE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_14)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_14)
                             || !(toClone instanceof Cat)) break;
                     ((Cat) newEntity).setCatType(((Cat) toClone).getCatType());
                     break;
@@ -177,37 +188,37 @@ public class EntityUtils {
                     break;
                 }
                 case PARROT_TYPE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_12)
                             || !(toClone instanceof Parrot)) break;
                     ((Parrot) newEntity).setVariant(((Parrot) toClone).getVariant());
                     break;
                 }
                 case PUFFERFISH_STATE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(toClone instanceof PufferFish)) break;
                     ((PufferFish) newEntity).setPuffState(((PufferFish) toClone).getPuffState());
                     break;
                 }
                 case TROPICALFISH_PATTERN: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(toClone instanceof TropicalFish)) break;
                     ((TropicalFish) newEntity).setPattern(((TropicalFish) toClone).getPattern());
                     break;
                 }
                 case TROPICALFISH_PATTERN_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(toClone instanceof TropicalFish)) break;
                     ((TropicalFish) newEntity).setPatternColor(((TropicalFish) toClone).getPatternColor());
                     break;
                 }
                 case TROPICALFISH_BODY_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(toClone instanceof TropicalFish)) break;
                     ((TropicalFish) newEntity).setBodyColor(((TropicalFish) toClone).getBodyColor());
                     break;
                 }
                 case PHANTOM_SIZE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(toClone instanceof Phantom)) break;
                     ((Phantom) newEntity).setSize(((Phantom) toClone).getSize());
                     break;
@@ -225,7 +236,7 @@ public class EntityUtils {
 
     public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity, Location location) {
         // Create a list of all entities around the initial entity of the same type.
-        List<LivingEntity> entityList = getNearbyEntities(location, searchRadius)
+        List<LivingEntity> entityList = getNearbyEntities(location, searchRadius, stackWholeChunk)
                 .stream().filter(entity -> entity.getType() == initalEntity.getType() && entity != initalEntity)
                 .collect(Collectors.toCollection(LinkedList::new));
 
@@ -250,7 +261,7 @@ public class EntityUtils {
                     break;
                 }
                 case NERFED: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) break;
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_9)) break;
                     entityList.removeIf(entity -> entity.hasAI() != initalEntity.hasAI());
                 }
                 case IS_TAMED: {
@@ -294,14 +305,14 @@ public class EntityUtils {
                     break;
                 }
                 case LLAMA_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_11)
                             || !(initalEntity instanceof Llama)) break;
                     Llama llama = ((Llama) initalEntity);
                     entityList.removeIf(entity -> ((Llama) entity).getColor() != llama.getColor());
                     break;
                 }
                 case LLAMA_STRENGTH: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_11)
                             || !(initalEntity instanceof Llama)) break;
                     Llama llama = ((Llama) initalEntity);
                     entityList.removeIf(entity -> ((Llama) entity).getStrength() != llama.getStrength());
@@ -320,7 +331,7 @@ public class EntityUtils {
                     break;
                 }
                 case HORSE_CARRYING_CHEST: {
-                    if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)) {
+                    if (plugin.isServerVersionAtLeast(ServerVersion.V1_11)) {
                         if (!(initalEntity instanceof ChestedHorse)) break;
                         entityList.removeIf(entity -> ((ChestedHorse) entity).isCarryingChest());
                     } else {
@@ -335,7 +346,7 @@ public class EntityUtils {
                     break;
                 }
                 case HORSE_HAS_SADDLE: {
-                    if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             && initalEntity instanceof AbstractHorse) {
                         entityList.removeIf(entity -> ((AbstractHorse) entity).getInventory().getSaddle() != null);
                         break;
@@ -345,7 +356,7 @@ public class EntityUtils {
                     break;
                 }
                 case HORSE_JUMP: {
-                    if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_11)) {
+                    if (plugin.isServerVersionAtLeast(ServerVersion.V1_11)) {
                         if (!(initalEntity instanceof AbstractHorse)) break;
                         AbstractHorse horse = ((AbstractHorse) initalEntity);
                         entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
@@ -387,7 +398,7 @@ public class EntityUtils {
                     entityList.removeIf(entity -> ((Ocelot) entity).getCatType() != ocelot.getCatType());
                 }
                 case CAT_TYPE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_14)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_14)
                             || !(initalEntity instanceof Cat)) break;
                     Cat cat = (Cat) initalEntity;
                     entityList.removeIf(entity -> ((Cat) entity).getCatType() != cat.getCatType());
@@ -400,42 +411,42 @@ public class EntityUtils {
                     break;
                 }
                 case PARROT_TYPE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_12)
                             || !(initalEntity instanceof Parrot)) break;
                     Parrot parrot = (Parrot) initalEntity;
                     entityList.removeIf(entity -> ((Parrot) entity).getVariant() != parrot.getVariant());
                     break;
                 }
                 case PUFFERFISH_STATE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(initalEntity instanceof PufferFish)) break;
                     PufferFish pufferFish = (PufferFish) initalEntity;
                     entityList.removeIf(entity -> ((PufferFish) entity).getPuffState() != pufferFish.getPuffState());
                     break;
                 }
                 case TROPICALFISH_PATTERN: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(initalEntity instanceof TropicalFish)) break;
                     TropicalFish tropicalFish = (TropicalFish) initalEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getPattern() != tropicalFish.getPattern());
                     break;
                 }
                 case TROPICALFISH_PATTERN_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(initalEntity instanceof TropicalFish)) break;
                     TropicalFish tropicalFish = (TropicalFish) initalEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getPatternColor() != tropicalFish.getPatternColor());
                     break;
                 }
                 case TROPICALFISH_BODY_COLOR: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(initalEntity instanceof TropicalFish)) break;
                     TropicalFish tropicalFish = (TropicalFish) initalEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getBodyColor() != tropicalFish.getBodyColor());
                     break;
                 }
                 case PHANTOM_SIZE: {
-                    if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13)
+                    if (!plugin.isServerVersionAtLeast(ServerVersion.V1_13)
                             || !(initalEntity instanceof Phantom)) break;
                     Phantom phantom = (Phantom) initalEntity;
                     entityList.removeIf(entity -> ((Phantom) entity).getSize() != phantom.getSize());
@@ -452,7 +463,7 @@ public class EntityUtils {
     }
 
     public void splitFromStack(LivingEntity entity) {
-        UltimateStacker instance = UltimateStacker.getInstance();
+        UltimateStacker instance = plugin;
         EntityStack stack = instance.getEntityStackManager().getStack(entity);
 
         if (stack.getAmount() <= 1) return;

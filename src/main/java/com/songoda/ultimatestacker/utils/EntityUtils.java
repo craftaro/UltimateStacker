@@ -77,7 +77,7 @@ public class EntityUtils {
     public int getSimilarStacksInChunk(LivingEntity entity) {
         int count = 0;
         for (LivingEntity e : getNearbyEntities(entity.getLocation(), -1, true)) {
-            if (plugin.getEntityStackManager().isStacked(e))
+            if (entity.getType() == e.getType() && plugin.getEntityStackManager().isStacked(e))
                 count++;
         }
         return count;

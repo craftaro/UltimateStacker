@@ -31,7 +31,7 @@ public class StackingTask extends BukkitRunnable {
     private int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
     private int minEntityStackSize = Setting.MIN_STACK_ENTITIES.getInt();
 
-    private int minPerTypeStacksPerChunk = Setting.MIN_PER_TYPE_STACKS_PER_CHUNK.getInt();
+    private int maxPerTypeStacksPerChunk = Setting.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
@@ -119,8 +119,8 @@ public class StackingTask extends BukkitRunnable {
         // Is this entity stacked?
         boolean isStack = stack != null;
 
-        if (isStack && minPerTypeStacksPerChunk != -1) {
-            if (plugin.getEntityUtils().getSimilarStacksInChunk(livingEntity) > minPerTypeStacksPerChunk) {
+        if (isStack && maxPerTypeStacksPerChunk != -1) {
+            if (plugin.getEntityUtils().getSimilarStacksInChunk(livingEntity) > maxPerTypeStacksPerChunk) {
                 stack.setAmount(1);
                 livingEntity.remove();
                 this.processed.add(livingEntity.getUniqueId());

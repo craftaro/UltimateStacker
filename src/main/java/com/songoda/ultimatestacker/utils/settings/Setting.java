@@ -34,8 +34,8 @@ public enum Setting {
             "The minimum amount required before a stack can be formed.",
             "Do not set this to lower than 2."),
 
-    MIN_PER_TYPE_STACKS_PER_CHUNK("Entities.Min Per Type Stacks Per Chunk", -1,
-            "The minimum amount of each entity type stack allowed in a chunk."),
+    MAX_PER_TYPE_STACKS_PER_CHUNK("Entities.Max Per Type Stacks Per Chunk", -1,
+            "The maximum amount of each entity type stack allowed in a chunk."),
 
     STACK_WHOLE_CHUNK("Entities.Stack Whole Chunk", false,
             "Should all qualifying entities in each chunk be stacked?",

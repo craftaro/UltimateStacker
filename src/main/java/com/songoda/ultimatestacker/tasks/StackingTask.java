@@ -9,10 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -107,6 +104,7 @@ public class StackingTask extends BukkitRunnable {
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
         return !Setting.ONLY_STACK_ON_SURFACE.getBoolean()
                 || Methods.canFly(livingEntity)
+                || entity.getType() == EntityType.SHULKER
                 || (livingEntity.isOnGround() || location.getBlock().isLiquid());
 
     }

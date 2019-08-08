@@ -38,7 +38,7 @@ public class StackingTask extends BukkitRunnable {
         this.stackManager = plugin.getEntityStackManager();
 
         // Start stacking task.
-        runTaskTimerAsynchronously(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
+        runTaskTimer(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override

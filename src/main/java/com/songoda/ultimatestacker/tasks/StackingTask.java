@@ -38,7 +38,7 @@ public class StackingTask extends BukkitRunnable {
         this.stackManager = plugin.getEntityStackManager();
 
         // Start stacking task.
-        runTaskTimer(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
+        runTaskTimerAsynchronously(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override
@@ -118,15 +118,6 @@ public class StackingTask extends BukkitRunnable {
 
         // Is this entity stacked?
         boolean isStack = stack != null;
-
-        if (isStack && maxPerTypeStacksPerChunk != -1) {
-            if (plugin.getEntityUtils().getSimilarStacksInChunk(livingEntity) > maxPerTypeStacksPerChunk) {
-                stack.setAmount(1);
-                livingEntity.remove();
-                this.processed.add(livingEntity.getUniqueId());
-                return;
-            }
-        }
 
         // The amount that is stackable.
         int amountToStack = isStack ? stack.getAmount() : 1;
@@ -217,6 +208,14 @@ public class StackingTask extends BukkitRunnable {
 
         // Remove all stacked entities from our stackable friends.
         stackableFriends.removeIf(stackManager::isStacked);
+
+        // If the stack cap is met then delete this entity.
+        if (maxPerTypeStacksPerChunk != -1
+                && (plugin.getEntityUtils().getSimilarStacksInChunk(livingEntity) + 1) > maxPerTypeStacksPerChunk) {
+            livingEntity.remove();
+            this.processed.add(livingEntity.getUniqueId());
+            return;
+        }
 
         // If there are none or not enough stackable friends left to create a new entity,
         // the stack sizes overlap then skip this entity.

@@ -52,7 +52,8 @@ public enum Setting {
 
     KILL_WHOLE_STACK_ON_DEATH("Entities.Kill Whole Stack On Death", false,
             "Should killing a stack of entities kill the whole stack or",
-            "just one out of the stack?"),
+            "just one out of the stack? If you want only certain entities to be",
+            "effected by this you can configure it in the entities.yml"),
 
     CLEAR_LAG("Entities.Clear Lag", false,
             "When enabled, the plugin will hook into ClearLag and extend the",

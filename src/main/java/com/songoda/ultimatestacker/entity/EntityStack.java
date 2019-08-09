@@ -168,7 +168,10 @@ public class EntityStack {
         killed.setCustomNameVisible(true);
         killed.setCustomName(Methods.formatText("&7"));
 
-        if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && getAmount() != 1) {
+        boolean killWholeStack = Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
+                || plugin.getMobFile().getConfig().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
+
+        if (killWholeStack && getAmount() != 1) {
             handleWholeStackDeath(killed, drops, custom, droppedExp);
         } else if (getAmount() != 1) {
             List<String> reasons = Setting.INSTANT_KILL.getStringList();

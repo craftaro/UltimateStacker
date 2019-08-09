@@ -94,8 +94,8 @@ public class DataManager {
             try (Statement statement = connection.createStatement()) {
                 ResultSet result = statement.executeQuery(selectSpawners);
                 while (result.next()) {
-
                     int spawnerId = result.getInt("id");
+                    System.out.println(result.getRow());
 
                     int amount = result.getInt("amount");
 
@@ -109,6 +109,9 @@ public class DataManager {
                     spawnerStack.setId(spawnerId);
                     spawners.put(location, spawnerStack);
                 }
+                System.out.println("loaded " + spawners.size());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             this.sync(() -> callback.accept(spawners));

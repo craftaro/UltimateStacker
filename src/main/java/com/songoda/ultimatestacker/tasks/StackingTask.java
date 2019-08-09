@@ -104,7 +104,7 @@ public class StackingTask extends BukkitRunnable {
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
         return !Setting.ONLY_STACK_ON_SURFACE.getBoolean()
                 || Methods.canFly(livingEntity)
-                || entity.getType() == EntityType.SHULKER
+                || entity.getType().name().equals("SHULKER")
                 || (livingEntity.isOnGround() || location.getBlock().isLiquid());
 
     }

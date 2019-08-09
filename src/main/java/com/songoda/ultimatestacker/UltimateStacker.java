@@ -104,6 +104,7 @@ public class UltimateStacker extends JavaPlugin {
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Enabled", true);
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
                 mobFile.getConfig().addDefault("Mobs." + value.name() + ".Max Stack Size", -1);
+                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Kill Whole Stack", false);
             }
         }
         mobFile.getConfig().options().copyDefaults(true);

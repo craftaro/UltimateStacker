@@ -8,9 +8,11 @@ import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -51,7 +53,10 @@ public class SpawnerListeners implements Listener {
                 || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
             return;
 
-        if (event.getItem() == null) return;
+        if (event.getItem() == null) {
+            event.setCancelled(true);
+            return;
+        }
 
         Material itemType = event.getItem().getType();
         Block block = event.getClickedBlock();
@@ -59,16 +64,15 @@ public class SpawnerListeners implements Listener {
 
         if (block == null || itemType == Material.AIR) return;
 
-        Material blockType = block.getType();
-
         if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
                 || !itemType.toString().contains(plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? "SPAWN_EGG" : "MONSTER_EGG"))
             return;
 
         event.setCancelled(true);
 
-        if (!Setting.EGGS_CONVERT_SPAWNERS.getBoolean()) {
-            event.setCancelled(true);
+        if (!Setting.EGGS_CONVERT_SPAWNERS.getBoolean()
+                || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName())) {
+            return;
         }
 
         SpawnerStackManager manager = plugin.getSpawnerStackManager();
@@ -78,8 +82,8 @@ public class SpawnerListeners implements Listener {
 
         int stackSize = spawner.getAmount();
         int amt = player.getInventory().getItemInHand().getAmount();
-        EntityType entityType;
 
+        EntityType entityType;
         if (plugin.isServerVersionAtLeast(ServerVersion.V1_13))
             entityType = EntityType.valueOf(itemType.name().replace("_SPAWN_EGG", "").replace("MOOSHROOM", "MUSHROOM_COW"));
         else if (plugin.isServerVersionAtLeast(ServerVersion.V1_12)) {
@@ -103,14 +107,17 @@ public class SpawnerListeners implements Listener {
             return;
         }
 
-        if (blockType.equals(itemType)) {
+
+        CreatureSpawner creatureSpawner =  (CreatureSpawner) block.getState();
+
+        if (entityType == creatureSpawner.getSpawnedType()) {
             plugin.getLocale().getMessage("event.egg.sametype")
                     .processPlaceholder("type", entityType.name()).sendPrefixedMessage(player);
             return;
         }
 
-        spawner.getCreatureSpawner().setSpawnedType(entityType);
-        spawner.getCreatureSpawner().update();
+        creatureSpawner.setSpawnedType(entityType);
+        creatureSpawner.update();
 
         if (plugin.getHologram() != null)
             plugin.getHologram().update(spawner);

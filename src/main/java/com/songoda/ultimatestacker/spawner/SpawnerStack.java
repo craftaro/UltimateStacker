@@ -23,10 +23,6 @@ public class SpawnerStack {
         setAmount(amount);
     }
 
-    public CreatureSpawner getCreatureSpawner() {
-        return (CreatureSpawner) location.getBlock().getState();
-    }
-
     public int getAmount() {
         return amount;
     }

@@ -163,6 +163,10 @@ public enum Setting {
     SPAWNER_HOLOGRAMS("Spawners.Holograms Enabled", true,
             "Should holograms be displayed above stacked spawners?"),
 
+    EGGS_CONVERT_SPAWNERS("Spawners.Eggs Convert Spawners", true,
+            "Should eggs convert spawners? If enabled you will",
+            "still need to give perms for it to work."),
+
     MAX_STACK_SPAWNERS("Spawners.Max Stack Size", 5,
             "What should the max a spawner can stack to be?"),
 

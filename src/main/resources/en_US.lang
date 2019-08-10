@@ -9,3 +9,5 @@ command.give.success = "&7You have been given a &6%type%&7."
 #Event Messages
 
 event.general.nopermission = "&cYou do not have permission to do that."
+event.egg.needmore = "&7You need &6%amount% &7Monster Eggs to convert this spawner."
+event.egg.sametype = "&7This already spawns &6%type%s&7."

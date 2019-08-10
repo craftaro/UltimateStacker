@@ -23,6 +23,10 @@ public class SpawnerStack {
         setAmount(amount);
     }
 
+    public CreatureSpawner getCreatureSpawner() {
+        return (CreatureSpawner) location.getBlock().getState();
+    }
+
     public int getAmount() {
         return amount;
     }
@@ -51,7 +55,7 @@ public class SpawnerStack {
     public int calculateSpawnCount() {
         Random random = new Random();
         int count = 0;
-        for (int i = 0; i < getAmount(); i ++) {
+        for (int i = 0; i < getAmount(); i++) {
             count += random.nextInt(3 - 1 + 1) + 1;
         }
         return count;

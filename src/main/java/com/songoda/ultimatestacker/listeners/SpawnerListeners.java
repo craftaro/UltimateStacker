@@ -53,10 +53,8 @@ public class SpawnerListeners implements Listener {
                 || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))
             return;
 
-        if (event.getItem() == null) {
-            event.setCancelled(true);
+        if (event.getItem() == null)
             return;
-        }
 
         Material itemType = event.getItem().getType();
         Block block = event.getClickedBlock();

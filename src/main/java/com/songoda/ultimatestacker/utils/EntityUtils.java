@@ -109,7 +109,7 @@ public class EntityUtils {
                 }
                 case SKELETON_TYPE: {
                     if (!(toClone instanceof Skeleton)
-                            || plugin.isServerVersionAtLeast(ServerVersion.V1_12)) break;
+                            || plugin.isServerVersionAtLeast(ServerVersion.V1_11)) break;
                     ((Skeleton) newEntity).setSkeletonType(((Skeleton) toClone).getSkeletonType());
                     break;
                 }

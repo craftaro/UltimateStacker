@@ -68,7 +68,7 @@ public class Methods {
                 || !plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
                 || !Setting.ITEM_HOLOGRAMS.getBoolean()
                 || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
-        
+
         item.setCustomName(name);
         item.setCustomNameVisible(true);
     }

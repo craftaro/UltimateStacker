@@ -65,6 +65,7 @@ public class Methods {
             item.removeMetadata("US_AMT", plugin);
             itemStack.setAmount(newAmount);
         }
+        item.setItemStack(itemStack);
 
         if ((blacklisted && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
                 || !plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")

@@ -56,7 +56,9 @@ public class Methods {
         String name = Methods.convertToInvisibleString("IS") +
                 compileItemName(itemStack, newAmount);
 
-        if (newAmount > 32) {
+        boolean blacklisted = isMaterialBlacklisted(itemStack.getType());
+
+        if (newAmount > 32 && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(plugin, newAmount));
             itemStack.setAmount(32);
         } else {
@@ -64,7 +66,7 @@ public class Methods {
             itemStack.setAmount(newAmount);
         }
 
-        if ((isMaterialBlacklisted(itemStack.getType()) && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
+        if ((blacklisted && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
                 || !plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
                 || !Setting.ITEM_HOLOGRAMS.getBoolean()
                 || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;

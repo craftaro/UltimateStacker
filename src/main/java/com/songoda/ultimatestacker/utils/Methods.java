@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.utils;
 
-import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.*;
@@ -14,7 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Methods {
@@ -41,6 +43,13 @@ public class Methods {
             Methods.updateItemAmount(item, itemStack, amount);
     }
 
+    public static boolean isMaterialBlacklisted(Material type) {
+        List<String> whitelist = Setting.ITEM_WHITELIST.getStringList();
+        List<String> blacklist = Setting.ITEM_BLACKLIST.getStringList();
+        return !whitelist.isEmpty() && !whitelist.contains(type.name())
+                || !blacklist.isEmpty() && blacklist.contains(type.name());
+    }
+
     public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
         UltimateStacker plugin = UltimateStacker.getInstance();
         Material material = itemStack.getType();
@@ -55,12 +64,13 @@ public class Methods {
             itemStack.setAmount(newAmount);
         }
 
-        if (plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
-                && Setting.ITEM_HOLOGRAMS.getBoolean()) {
-            if (newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
-            item.setCustomName(name);
-            item.setCustomNameVisible(true);
-        }
+        if ((isMaterialBlacklisted(itemStack.getType()) && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
+                || !plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
+                || !Setting.ITEM_HOLOGRAMS.getBoolean()
+                || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
+        
+        item.setCustomName(name);
+        item.setCustomNameVisible(true);
     }
 
     public static int getActualItemAmount(Item item) {

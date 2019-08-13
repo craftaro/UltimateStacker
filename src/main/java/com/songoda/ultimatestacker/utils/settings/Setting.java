@@ -142,6 +142,9 @@ public enum Setting {
             "Should holograms be displayed above items when there is only a single",
             "item in the stack?"),
 
+    ITEM_HOLOGRAM_BLACKLIST("Items.Show Holograms For Blacklisted Items", true,
+            "Should items that are blacklisted display holograms?"),
+
     MAX_STACK_ITEMS("Items.Max Stack Size", 512,
             "The max stack size for items.",
             "Currently this can only be set to a max of 120."),
@@ -154,10 +157,17 @@ public enum Setting {
             "This is added only because it looks smoother in game. This is only visual and",
             "doesn't actually effect the item."),
 
+    ITEM_BLACKLIST("Items.Blacklist", Collections.singletonList("EGG"),
+            "Items included in this list will stack to normal amounts.",
+            "Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html",
+            "Leave this empty by using \"blacklist: []\" if you do not wish to disable",
+            "stacking for any items."),
+
     ITEM_WHITELIST("Items.Whitelist", new ArrayList(),
             "Items included in this whitelist will be stacked.",
             "Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html",
-            "Leave this empty by using \"whitelist: []\" if you want everything to be stacked."),
+            "Leave this empty by using \"whitelist: []\" if you want everything to be stacked.",
+            "Items not in this list will act as if they are blacklisted."),
 
     SHOW_STACK_SIZE_SINGLE("Items.Show Stack Size For Single", false,
             "When enabled stack sizes for a stack with a single item will",

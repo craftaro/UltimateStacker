@@ -4,7 +4,9 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.Split;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,6 +153,11 @@ public enum Setting {
             "Should color codes in dropped item names be removed?",
             "This is added only because it looks smoother in game. This is only visual and",
             "doesn't actually effect the item."),
+
+    ITEM_WHITELIST("Items.Whitelist", new ArrayList(),
+            "Items included in this whitelist will be stacked.",
+            "Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html",
+            "Leave this empty by using \"whitelist: []\" if you want everything to be stacked."),
 
     SHOW_STACK_SIZE_SINGLE("Items.Show Stack Size For Single", false,
             "When enabled stack sizes for a stack with a single item will",

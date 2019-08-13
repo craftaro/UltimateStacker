@@ -21,11 +21,12 @@ public class Methods {
 
     public static void updateInventory(Item item, Inventory inventory) {
         int amount = Methods.getActualItemAmount(item);
+        ItemStack itemStack = item.getItemStack();
 
         while (amount > 0) {
             int subtract = Math.min(amount, 64);
             amount -= subtract;
-            ItemStack newItem = item.getItemStack().clone();
+            ItemStack newItem = itemStack.clone();
             newItem.setAmount(subtract);
             Map<Integer, ItemStack> result = inventory.addItem(newItem);
             if (result.get(0) != null) {
@@ -37,21 +38,21 @@ public class Methods {
         if (amount <= 0)
             item.remove();
         else
-            Methods.updateItemAmount(item, amount);
+            Methods.updateItemAmount(item, itemStack, amount);
     }
 
-    public static void updateItemAmount(Item item, int newAmount) {
+    public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
         UltimateStacker plugin = UltimateStacker.getInstance();
-        Material material = item.getItemStack().getType();
+        Material material = itemStack.getType();
         String name = Methods.convertToInvisibleString("IS") +
-                compileItemName(item.getItemStack(), newAmount);
+                compileItemName(itemStack, newAmount);
 
         if (newAmount > 32) {
             item.setMetadata("US_AMT", new FixedMetadataValue(plugin, newAmount));
-            item.getItemStack().setAmount(32);
+            itemStack.setAmount(32);
         } else {
             item.removeMetadata("US_AMT", plugin);
-            item.getItemStack().setAmount(newAmount);
+            itemStack.setAmount(newAmount);
         }
 
         if (plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")

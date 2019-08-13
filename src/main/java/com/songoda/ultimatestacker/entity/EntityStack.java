@@ -131,7 +131,7 @@ public class EntityStack {
         UltimateStacker.getInstance().addExp(killed.getKiller(), this);
     }
 
-    private void handleSingleStackDeath(LivingEntity killed) {
+    private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
         LivingEntity newEntity = plugin.getEntityUtils().newEntity(killed);
 
@@ -151,6 +151,8 @@ public class EntityStack {
             if (killed.hasMetadata(entityMetadataKey))
                 newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
         }
+
+        DropUtils.processStackedDrop(killed, drops);
 
         EntityStack entityStack = stackManager.updateStack(killed, newEntity);
 
@@ -185,7 +187,7 @@ public class EntityStack {
                     return;
                 }
             }
-            handleSingleStackDeath(killed);
+            handleSingleStackDeath(killed, drops);
         }
     }
 

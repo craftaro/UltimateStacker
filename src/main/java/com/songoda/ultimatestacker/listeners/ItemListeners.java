@@ -5,8 +5,6 @@ import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -16,11 +14,9 @@ import org.bukkit.event.entity.ItemMergeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Map;
+import java.util.List;
 
 public class ItemListeners implements Listener {
 
@@ -35,12 +31,18 @@ public class ItemListeners implements Listener {
         int maxItemStackSize = Setting.MAX_STACK_ITEMS.getInt();
         if (!Setting.STACK_ITEMS.getBoolean()) return;
 
+        Item item = event.getTarget();
+        ItemStack itemStack = item.getItemStack();
+
         event.setCancelled(true);
 
-        Item item = event.getTarget();
+        int specific = instance.getItemFile().getConfig().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
+        int max = specific == -1 && new ItemStack(itemStack.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
 
-        int specific = instance.getItemFile().getConfig().getInt("Items." + item.getItemStack().getType().name() + ".Max Stack Size");
-        int max = specific == -1 && new ItemStack(item.getItemStack().getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
+        List<String> whitelist = Setting.ITEM_WHITELIST.getStringList();
+        if (!whitelist.isEmpty() && !whitelist.contains(itemStack.getType().name())) {
+            max = new ItemStack(itemStack.getType()).getMaxStackSize();
+        }
 
         if (max == -1) max = 1;
 
@@ -49,7 +51,7 @@ public class ItemListeners implements Listener {
 
         if (newAmount > max) return;
 
-        Methods.updateItemAmount(item, newAmount);
+        Methods.updateItemAmount(item, itemStack, newAmount);
         event.getEntity().remove();
     }
 
@@ -74,7 +76,7 @@ public class ItemListeners implements Listener {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
 
-        Methods.updateItemAmount(event.getEntity(), event.getEntity().getItemStack().getAmount());
+        Methods.updateItemAmount(event.getEntity(), itemStack, event.getEntity().getItemStack().getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

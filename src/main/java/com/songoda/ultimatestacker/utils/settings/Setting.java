@@ -158,7 +158,7 @@ public enum Setting {
             "doesn't actually effect the item."),
 
     ITEM_BLACKLIST("Items.Blacklist", Collections.singletonList("EGG"),
-            "Items included in this list will stack to normal amounts.",
+            "Items included in this list will stack to default Minecraft amounts.",
             "Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html",
             "Leave this empty by using \"blacklist: []\" if you do not wish to disable",
             "stacking for any items."),

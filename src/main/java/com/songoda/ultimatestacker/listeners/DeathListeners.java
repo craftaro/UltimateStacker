@@ -38,5 +38,7 @@ public class DeathListeners implements Listener {
         if (instance.getEntityStackManager().isStacked(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())
                     .onDeath(event.getEntity(), drops, custom, event.getDroppedExp());
+        else
+            DropUtils.processStackedDrop(event.getEntity(), drops);
     }
 }

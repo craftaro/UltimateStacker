@@ -37,8 +37,9 @@ public class TameListeners implements Listener {
 
         LivingEntity newEntity = plugin.getEntityUtils().newEntity((LivingEntity) tameable);
 
-        plugin.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
+        EntityStack second = plugin.getEntityStackManager().addStack(new EntityStack(newEntity, stack.getAmount() - 1));
         stack.setAmount(1);
+        second.setAmount(stack.getAmount() - 1);
         plugin.getEntityStackManager().removeStack(entity);
         entity.setVelocity(getRandomVector());
     }

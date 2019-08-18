@@ -266,7 +266,11 @@ public class EntityUtils {
                 }
                 case IS_TAMED: {
                     if (!(initalEntity instanceof Tameable)) break;
-                    entityList.removeIf(entity -> ((Tameable) entity).isTamed());
+                    if (((Tameable) initalEntity).isTamed()) {
+                        entityList.removeIf(entity -> !((Tameable) entity).isTamed());
+                    } else {
+                        entityList.removeIf(entity -> ((Tameable) entity).isTamed());
+                    }
                 }
                 case ANIMAL_OWNER: {
                     if (!(initalEntity instanceof Tameable)) break;

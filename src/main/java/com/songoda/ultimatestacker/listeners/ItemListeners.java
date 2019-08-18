@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
+import org.bukkit.block.BlockState;
 
 public class ItemListeners implements Listener {
 
@@ -56,12 +57,12 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
-        if (!Setting.STACK_ITEMS.getBoolean()) return;
-        int amount = Methods.getActualItemAmount(event.getItem());
-        if (amount <= 32) return;
+        if (!Setting.STACK_ITEMS.getBoolean() || !Methods.hasCustomAmount(event.getItem())) return;
         event.setCancelled(true);
 
         Methods.updateInventory(event.getItem(), event.getInventory());
+        if (event.getInventory().getHolder() instanceof BlockState)
+            Methods.updateAdjacentComparators(((BlockState)event.getInventory().getHolder()).getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

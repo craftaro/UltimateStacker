@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.bukkit.World;
 
 public class DataManager {
 
@@ -94,15 +95,19 @@ public class DataManager {
             try (Statement statement = connection.createStatement()) {
                 ResultSet result = statement.executeQuery(selectSpawners);
                 while (result.next()) {
+                    World world = Bukkit.getWorld(result.getString("world"));
+
+                    if(world == null)
+                        continue;
+
                     int spawnerId = result.getInt("id");
 
                     int amount = result.getInt("amount");
 
-                    String world = result.getString("world");
                     int x = result.getInt("x");
                     int y = result.getInt("y");
                     int z = result.getInt("z");
-                    Location location = new Location(Bukkit.getWorld(world), x, y, z);
+                    Location location = new Location(world, x, y, z);
 
                     SpawnerStack spawnerStack = new SpawnerStack(location, amount);
                     spawnerStack.setId(spawnerId);

@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.utils;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import java.lang.reflect.Method;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
@@ -24,9 +25,10 @@ public class Methods {
     public static void updateInventory(Item item, Inventory inventory) {
         int amount = Methods.getActualItemAmount(item);
         ItemStack itemStack = item.getItemStack();
+        final int maxStack = itemStack.getMaxStackSize();
 
         while (amount > 0) {
-            int subtract = Math.min(amount, 64);
+            int subtract = Math.min(amount, maxStack);
             amount -= subtract;
             ItemStack newItem = itemStack.clone();
             newItem.setAmount(subtract);
@@ -41,6 +43,42 @@ public class Methods {
             item.remove();
         else
             Methods.updateItemAmount(item, itemStack, amount);
+    }
+
+    private static Class<?> clazzCraftWorld, clazzCraftBlock, clazzBlockPosition;
+    private static Method getHandle, updateAdjacentComparators, getNMSBlock;
+
+    public static void updateAdjacentComparators(Location location) {
+        try {
+            // Cache reflection.
+            if (clazzCraftWorld == null) {
+                String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+                clazzCraftWorld = Class.forName("org.bukkit.craftbukkit." + ver + ".CraftWorld");
+                clazzCraftBlock = Class.forName("org.bukkit.craftbukkit." + ver + ".block.CraftBlock");
+                clazzBlockPosition = Class.forName("net.minecraft.server." + ver + ".BlockPosition");
+                Class<?> clazzWorld = Class.forName("net.minecraft.server." + ver + ".World");
+                Class<?> clazzBlock = Class.forName("net.minecraft.server." + ver + ".Block");
+
+                getHandle = clazzCraftWorld.getMethod("getHandle");
+                updateAdjacentComparators = clazzWorld.getMethod("updateAdjacentComparators", clazzBlockPosition, clazzBlock);
+                getNMSBlock = clazzCraftBlock.getDeclaredMethod("getNMSBlock");
+                getNMSBlock.setAccessible(true);
+            }
+
+            // invoke and cast objects.
+            Object craftWorld = clazzCraftWorld.cast(location.getWorld());
+            Object world = getHandle.invoke(craftWorld);
+            Object craftBlock = clazzCraftBlock.cast(location.getBlock());
+
+            // Invoke final method.
+            updateAdjacentComparators
+                    .invoke(world, clazzBlockPosition.getConstructor(double.class, double.class, double.class)
+                                    .newInstance(location.getX(), location.getY(), location.getZ()),
+                            getNMSBlock.invoke(craftBlock));
+
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+        }
     }
 
     public static boolean isMaterialBlacklisted(Material type) {
@@ -83,6 +121,13 @@ public class Methods {
         } else {
             return amount;
         }
+    }
+
+    public static boolean hasCustomAmount(Item item) {
+        if (item.hasMetadata("US_AMT")) {
+            return item.getItemStack().getAmount() != item.getMetadata("US_AMT").get(0).asInt();
+        }
+        return false;
     }
 
     public static String compileItemName(ItemStack item, int amount) {

@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 
 import java.util.Random;
+import java.util.logging.Level;
 
 public class SpawnerStack {
 
@@ -52,7 +53,7 @@ public class SpawnerStack {
         Random random = new Random();
         int count = 0;
         for (int i = 0; i < getAmount(); i++) {
-            count += random.nextInt(3 - 1 + 1) + 1;
+            count += random.nextInt(3) + 1;
         }
         return count;
     }

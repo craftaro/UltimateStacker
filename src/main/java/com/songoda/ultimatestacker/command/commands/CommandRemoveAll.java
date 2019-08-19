@@ -13,10 +13,12 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class CommandRemoveAll extends AbstractCommand {
 
     public CommandRemoveAll(AbstractCommand parent) {
-        super("removeall", parent, false);
+        super(parent, false, "removeall");
     }
 
     @Override
@@ -60,6 +62,11 @@ public class CommandRemoveAll extends AbstractCommand {
             instance.getLocale().newMessage("&7Removed &6" + amountRemoved + " stacked " + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
         }
         return ReturnType.SUCCESS;
+    }
+
+    @Override
+    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+        return null;
     }
 
     @Override

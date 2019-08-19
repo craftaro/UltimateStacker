@@ -8,10 +8,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class CommandConvert extends AbstractCommand {
 
     public CommandConvert(AbstractCommand parent) {
-        super("convert", parent, true);
+        super(parent, true, "convert");
     }
 
     @Override
@@ -24,6 +26,11 @@ public class CommandConvert extends AbstractCommand {
                     "in order to convert data."));
         }
         return ReturnType.SUCCESS;
+    }
+
+    @Override
+    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+        return null;
     }
 
     @Override

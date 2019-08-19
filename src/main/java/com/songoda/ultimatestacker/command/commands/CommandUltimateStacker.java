@@ -5,10 +5,12 @@ import com.songoda.ultimatestacker.command.AbstractCommand;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public class CommandUltimateStacker extends AbstractCommand {
 
     public CommandUltimateStacker() {
-        super("UltimateStacker", null, false);
+        super(null, false, "UltimateStacker");
     }
 
     @Override
@@ -25,6 +27,11 @@ public class CommandUltimateStacker extends AbstractCommand {
         sender.sendMessage("");
 
         return ReturnType.SUCCESS;
+    }
+
+    @Override
+    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+        return null;
     }
 
     @Override

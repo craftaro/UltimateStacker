@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CommandRemoveAll extends AbstractCommand {
@@ -24,9 +25,11 @@ public class CommandRemoveAll extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
-        if (args.length != 2) return ReturnType.SYNTAX_ERROR;
+        if (args.length < 2) return ReturnType.SYNTAX_ERROR;
 
         String type = args[1];
+
+        boolean all = args.length == 3;
 
         if (!type.equalsIgnoreCase("entities")
                 && !type.equalsIgnoreCase("items")) {
@@ -36,21 +39,18 @@ public class CommandRemoveAll extends AbstractCommand {
         int amountRemoved = 0;
         EntityStackManager stackManager = instance.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
-
             for (Entity entityO : world.getEntities()) {
                 if (entityO instanceof Player) continue;
 
-                    if (entityO.getType() != EntityType.DROPPED_ITEM && stackManager.isStacked(entityO) && type.equalsIgnoreCase("entities")) {
-                        entityO.remove();
-                        amountRemoved ++;
-                    } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
-                        ItemStack item = ((Item) entityO).getItemStack();
-                        if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(Methods.convertToInvisibleString("IS")) || item.hasItemMeta() && item.getItemMeta().hasDisplayName())
+                if (entityO.getType() != EntityType.DROPPED_ITEM && (stackManager.isStacked(entityO) || all) && type.equalsIgnoreCase("entities")) {
+                    entityO.remove();
+                    amountRemoved++;
+                } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
+                    if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(Methods.convertToInvisibleString("IS")) || all)
                         continue;
-                        entityO.remove();
-                        amountRemoved ++;
-                    }
-
+                    entityO.remove();
+                    amountRemoved++;
+                }
             }
         }
 
@@ -58,16 +58,20 @@ public class CommandRemoveAll extends AbstractCommand {
         if (type.equalsIgnoreCase("items") && amountRemoved == 1) type = "Item";
 
         if (amountRemoved == 0) {
-            instance.getLocale().newMessage("&7No stacked " + type + " exist that could be removed.").sendPrefixedMessage(sender);
+            instance.getLocale().newMessage("&7No" + (all ? " " : " stacked ") + type + " exist that could be removed.").sendPrefixedMessage(sender);
         } else {
-            instance.getLocale().newMessage("&7Removed &6" + amountRemoved + " stacked " + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
+            instance.getLocale().newMessage("&7Removed &6" + amountRemoved + (all ? " " : " stacked ") + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
         }
         return ReturnType.SUCCESS;
     }
 
     @Override
     protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
-        return Arrays.asList("entities", "items");
+        if (args.length == 2)
+            return Arrays.asList("entities", "items");
+        else if (args.length == 3)
+            return Collections.singletonList("all");
+        return null;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class CommandRemoveAll extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us removeall <entities/items>";
+        return "/us removeall <entities/items> [all]";
     }
 
     @Override

@@ -13,6 +13,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandRemoveAll extends AbstractCommand {
@@ -66,7 +67,7 @@ public class CommandRemoveAll extends AbstractCommand {
 
     @Override
     protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
-        return null;
+        return Arrays.asList("entities", "items");
     }
 
     @Override

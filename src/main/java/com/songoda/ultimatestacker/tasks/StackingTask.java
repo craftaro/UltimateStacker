@@ -90,12 +90,18 @@ public class StackingTask extends BukkitRunnable {
                 // Make sure the entity is not in love.
                 || entity.hasMetadata("inLove")
                 // Or in breeding cooldown.
-                || entity.hasMetadata("breedCooldown")
+                || entity.hasMetadata("breedCooldown"))
+            return false;
 
-                // If only stack from spawners is enabled make sure the entity spawned from a spawner.
-                || Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()
-                && !(entity.hasMetadata("US_REASON")
-                && entity.getMetadata("US_REASON").get(0).asString().equals("SPAWNER")))
+        // Allow spawn if stackreasons are set and match, or if from a spawner
+        final String spawnReason = entity.hasMetadata("US_REASON") ? entity.getMetadata("US_REASON").get(0).asString() : null;
+        List<String> stackReasons;
+        if (Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()) {
+            // If only stack from spawners is enabled, make sure the entity spawned from a spawner.
+            if (!"SPAWNER".equals(spawnReason))
+                return false;
+        } else if (!(stackReasons = Setting.STACK_REASONS.getStringList()).isEmpty() && !stackReasons.contains(spawnReason))
+            // Only stack if on the list of events to stack
             return false;
 
         // Cast our entity to living entity.

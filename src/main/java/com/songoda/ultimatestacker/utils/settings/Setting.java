@@ -113,6 +113,17 @@ public enum Setting {
             "if the entity originated from a spawner or not is wiped on",
             "server restart."),
 
+    STACK_REASONS("Entities.Stack Reasons", Arrays.asList(),
+            "This will limit mob stacking to mobs who spawned via the listed reasons.",
+            "This list is ignored if Only Stack From Spawners = true.",
+            "The following reasons can be added to the list:",
+            "NATURAL, JOCKEY, CHUNK_GEN, SPAWNER, EGG, SPAWNER_EGG, LIGHTNING, BUILD_SNOWMAN, ",
+            "BUILD_IRONGOLEM, BUILD_WITHER, VILLAGE_DEFENSE, VILLAGE_INVASION, BREEDING,",
+            "SLIME_SPLIT, REINFORCEMENTS, NETHER_PORTAL, DISPENSE_EGG, INFECTION,",
+            "CURED, OCELOT_BABY, SILVERFISH_BLOCK, MOUNT, TRAP, ENDER_PEARL, ",
+            "SHOULDER_ENTITY, DROWNED, SHEARED, EXPLOSION"
+    ),
+
     CARRY_OVER_METADATA_ON_DEATH("Entities.Carry Over Metadata On Death", true,
             "With this enabled any metadata assigned from supported plugins such",
             "as EpicSpawners and mcMMO will be preserved when the entity is killed."),

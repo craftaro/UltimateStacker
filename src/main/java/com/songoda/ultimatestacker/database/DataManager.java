@@ -36,7 +36,6 @@ public class DataManager {
                 for (SpawnerStack spawnerStack : spawnerStacks) {
                     statement.setInt(1, spawnerStack.getAmount());
                     statement.setInt(2, spawnerStack.getId());
-                    statement.executeUpdate();
                     statement.addBatch();
                 }
 

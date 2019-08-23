@@ -88,13 +88,24 @@ public class Methods {
                 || !blacklist.isEmpty() && blacklist.contains(type.name());
     }
 
+    public static boolean isMaterialBlacklisted(Material type, byte data) {
+        List<String> whitelist = Setting.ITEM_WHITELIST.getStringList();
+        List<String> blacklist = Setting.ITEM_BLACKLIST.getStringList();
+
+        String combined = type.toString() + ":" + data;
+
+        return !whitelist.isEmpty() && !whitelist.contains(combined)
+                || !blacklist.isEmpty() && blacklist.contains(combined);
+    }
+
     public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
         UltimateStacker plugin = UltimateStacker.getInstance();
         Material material = itemStack.getType();
         String name = Methods.convertToInvisibleString("IS") +
                 compileItemName(itemStack, newAmount);
 
-        boolean blacklisted = isMaterialBlacklisted(itemStack.getType());
+        boolean blacklisted = UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
+                isMaterialBlacklisted(itemStack.getType()) : isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData());
 
         if (newAmount > 32 && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(plugin, newAmount));

@@ -6,6 +6,7 @@ import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -41,7 +42,10 @@ public class ItemListeners implements Listener {
         int specific = instance.getItemFile().getConfig().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
         int max = specific == -1 && new ItemStack(itemStack.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
 
-        if (Methods.isMaterialBlacklisted(itemStack.getType()))
+        if (instance.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType()))
+            max = new ItemStack(itemStack.getType()).getMaxStackSize();
+
+        if (!instance.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData()))
             max = new ItemStack(itemStack.getType()).getMaxStackSize();
 
         if (max == -1) max = 1;

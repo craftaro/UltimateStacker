@@ -7,10 +7,8 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Sheep;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -68,10 +66,22 @@ public class LootablesManager {
             };
         }
 
+        EntityType killer = null;
+        if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
+            Entity killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
+            killer = killerEntity.getType();
+            if (killerEntity instanceof Projectile) {
+               Projectile projectile = (Projectile) killerEntity;
+               if (projectile.getShooter() instanceof Entity) {
+                   killer = ((Entity) projectile.getShooter()).getType();
+               }
+            }
+        }
+
         return lootManager.runLoot(modify,
                 entity.getFireTicks() != -1,
                 entity.getKiller() != null ? entity.getKiller().getItemInHand() : null,
-                entity.getKiller() == null ? null : entity.getKiller().getType(),
+                killer,
                 loot,
                 rerollChance,
                 looting);

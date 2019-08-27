@@ -98,6 +98,11 @@ public class Methods {
                 || !blacklist.isEmpty() && blacklist.contains(combined);
     }
 
+    // This function shouldn't change! This is the API that many plugins hook into!
+    public static void updateItemAmount(Item item, int newAmount) {
+        updateItemAmount(item, item.getItemStack(), newAmount);
+    }
+
     public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
         UltimateStacker plugin = UltimateStacker.getInstance();
         Material material = itemStack.getType();

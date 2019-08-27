@@ -100,6 +100,7 @@ public class Methods {
 
     // This function shouldn't change! This is the API that many plugins hook into!
     public static void updateItemAmount(Item item, int newAmount) {
+        item.getItemStack().setAmount(Math.min(32, newAmount));
         updateItemAmount(item, item.getItemStack(), newAmount);
     }
 

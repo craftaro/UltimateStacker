@@ -49,8 +49,13 @@ public enum Setting {
     HOLOGRAMS_ON_LOOK_ENTITY("Entities.Only Show Holograms On Look", false,
             "Only show nametags above an entities head when looking directly at them."),
 
-    CUSTOM_DROPS("Entities.Custom Drops", true,
+    CUSTOM_DROPS("Entities.Custom Drops.Enabled", true,
             "Should custom drops be enabled?"),
+
+    REROLL("Entities.Custom Drops.Reroll", true,
+            "Increases chance of uncommon drops by making a second attempt to",
+            "drop if the original attempt failed (Requires the looting enchantment).",
+            "This is a default Minecraft mechanic."),
 
     KILL_WHOLE_STACK_ON_DEATH("Entities.Kill Whole Stack On Death", false,
             "Should killing a stack of entities kill the whole stack or",

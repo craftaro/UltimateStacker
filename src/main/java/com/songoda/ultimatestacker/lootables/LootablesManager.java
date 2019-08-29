@@ -5,6 +5,7 @@ import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.ServerVersion;
+import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -39,7 +40,7 @@ public class LootablesManager {
                 ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
                 : 0;
 
-        int rerollChance = looting / (looting + 1);
+        int rerollChance = Setting.REROLL.getBoolean() ? 100 * looting / (looting + 1) : 0;
 
         for (Loot loot : lootable.getRegisteredLoot())
             toDrop.addAll(runLoot(entity, loot, rerollChance, looting));
@@ -52,9 +53,7 @@ public class LootablesManager {
         if (entity.getType() == EntityType.SHEEP) {
             modify = (Loot loot2) -> {
                 Material material = loot2.getMaterial();
-                if (material == (instance.isServerVersionAtLeast(com.songoda.lootables.utils.ServerVersion.V1_13)
-                        ? Material.WHITE_WOOL : Material.valueOf("WOOL"))
-                        && ((Sheep) entity).getColor() != null) {
+                if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
                     if (((Sheep) entity).isSheared()) return null;
                     if (instance.isServerVersionAtLeast(com.songoda.lootables.utils.ServerVersion.V1_13))
                         loot2.setMaterial(Material.valueOf(((Sheep) entity).getColor() + "_WOOL"));
@@ -71,10 +70,10 @@ public class LootablesManager {
             Entity killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
             killer = killerEntity.getType();
             if (killerEntity instanceof Projectile) {
-               Projectile projectile = (Projectile) killerEntity;
-               if (projectile.getShooter() instanceof Entity) {
-                   killer = ((Entity) projectile.getShooter()).getType();
-               }
+                Projectile projectile = (Projectile) killerEntity;
+                if (projectile.getShooter() instanceof Entity) {
+                    killer = ((Entity) projectile.getShooter()).getType();
+                }
             }
         }
 
@@ -198,6 +197,10 @@ public class LootablesManager {
                     new LootBuilder()
                             .setMaterial(Material.GOLD_INGOT)
                             .setChance(5)
+                            .addOnlyDropFors(EntityType.PLAYER).build(),
+                    new LootBuilder()
+                            .setMaterial(Material.TRIDENT)
+                            .setChance(1)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
 

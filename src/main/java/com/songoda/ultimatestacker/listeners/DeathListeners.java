@@ -38,7 +38,6 @@ public class DeathListeners implements Listener {
             for (ItemStack item : event.getDrops())
                 drops.add(new Drop(item));
         }
-        System.out.println(event.getDrops());
         for (ItemStack item : new ArrayList<>(event.getDrops())) {
             if (!shouldDrop(event.getEntity(), item.getType()))
                 event.getDrops().remove(item);

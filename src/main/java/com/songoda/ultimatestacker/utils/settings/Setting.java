@@ -148,6 +148,9 @@ public enum Setting {
             "Y axis. This is important for grinders so that flying entities don't continuously",
             "stack upwards to a higher up entity."),
 
+    REALISTIC_DAMAGE("Entities.Use Realistic Weapon Damage", true,
+            "Should weapons tale damage based on the amount of entites in the stack?"),
+
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),
 

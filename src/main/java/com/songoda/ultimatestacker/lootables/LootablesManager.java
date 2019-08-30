@@ -197,10 +197,6 @@ public class LootablesManager {
                     new LootBuilder()
                             .setMaterial(Material.GOLD_INGOT)
                             .setChance(5)
-                            .addOnlyDropFors(EntityType.PLAYER).build(),
-                    new LootBuilder()
-                            .setMaterial(Material.TRIDENT)
-                            .setChance(1)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
 

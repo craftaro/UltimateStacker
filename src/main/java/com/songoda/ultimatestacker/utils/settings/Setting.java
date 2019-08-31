@@ -149,7 +149,7 @@ public enum Setting {
             "stack upwards to a higher up entity."),
 
     REALISTIC_DAMAGE("Entities.Use Realistic Weapon Damage", true,
-            "Should weapons tale damage based on the amount of entites in the stack?"),
+            "Should weapons take damage based on the amount of entites in the stack?"),
 
     STACK_ITEMS("Items.Enabled", true,
             "Should items be stacked?"),

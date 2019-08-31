@@ -40,7 +40,7 @@ public class LootablesManager {
                 ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
                 : 0;
 
-        int rerollChance = Setting.REROLL.getBoolean() ? 100 * looting / (looting + 1) : 0;
+        int rerollChance = Setting.REROLL.getBoolean() ? looting / (looting + 1) : 0;
 
         for (Loot loot : lootable.getRegisteredLoot())
             toDrop.addAll(runLoot(entity, loot, rerollChance, looting));

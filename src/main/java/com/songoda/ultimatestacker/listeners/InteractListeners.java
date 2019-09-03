@@ -5,7 +5,7 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.Split;
-import com.songoda.ultimatestacker.utils.settings.Setting;
+import com.songoda.ultimatestacker.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Ageable;

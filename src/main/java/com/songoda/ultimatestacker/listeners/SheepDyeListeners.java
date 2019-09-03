@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.entity.Split;
-import com.songoda.ultimatestacker.utils.settings.Setting;
+import com.songoda.ultimatestacker.settings.Setting;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

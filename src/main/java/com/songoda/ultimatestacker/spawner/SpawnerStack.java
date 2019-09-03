@@ -2,8 +2,8 @@ package com.songoda.ultimatestacker.spawner;
 
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.settings.Setting;
 import com.songoda.ultimatestacker.utils.Reflection;
-import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.LegacyMaterials;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.utils.settings.Setting;
+import com.songoda.ultimatestacker.settings.Setting;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

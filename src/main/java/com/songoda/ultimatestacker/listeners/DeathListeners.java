@@ -1,11 +1,12 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.ServerProject;
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.settings.Setting;
 import com.songoda.ultimatestacker.utils.DropUtils;
-import com.songoda.ultimatestacker.utils.ServerVersion;
-import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ChestedHorse;
@@ -62,14 +63,14 @@ public class DeathListeners implements Listener {
         if (entity.getEquipment() != null && entity.getEquipment().getArmorContents().length != 0) {
             List<ItemStack> items = new ArrayList<>(Arrays.asList(entity.getEquipment().getArmorContents()));
             items.add(entity.getEquipment().getItemInHand());
-            if (instance.isServerVersionAtLeast(ServerVersion.V1_9))
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9))
                 items.add(entity.getEquipment().getItemInOffHand());
             for (ItemStack item : items) {
                 if (item.getType() == material)
                     return true;
             }
         }
-        if (instance.isServerVersionAtLeast(ServerVersion.V1_11) && entity instanceof ChestedHorse) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && entity instanceof ChestedHorse) {
             if (((ChestedHorse) entity).getInventory().contains(material))
                 return true;
         }
@@ -115,7 +116,7 @@ public class DeathListeners implements Listener {
             Player player = (Player) event.getDamager();
             ItemStack tool = player.getInventory().getItemInMainHand();
             if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()
-                    || tool.getItemMeta().spigot().isUnbreakable())))
+                    || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().spigot().isUnbreakable()))))
                 return;
 
             int unbreakingLevel = tool.getEnchantmentLevel(Enchantment.DURABILITY);

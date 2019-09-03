@@ -32,7 +32,7 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <artifactSet>
                                 <includes>
-                                    <include>com.songoda:songodaupdater</include>
+                                    <include>com.songoda:SongodaCore</include>
                                     <include>com.songoda:Lootables</include>
                                     <include>com.zaxxer:HikariCP</include>
                                     <include>org.slf4j:slf4j-api</include>
@@ -49,6 +49,16 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.songoda.core</pattern>
+                                    <shadedPattern>${project.groupId}.ultimatestacker.core</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.songoda.lootables</pattern>
+                                    <shadedPattern>${project.groupId}.ultimatestacker.lootables</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -67,19 +77,10 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>com.gmail.filoghost.holographicdisplays</groupId>
-            <artifactId>holographicdisplays-api</artifactId>
-            <version>2.3.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.14.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.songoda</groupId>
-            <artifactId>songodaupdater</artifactId>
-            <version>1</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.songoda</groupId>
@@ -87,24 +88,15 @@
             <version>1.0.3</version>
         </dependency>
         <dependency>
-            <groupId>net.milkbowl</groupId>
-            <artifactId>vault</artifactId>
-            <version>1.7.1</version>
+            <groupId>com.songoda</groupId>
+            <artifactId>SongodaCore</artifactId>
+            <version>LATEST</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.gamingmesh</groupId>
             <artifactId>jobs</artifactId>
             <version>4.10.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.bgsoftware</groupId>
-            <artifactId>WildStacker</artifactId>
-            <version>2-9-0</version>
-        </dependency>
-        <dependency>
-            <groupId>uk.antiperson</groupId>
-            <artifactId>stackmob</artifactId>
-            <version>4-0-2</version>
         </dependency>
         <dependency>
             <groupId>me.minebuilders</groupId>

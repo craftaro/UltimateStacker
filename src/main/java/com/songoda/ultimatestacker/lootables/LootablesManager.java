@@ -6,6 +6,7 @@ import com.songoda.lootables.Lootables;
 import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.settings.Setting;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -87,8 +88,6 @@ public class LootablesManager {
     }
 
     public void createDefaultLootables() {
-        UltimateStacker plugin = UltimateStacker.getInstance();
-
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             // Add Trader Llama.
             lootManager.addLootable(new Lootable("TRADER_LLAMA",
@@ -210,68 +209,39 @@ public class LootablesManager {
         }
 
 
-        Loot fish1 = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
-                .addChildLoot(new LootBuilder()
-                                .setMaterial(Material.COD)
-                                .setBurnedMaterial(Material.COOKED_COD)
-                                .setChance(50).build(),
-                        new LootBuilder()
-                                .setMaterial(Material.PRISMARINE_CRYSTALS)
-                                .setChance(33).build())
-                .build()
-                :
-                new LootBuilder()
+        Loot fish1 = new LootBuilder()
                         .addChildLoot(new LootBuilder()
-                                        .setMaterial(Material.valueOf("RAW_FISH"))
-                                        .setBurnedMaterial(Material.valueOf("COOKED_FISH"))
+                                        .setMaterial(LegacyMaterials.COD.getMaterial())
+                                        .setBurnedMaterial(LegacyMaterials.COOKED_COD.getMaterial())
                                         .setChance(50).build(),
                                 new LootBuilder()
                                         .setMaterial(Material.PRISMARINE_CRYSTALS)
                                         .setChance(33).build())
                         .build();
 
-        Loot fish2 = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
+        Loot fish2 = new LootBuilder()
                 .setChance(2.5)
                 .addChildLoot(new LootBuilder()
-                                .setMaterial(Material.COD)
+                                .setMaterial(LegacyMaterials.COD.getMaterial())
+                                .setData(LegacyMaterials.COD.getData())
                                 .setChance(60)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(Material.SALMON)
+                                .setMaterial(LegacyMaterials.SALMON.getMaterial())
+                                .setData(LegacyMaterials.SALMON.getData())
                                 .setChance(25)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(Material.PUFFERFISH)
+                                .setMaterial(LegacyMaterials.PUFFERFISH.getMaterial())
+                                .setData(LegacyMaterials.PUFFERFISH.getData())
                                 .setChance(13)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(Material.TROPICAL_FISH)
+                                .setMaterial(LegacyMaterials.TROPICAL_FISH.getMaterial())
+                                .setData(LegacyMaterials.TROPICAL_FISH.getData())
                                 .setChance(2)
                                 .setAllowLootingEnchant(false).build())
-                .addOnlyDropFors(EntityType.PLAYER).build()
-                :
-                new LootBuilder()
-                        .setChance(2.5)
-                        .addChildLoot(new LootBuilder()
-                                        .setMaterial(Material.valueOf("RAW_FISH"))
-                                        .setChance(60)
-                                        .setAllowLootingEnchant(false).build(),
-                                new LootBuilder()
-                                        .setMaterial(Material.valueOf("RAW_FISH"))
-                                        .setData(1)
-                                        .setChance(25)
-                                        .setAllowLootingEnchant(false).build(),
-                                new LootBuilder()
-                                        .setMaterial(Material.valueOf("RAW_FISH"))
-                                        .setData(3)
-                                        .setChance(13)
-                                        .setAllowLootingEnchant(false).build(),
-                                new LootBuilder()
-                                        .setMaterial(Material.valueOf("RAW_FISH"))
-                                        .setData(2)
-                                        .setChance(2)
-                                        .setAllowLootingEnchant(false).build())
-                        .addOnlyDropFors(EntityType.PLAYER).build();
+                .addOnlyDropFors(EntityType.PLAYER).build();
 
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
             // Add Zombie Villager.
@@ -336,15 +306,9 @@ public class LootablesManager {
                             .setMin(0)
                             .setMax(2).build()));
 
-            Loot witherSkull = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ?
-                    new LootBuilder()
-                            .setMaterial(Material.WITHER_SKELETON_SKULL)
-                            .setChance(2.5)
-                            .addOnlyDropFors(EntityType.PLAYER).build()
-                    :
-                    new LootBuilder()
-                            .setMaterial(Material.valueOf("SKULL_ITEM"))
-                            .setData(1)
+            Loot witherSkull = new LootBuilder()
+                            .setMaterial(LegacyMaterials.WITHER_SKELETON_SKULL.getMaterial())
+                            .setData(LegacyMaterials.WITHER_SKELETON_SKULL.getData())
                             .setChance(2.5)
                             .addOnlyDropFors(EntityType.PLAYER).build();
 
@@ -423,8 +387,8 @@ public class LootablesManager {
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(LegacyMaterials.COD.getMaterial())
-                            .setData(LegacyMaterials.COD.getData())
+                            .setMaterial(LegacyMaterials.SALMON.getMaterial())
+                            .setData(LegacyMaterials.SALMON.getData())
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));

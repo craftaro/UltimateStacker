@@ -1,7 +1,7 @@
-package com.songoda.ultimatestacker.command.commands;
+package com.songoda.ultimatestacker.commands;
 
+import com.songoda.core.commands.AbstractCommand;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.AbstractCommand;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -16,29 +16,32 @@ import java.util.stream.Collectors;
 
 public class CommandGiveSpawner extends AbstractCommand {
 
-    public CommandGiveSpawner(AbstractCommand abstractCommand) {
-        super(abstractCommand, false, "givespawner");
+    UltimateStacker instance;
+
+    public CommandGiveSpawner() {
+        super(false, "givespawner");
+        instance = UltimateStacker.getInstance();
     }
 
     @Override
-    protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
-        if (args.length < 3) return ReturnType.SYNTAX_ERROR;
+    protected ReturnType runCommand(CommandSender sender, String... args) {
+        if (args.length < 2) return ReturnType.SYNTAX_ERROR;
 
-        if (Bukkit.getPlayer(args[1]) == null && !args[1].trim().toLowerCase().equals("all")) {
-            sender.sendMessage("Not a player...");
+        if (Bukkit.getPlayer(args[0]) == null && !args[0].trim().toLowerCase().equals("all")) {
+            sender.sendMessage(args[0] + " is not a player...");
             return ReturnType.SYNTAX_ERROR;
         }
 
         EntityType type = null;
         for (EntityType types : EntityType.values()) {
-            String input = args[2].toUpperCase().replace("_", "").replace(" ", "");
+            String input = args[1].toUpperCase().replace("_", "").replace(" ", "");
             String compare = types.name().toUpperCase().replace("_", "").replace(" ", "");
             if (input.equals(compare))
                 type = types;
         }
 
         if (type == null) {
-            instance.getLocale().newMessage("&7The entity StackType &6" + args[2] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
+            instance.getLocale().newMessage("&7The entity StackType &6" + args[1] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {
@@ -48,10 +51,10 @@ public class CommandGiveSpawner extends AbstractCommand {
             sender.sendMessage(Methods.formatText("&6" + list));
         } else {
 
-            int amt = args.length == 4 ? Integer.parseInt(args[3]) : 1;
+            int amt = args.length == 3 ? Integer.parseInt(args[2]) : 1;
             ItemStack itemStack = Methods.getSpawnerItem(type, amt);
-            if (!args[1].trim().toLowerCase().equals("all")) {
-                Player player = Bukkit.getOfflinePlayer(args[1]).getPlayer();
+            if (!args[0].trim().toLowerCase().equals("all")) {
+                Player player = Bukkit.getOfflinePlayer(args[0]).getPlayer();
                 player.getInventory().addItem(itemStack);
                 instance.getLocale().getMessage("command.give.success")
                         .processPlaceholder("type", Methods.compileSpawnerName(type, amt))
@@ -69,17 +72,17 @@ public class CommandGiveSpawner extends AbstractCommand {
     }
 
     @Override
-    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
-        if (args.length == 2) {
+    protected List<String> onTab(CommandSender sender, String... args) {
+        if (args.length == 1) {
             List<String> players = new ArrayList<>();
             players.add("all");
             players.addAll(Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
             return players;
-        } else if (args.length == 3) {
+        } else if (args.length == 2) {
             return Arrays.stream(EntityType.values())
                     .filter(types -> types.isSpawnable() && types.isAlive() && !types.toString().contains("ARMOR"))
                     .map(Enum::name).collect(Collectors.toList());
-        } else if (args.length == 4) {
+        } else if (args.length == 3) {
             return Arrays.asList("1", "2", "3", "4", "5");
         }
         return null;

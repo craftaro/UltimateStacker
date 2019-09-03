@@ -1,14 +1,14 @@
 package com.songoda.ultimatestacker.entity;
 
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.DropUtils;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -94,7 +94,7 @@ public class EntityStack {
     }
 
     private LivingEntity getEntityByUniqueId(UUID uniqueId) {
-        if (UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_12))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
             return (LivingEntity) Bukkit.getEntity(uniqueId);
 
         for (World world : Bukkit.getWorlds()) {
@@ -140,8 +140,7 @@ public class EntityStack {
         newEntity.getEquipment().clear();
 
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(new ItemStack(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                    ? Material.GOLDEN_SWORD : Material.valueOf("GOLD_SWORD")));
+            newEntity.getEquipment().setItemInHand(LegacyMaterials.GOLDEN_SWORD.getItem());
 
         if (Setting.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
             if (killed.hasMetadata("ES"))
@@ -171,7 +170,7 @@ public class EntityStack {
         killed.setCustomName(Methods.formatText("&7"));
 
         boolean killWholeStack = Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
-                || plugin.getMobFile().getConfig().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
+                || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
 
         if (killWholeStack && getAmount() != 1) {
             handleWholeStackDeath(killed, drops, custom, droppedExp);

@@ -16,8 +16,8 @@ public class WildStackerConvert implements Convert {
 
     private final UltimateStacker plugin;
 
-    public WildStackerConvert(UltimateStacker plugin) {
-        this.plugin = plugin;
+    public WildStackerConvert() {
+        this.plugin = UltimateStacker.getInstance();
     }
 
     @Override
@@ -60,8 +60,7 @@ public class WildStackerConvert implements Convert {
 
             stack.setAmount(WildStackerAPI
                     .getSpawnersAmount((CreatureSpawner) spawner.getLocation().getBlock().getState()));
-            if (plugin.getHologram() != null)
-                plugin.getHologram().add(stack);
+            plugin.updateHologram(stack);
         }
     }
 

@@ -1,7 +1,8 @@
-package com.songoda.ultimatestacker.command.commands;
+package com.songoda.ultimatestacker.commands;
 
+import com.songoda.core.commands.AbstractCommand;
+import com.songoda.core.configuration.editor.PluginConfigGui;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -9,18 +10,21 @@ import java.util.List;
 
 public class CommandSettings extends AbstractCommand {
 
-    public CommandSettings(AbstractCommand parent) {
-        super(parent, true, "Settings");
+    UltimateStacker instance;
+
+    public CommandSettings() {
+        super(true, "Settings");
+        instance = UltimateStacker.getInstance();
     }
 
     @Override
-    protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
-        instance.getSettingsManager().openSettingsManager((Player) sender);
+    protected ReturnType runCommand(CommandSender sender, String... args) {
+        instance.getGuiManager().showGUI((Player) sender, new PluginConfigGui(instance));
         return ReturnType.SUCCESS;
     }
 
     @Override
-    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+    protected List<String> onTab(CommandSender sender, String... args) {
         return null;
     }
 

@@ -1,26 +1,29 @@
-package com.songoda.ultimatestacker.command.commands;
+package com.songoda.ultimatestacker.commands;
 
+import com.songoda.core.commands.AbstractCommand;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 public class CommandReload extends AbstractCommand {
 
-    public CommandReload(AbstractCommand parent) {
-        super(parent, false, "reload");
+    UltimateStacker instance;
+
+    public CommandReload() {
+        super(false, "reload");
+        instance = UltimateStacker.getInstance();
     }
 
     @Override
-    protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
-        instance.reload();
+    protected ReturnType runCommand(CommandSender sender, String... args) {
+        instance.reloadConfig();
         instance.getLocale().getMessage("&7Configuration and Language files reloaded.").sendPrefixedMessage(sender);
         return ReturnType.SUCCESS;
     }
 
     @Override
-    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+    protected List<String> onTab(CommandSender sender, String... args) {
         return null;
     }
 
@@ -38,4 +41,5 @@ public class CommandReload extends AbstractCommand {
     public String getDescription() {
         return "Reload the Configuration and Language files.";
     }
+
 }

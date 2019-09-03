@@ -1,13 +1,13 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.CompatibleSounds;
+import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.utils.BlockUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Material;
-import org.bukkit.Server;
-import org.bukkit.Sound;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,9 +17,6 @@ import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-import org.bukkit.block.BlockState;
 
 public class ItemListeners implements Listener {
 
@@ -39,13 +36,13 @@ public class ItemListeners implements Listener {
 
         event.setCancelled(true);
 
-        int specific = instance.getItemFile().getConfig().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
+        int specific = instance.getItemFile().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
         int max = specific == -1 && new ItemStack(itemStack.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
 
-        if (instance.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType()))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType()))
             max = new ItemStack(itemStack.getType()).getMaxStackSize();
 
-        if (!instance.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData()))
+        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData()))
             max = new ItemStack(itemStack.getType()).getMaxStackSize();
 
         if (max == -1) max = 1;
@@ -66,7 +63,7 @@ public class ItemListeners implements Listener {
 
         Methods.updateInventory(event.getItem(), event.getInventory());
         if (event.getInventory().getHolder() instanceof BlockState)
-            Methods.updateAdjacentComparators(((BlockState)event.getInventory().getHolder()).getLocation());
+            BlockUtils.updateAdjacentComparators(((BlockState)event.getInventory().getHolder()).getLocation());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -89,9 +86,7 @@ public class ItemListeners implements Listener {
         if (event.getItem().getItemStack().getAmount() < 32) return;
         event.setCancelled(true);
 
-        event.getPlayer().playSound(event.getPlayer().getLocation(),
-                instance.isServerVersionAtLeast(ServerVersion.V1_9) ? Sound.ENTITY_ITEM_PICKUP
-                        : Sound.valueOf("ITEM_PICKUP"), .2f, (float) (1 + Math.random()));
+        event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSounds.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
 
         Methods.updateInventory(event.getItem(), event.getPlayer().getInventory());
     }

@@ -1,14 +1,13 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -62,8 +61,8 @@ public class SpawnerListeners implements Listener {
 
         if (block == null || itemType == Material.AIR) return;
 
-        if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
-                || !itemType.toString().contains(plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? "SPAWN_EGG" : "MONSTER_EGG"))
+        if (block.getType() != (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER"))
+                || !itemType.toString().contains(ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? "SPAWN_EGG" : "MONSTER_EGG"))
             return;
 
         event.setCancelled(true);
@@ -82,9 +81,9 @@ public class SpawnerListeners implements Listener {
         int amt = player.getInventory().getItemInHand().getAmount();
 
         EntityType entityType;
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_13))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
             entityType = EntityType.valueOf(itemType.name().replace("_SPAWN_EGG", "").replace("MOOSHROOM", "MUSHROOM_COW"));
-        else if (plugin.isServerVersionAtLeast(ServerVersion.V1_12)) {
+        else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
             String str = Reflection.getNBTTagCompound(Reflection.getNMSItemStack(event.getItem())).toString();
             if (str.contains("minecraft:"))
                 entityType = EntityType.fromName(str.substring(str.indexOf("minecraft:") + 10, str.indexOf("\"}")));
@@ -117,8 +116,7 @@ public class SpawnerListeners implements Listener {
         creatureSpawner.setSpawnedType(entityType);
         creatureSpawner.update();
 
-        if (plugin.getHologram() != null)
-            plugin.getHologram().update(spawner);
+        plugin.updateHologram(spawner);
         if (player.getGameMode() != GameMode.CREATIVE) {
             Methods.takeItem(player, stackSize - 1);
         }

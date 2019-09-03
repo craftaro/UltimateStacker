@@ -14,8 +14,8 @@ public class StackMobConvert implements Convert {
 
     private final StackMob stackMob;
 
-    public StackMobConvert(UltimateStacker plugin) {
-        this.plugin = plugin;
+    public StackMobConvert() {
+        this.plugin = UltimateStacker.getInstance();
         stackMob = (StackMob) Bukkit.getPluginManager().getPlugin("StackMob");
     }
 

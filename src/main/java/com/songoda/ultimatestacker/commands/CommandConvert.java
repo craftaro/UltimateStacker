@@ -1,7 +1,7 @@
-package com.songoda.ultimatestacker.command.commands;
+package com.songoda.ultimatestacker.commands;
 
+import com.songoda.core.commands.AbstractCommand;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.command.AbstractCommand;
 import com.songoda.ultimatestacker.gui.GUIConvert;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -12,15 +12,18 @@ import java.util.List;
 
 public class CommandConvert extends AbstractCommand {
 
-    public CommandConvert(AbstractCommand parent) {
-        super(parent, true, "convert");
+    UltimateStacker instance;
+
+    public CommandConvert() {
+        super(true, "convert");
+        instance = UltimateStacker.getInstance();
     }
 
     @Override
-    protected ReturnType runCommand(UltimateStacker instance, CommandSender sender, String... args) {
+    protected ReturnType runCommand(CommandSender sender, String... args) {
         if (Bukkit.getPluginManager().isPluginEnabled("WildStacker")
                 || Bukkit.getPluginManager().isPluginEnabled("StackMob")) {
-            new GUIConvert(instance, (Player) sender);
+            instance.getGuiManager().showGUI((Player) sender, new GUIConvert());
         } else {
             sender.sendMessage(Methods.formatText("&cYou need to have the plugin &4WildStacker &cor &4StackMob &cenabled " +
                     "in order to convert data."));
@@ -29,7 +32,7 @@ public class CommandConvert extends AbstractCommand {
     }
 
     @Override
-    protected List<String> onTab(UltimateStacker instance, CommandSender sender, String... args) {
+    protected List<String> onTab(CommandSender sender, String... args) {
         return null;
     }
 

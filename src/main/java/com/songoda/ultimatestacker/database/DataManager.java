@@ -1,32 +1,24 @@
 package com.songoda.ultimatestacker.database;
 
+import com.songoda.core.database.DataManagerAbstract;
+import com.songoda.core.database.DatabaseConnector;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
-
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
-public class DataManager {
-
-    private final DatabaseConnector databaseConnector;
-    private final Plugin plugin;
+public class DataManager extends DataManagerAbstract {
 
     public DataManager(DatabaseConnector databaseConnector, Plugin plugin) {
-        this.databaseConnector = databaseConnector;
-        this.plugin = plugin;
-    }
-
-    /**
-     * @return the prefix to be used by all table names
-     */
-    public String getTablePrefix() {
-        return this.plugin.getDescription().getName().toLowerCase() + '_';
+        super(databaseConnector, plugin);
     }
 
     public void bulkUpdateSpawners(Collection<SpawnerStack> spawnerStacks) {
@@ -43,7 +35,6 @@ public class DataManager {
             }
         });
     }
-
 
     public void updateSpawner(SpawnerStack spawnerStack) {
         this.async(() -> this.databaseConnector.connect(connection -> {
@@ -119,31 +110,4 @@ public class DataManager {
             this.sync(() -> callback.accept(spawners));
         }));
     }
-
-    private int lastInsertedId(Connection connection) {
-        String query;
-        if (this.databaseConnector instanceof SQLiteConnector) {
-            query = "SELECT last_insert_rowid()";
-        } else {
-            query = "SELECT LAST_INSERT_ID()";
-        }
-
-        try (Statement statement = connection.createStatement()) {
-            ResultSet result = statement.executeQuery(query);
-            result.next();
-            return result.getInt(1);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    public void async(Runnable runnable) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
-    }
-
-    public void sync(Runnable runnable) {
-        Bukkit.getScheduler().runTask(this.plugin, runnable);
-    }
-
 }

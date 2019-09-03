@@ -1,24 +1,33 @@
 package com.songoda.ultimatestacker.utils;
 
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.settings.Setting;
-import java.lang.reflect.Method;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.CreatureSpawner;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.util.Vector;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 public class Methods {
 
@@ -45,111 +54,45 @@ public class Methods {
             Methods.updateItemAmount(item, itemStack, amount);
     }
 
-    private static Class<?> clazzCraftWorld, clazzCraftBlock, clazzBlockPosition;
-    private static Method getHandle, updateAdjacentComparators, getNMSBlock;
-
-    public static void updateAdjacentComparators(Location location) {
-        try {
-            // Cache reflection.
-            if (clazzCraftWorld == null) {
-                String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-                clazzCraftWorld = Class.forName("org.bukkit.craftbukkit." + ver + ".CraftWorld");
-                clazzCraftBlock = Class.forName("org.bukkit.craftbukkit." + ver + ".block.CraftBlock");
-                clazzBlockPosition = Class.forName("net.minecraft.server." + ver + ".BlockPosition");
-                Class<?> clazzWorld = Class.forName("net.minecraft.server." + ver + ".World");
-                Class<?> clazzBlock = Class.forName("net.minecraft.server." + ver + ".Block");
-
-                getHandle = clazzCraftWorld.getMethod("getHandle");
-                updateAdjacentComparators = clazzWorld.getMethod("updateAdjacentComparators", clazzBlockPosition, clazzBlock);
-                getNMSBlock = clazzCraftBlock.getDeclaredMethod("getNMSBlock");
-                getNMSBlock.setAccessible(true);
-            }
-
-            // invoke and cast objects.
-            Object craftWorld = clazzCraftWorld.cast(location.getWorld());
-            Object world = getHandle.invoke(craftWorld);
-            Object craftBlock = clazzCraftBlock.cast(location.getBlock());
-
-            // Invoke final method.
-            updateAdjacentComparators
-                    .invoke(world, clazzBlockPosition.getConstructor(double.class, double.class, double.class)
-                                    .newInstance(location.getX(), location.getY(), location.getZ()),
-                            getNMSBlock.invoke(craftBlock));
-
-        } catch (ReflectiveOperationException e) {
-            e.printStackTrace();
-        }
-    }
-
+    // Do not touch! API for older plugins
+    @Deprecated
     public static boolean isMaterialBlacklisted(Material type) {
-        List<String> whitelist = Setting.ITEM_WHITELIST.getStringList();
-        List<String> blacklist = Setting.ITEM_BLACKLIST.getStringList();
-        return !whitelist.isEmpty() && !whitelist.contains(type.name())
-                || !blacklist.isEmpty() && blacklist.contains(type.name());
+        return UltimateStacker.isMaterialBlacklisted(type);
     }
 
+    // Do not touch! API for older plugins
+    @Deprecated
     public static boolean isMaterialBlacklisted(Material type, byte data) {
-        List<String> whitelist = Setting.ITEM_WHITELIST.getStringList();
-        List<String> blacklist = Setting.ITEM_BLACKLIST.getStringList();
-
-        String combined = type.toString() + ":" + data;
-
-        return !whitelist.isEmpty() && !whitelist.contains(combined)
-                || !blacklist.isEmpty() && blacklist.contains(combined);
+        return UltimateStacker.isMaterialBlacklisted(type, data);
     }
 
-    // This function shouldn't change! This is the API that many plugins hook into!
+    // Do not touch! API for older plugins
+    @Deprecated
     public static void updateItemAmount(Item item, int newAmount) {
-        item.getItemStack().setAmount(Math.min(32, newAmount));
-        updateItemAmount(item, item.getItemStack(), newAmount);
+        UltimateStacker.updateItemAmount(item, newAmount);
     }
 
+    // Do not touch! API for older plugins
+    @Deprecated
     public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
-        UltimateStacker plugin = UltimateStacker.getInstance();
-        Material material = itemStack.getType();
-        String name = Methods.convertToInvisibleString("IS") +
-                compileItemName(itemStack, newAmount);
-
-        boolean blacklisted = UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
-                isMaterialBlacklisted(itemStack.getType()) : isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData());
-
-        if (newAmount > 32 && !blacklisted) {
-            item.setMetadata("US_AMT", new FixedMetadataValue(plugin, newAmount));
-            itemStack.setAmount(32);
-        } else {
-            item.removeMetadata("US_AMT", plugin);
-            itemStack.setAmount(newAmount);
-        }
-        item.setItemStack(itemStack);
-
-        if ((blacklisted && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
-                || !plugin.getItemFile().getConfig().getBoolean("Items." + material + ".Has Hologram")
-                || !Setting.ITEM_HOLOGRAMS.getBoolean()
-                || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean()) return;
-
-        item.setCustomName(name);
-        item.setCustomNameVisible(true);
+        UltimateStacker.updateItemAmount(item, itemStack, newAmount);
     }
 
+    // Do not touch! API for older plugins
+    @Deprecated
     public static int getActualItemAmount(Item item) {
-        int amount = item.getItemStack().getAmount();
-        if (amount >= 32 && item.hasMetadata("US_AMT")) {
-            return item.getMetadata("US_AMT").get(0).asInt();
-        } else {
-            return amount;
-        }
+        return UltimateStacker.getActualItemAmount(item);
     }
 
+    // Do not touch! API for older plugins
+    @Deprecated
     public static boolean hasCustomAmount(Item item) {
-        if (item.hasMetadata("US_AMT")) {
-            return item.getItemStack().getAmount() != item.getMetadata("US_AMT").get(0).asInt();
-        }
-        return false;
+        return UltimateStacker.hasCustomAmount(item);
     }
 
     public static String compileItemName(ItemStack item, int amount) {
         String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile().getConfig()
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile()
                 .getString("Items." + item.getType().name() + ".Display Name"));
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
@@ -165,7 +108,7 @@ public class Methods {
             nameFormat = nameFormat.replace("[", "").replace("]", "");
         }
 
-        String info = Methods.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
+        String info = TextUtils.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
 
         return info + Methods.formatText(nameFormat).trim();
     }
@@ -188,23 +131,23 @@ public class Methods {
 
     public static String compileSpawnerName(EntityType entityType, int amount) {
         String nameFormat = UltimateStacker.getInstance().getConfig().getString("Spawners.Name Format");
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getSpawnerFile().getConfig().getString("Spawners." + entityType.name() + ".Display Name"));
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getSpawnerFile().getString("Spawners." + entityType.name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
+        String info = TextUtils.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
         return info + Methods.formatText(nameFormat).trim();
     }
 
     public static String compileEntityName(Entity entity, int amount) {
         String nameFormat = Setting.NAME_FORMAT_ENTITY.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getConfig().getString("Mobs." + entity.getType().name() + ".Display Name"));
+        String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = Methods.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
+        String info = TextUtils.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
 
         return info + Methods.formatText(nameFormat).trim();
     }
@@ -221,7 +164,7 @@ public class Methods {
     }
 
     public static ItemStack getSpawnerItem(EntityType entityType, int amount) {
-        ItemStack item = new ItemStack((UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")), 1);
+        ItemStack item = LegacyMaterials.SPAWNER.getItem();
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Methods.compileSpawnerName(entityType, amount));
         CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta) meta).getBlockState();
@@ -231,39 +174,10 @@ public class Methods {
         return item;
     }
 
-    public static ItemStack getGlass() {
-        UltimateStacker instance = UltimateStacker.getInstance();
-        return Methods.getGlass(instance.getConfig().getBoolean("Interfaces.Replace Glass Type 1 With Rainbow Glass"), instance.getConfig().getInt("Interfaces.Glass Type 1"));
-    }
-
-    public static ItemStack getBackgroundGlass(boolean type) {
-        UltimateStacker instance = UltimateStacker.getInstance();
-        if (type)
-            return getGlass(false, instance.getConfig().getInt("Interfaces.Glass Type 2"));
-        else
-            return getGlass(false, instance.getConfig().getInt("Interfaces.Glass Type 3"));
-    }
-
-    private static ItemStack getGlass(Boolean rainbow, int type) {
-        int randomNum = 1 + (int) (Math.random() * 6);
-        ItemStack glass;
-        if (rainbow) {
-            glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
-                    Material.LEGACY_STAINED_GLASS_PANE : Material.valueOf("STAINED_GLASS_PANE"), 1, (short) randomNum);
-        } else {
-            glass = new ItemStack(UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_13) ?
-                    Material.LEGACY_STAINED_GLASS_PANE : Material.valueOf("STAINED_GLASS_PANE"), 1, (short) type);
-        }
-        ItemMeta glassmeta = glass.getItemMeta();
-        glassmeta.setDisplayName("§l");
-        glass.setItemMeta(glassmeta);
-        return glass;
-    }
-
     public static String formatTitle(String text) {
         if (text == null || text.equals(""))
             return "";
-        if (!UltimateStacker.getInstance().isServerVersionAtLeast(ServerVersion.V1_9)) {
+        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)) {
             if (text.length() > 31)
                 text = text.substring(0, 29) + "...";
         }
@@ -336,15 +250,6 @@ public class Methods {
         Location location = new Location(world, x, y, z, 0, 0);
         serializeCache.put(cacheKey, location.clone());
         return location;
-    }
-
-
-    public static String convertToInvisibleString(String s) {
-        if (s == null || s.equals(""))
-            return "";
-        StringBuilder hidden = new StringBuilder();
-        for (char c : s.toCharArray()) hidden.append(ChatColor.COLOR_CHAR + "").append(c);
-        return hidden.toString();
     }
 
     public static String insertSemicolon(String s) {

@@ -1,58 +1,74 @@
 package com.songoda.ultimatestacker;
 
-import com.songoda.ultimatestacker.command.CommandManager;
-import com.songoda.ultimatestacker.database.*;
+import com.songoda.core.SongodaCore;
+import com.songoda.core.SongodaPlugin;
+import com.songoda.core.commands.CommandManager;
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.configuration.Config;
+import com.songoda.core.database.DataMigrationManager;
+import com.songoda.core.database.DatabaseConnector;
+import com.songoda.core.database.MySQLConnector;
+import com.songoda.core.database.SQLiteConnector;
+import com.songoda.core.gui.GuiManager;
+import com.songoda.core.hooks.HologramManager;
+import com.songoda.core.utils.TextUtils;
+import com.songoda.ultimatestacker.commands.CommandConvert;
+import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
+import com.songoda.ultimatestacker.commands.CommandReload;
+import com.songoda.ultimatestacker.commands.CommandRemoveAll;
+import com.songoda.ultimatestacker.commands.CommandSettings;
+import com.songoda.ultimatestacker.commands.CommandUltimateStacker;
+import com.songoda.ultimatestacker.database.DataManager;
+import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.hologram.Hologram;
-import com.songoda.ultimatestacker.hologram.HologramHolographicDisplays;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.lootables.LootablesManager;
+import com.songoda.ultimatestacker.settings.Setting;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
 import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
-import com.songoda.ultimatestacker.utils.*;
-import com.songoda.ultimatestacker.utils.locale.Locale;
-import com.songoda.ultimatestacker.utils.settings.Setting;
-import com.songoda.ultimatestacker.utils.settings.SettingsManager;
-import com.songoda.ultimatestacker.utils.updateModules.LocaleModule;
-import com.songoda.update.Plugin;
-import com.songoda.update.SongodaUpdate;
-import org.apache.commons.lang.ArrayUtils;
+import com.songoda.ultimatestacker.utils.EntityUtils;
+import com.songoda.ultimatestacker.utils.Methods;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.block.Block;
+import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-public class UltimateStacker extends JavaPlugin {
+public class UltimateStacker extends SongodaPlugin {
 
     private static UltimateStacker INSTANCE;
+    private static List<String> whitelist;
+    private static List<String> blacklist;
 
-    private ConfigWrapper mobFile = new ConfigWrapper(this, "", "mobs.yml");
-    private ConfigWrapper itemFile = new ConfigWrapper(this, "", "items.yml");
-    private ConfigWrapper spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
+    private final Config mobFile = new Config(this, "mobs.yml");
+    private final Config itemFile = new Config(this, "items.yml");
+    private final Config spawnerFile = new Config(this, "spawners.yml");
 
-    private Locale locale;
-    private SettingsManager settingsManager;
+    private final GuiManager guiManager = new GuiManager(this);
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
     private LootablesManager lootablesManager;
     private CommandManager commandManager;
     private StackingTask stackingTask;
-    private Hologram hologram;
 
     private DatabaseConnector databaseConnector;
     private DataMigrationManager dataMigrationManager;
@@ -62,35 +78,40 @@ public class UltimateStacker extends JavaPlugin {
 
     private List<StackerHook> stackerHooks = new ArrayList<>();
 
-    private ServerVersion serverVersion = ServerVersion.fromPackageName(Bukkit.getServer().getClass().getPackage().getName());
-
     public static UltimateStacker getInstance() {
         return INSTANCE;
     }
 
-    public void onDisable() {
+    @Override
+    public void onPluginLoad() {
+        INSTANCE = this;
+    }
+    
+    @Override
+    public void onPluginDisable() {
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
-
-        ConsoleCommandSender console = Bukkit.getConsoleSender();
-        console.sendMessage(Methods.formatText("&a============================="));
-        console.sendMessage(Methods.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Songoda <3!"));
-        console.sendMessage(Methods.formatText("&7Action: &cDisabling&7..."));
-        console.sendMessage(Methods.formatText("&a============================="));
+        HologramManager.removeAllHolograms();
     }
 
     @Override
-    public void onEnable() {
-        INSTANCE = this;
+    public void onPluginEnable() {
+        // Run Songoda Updater
+        SongodaCore.registerPlugin(this, 16, LegacyMaterials.IRON_INGOT);
 
-        ConsoleCommandSender console = Bukkit.getConsoleSender();
-        console.sendMessage(Methods.formatText("&a============================="));
-        console.sendMessage(Methods.formatText("&7UltimateStacker " + this.getDescription().getVersion() + " by &5Songoda <3&7!"));
-        console.sendMessage(Methods.formatText("&7Action: &aEnabling&7..."));
-
-        this.settingsManager = new SettingsManager(this);
-        this.settingsManager.setupConfig();
-
+        // Setup Config
+        Setting.setupConfig();
+		this.setLocale(Setting.LANGUGE_MODE.getString(), false);
+        whitelist = Setting.ITEM_WHITELIST.getStringList();
+        blacklist = Setting.ITEM_BLACKLIST.getStringList();
+        
+        // Setup plugin commands
         this.commandManager = new CommandManager(this);
+        this.commandManager.addCommand(new CommandUltimateStacker())
+                .addSubCommand(new CommandSettings())
+                .addSubCommand(new CommandRemoveAll())
+                .addSubCommand(new CommandReload())
+                .addSubCommand(new CommandGiveSpawner())
+                .addSubCommand(new CommandConvert());
 
         this.entityUtils = new EntityUtils();
 
@@ -98,49 +119,41 @@ public class UltimateStacker extends JavaPlugin {
         this.lootablesManager.createDefaultLootables();
         this.getLootablesManager().getLootManager().loadLootables();
 
-
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
-                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Enabled", true);
-                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
-                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Max Stack Size", -1);
-                mobFile.getConfig().addDefault("Mobs." + value.name() + ".Kill Whole Stack", false);
+                mobFile.addDefault("Mobs." + value.name() + ".Enabled", true);
+                mobFile.addDefault("Mobs." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
+                mobFile.addDefault("Mobs." + value.name() + ".Max Stack Size", -1);
+                mobFile.addDefault("Mobs." + value.name() + ".Kill Whole Stack", false);
             }
         }
-        mobFile.getConfig().options().copyDefaults(true);
-        mobFile.saveConfig();
+        mobFile.load();
+        mobFile.saveChanges();
 
         for (Material value : Material.values()) {
-            itemFile.getConfig().addDefault("Items." + value.name() + ".Has Hologram", true);
-            itemFile.getConfig().addDefault("Items." + value.name() + ".Max Stack Size", -1);
-            itemFile.getConfig().addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
+            itemFile.addDefault("Items." + value.name() + ".Has Hologram", true);
+            itemFile.addDefault("Items." + value.name() + ".Max Stack Size", -1);
+            itemFile.addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
         }
-        itemFile.getConfig().options().copyDefaults(true);
-        itemFile.saveConfig();
+        itemFile.load();
+        itemFile.saveChanges();
 
         for (EntityType value : EntityType.values()) {
             if (value.isSpawnable() && value.isAlive() && !value.toString().contains("ARMOR")) {
-                spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Max Stack Size", -1);
-                spawnerFile.getConfig().addDefault("Spawners." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
+                spawnerFile.addDefault("Spawners." + value.name() + ".Max Stack Size", -1);
+                spawnerFile.addDefault("Spawners." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
             }
         }
-        spawnerFile.getConfig().options().copyDefaults(true);
-        spawnerFile.saveConfig();
-
-        new Locale(this, "en_US");
-        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode"));
-
-        //Running Songoda Updater
-        Plugin plugin = new Plugin(this, 16);
-        plugin.addModule(new LocaleModule());
-        SongodaUpdate.load(plugin);
+        spawnerFile.load();
+        spawnerFile.saveChanges();
 
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager();
         this.stackingTask = new StackingTask(this);
 
+        guiManager.init();
         PluginManager pluginManager = Bukkit.getPluginManager();
-        if (isServerVersionAtLeast(ServerVersion.V1_10))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_10))
             pluginManager.registerEvents(new BreedListeners(this), this);
         pluginManager.registerEvents(new BlockListeners(this), this);
         pluginManager.registerEvents(new DeathListeners(this), this);
@@ -155,19 +168,10 @@ public class UltimateStacker extends JavaPlugin {
         if (Setting.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
             pluginManager.registerEvents(new ClearLagListeners(this), this);
 
-        // Register Hologram Plugin
-        if (Setting.SPAWNER_HOLOGRAMS.getBoolean()) {
-            if (pluginManager.isPluginEnabled("HolographicDisplays"))
-                hologram = new HologramHolographicDisplays(this);
-        }
-
         // Register Hooks
         if (pluginManager.isPluginEnabled("Jobs")) {
             stackerHooks.add(new JobsHook());
         }
-
-        // Starting Metrics
-        new Metrics(this);
 
         // Legacy Data
         Bukkit.getScheduler().runTaskLater(this, () -> {
@@ -218,18 +222,18 @@ public class UltimateStacker extends JavaPlugin {
         }
 
         this.dataManager = new DataManager(this.databaseConnector, this);
-        this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager);
+        this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
+                new _1_InitialMigration());
         this.dataMigrationManager.runMigrations();
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
+            final boolean useHolo = Setting.SPAWNER_HOLOGRAMS.getBoolean();
             this.dataManager.getSpawners((spawners) -> {
                 this.spawnerStackManager.addSpawners(spawners);
-                if (hologram != null)
-                    this.hologram.loadHolograms();
+                if (useHolo)
+                    loadHolograms();
             });
         }, 20L);
-
-        console.sendMessage(Methods.formatText("&a============================="));
     }
 
     public void addExp(Player player, EntityStack stack) {
@@ -238,8 +242,21 @@ public class UltimateStacker extends JavaPlugin {
         }
     }
 
-    public void reload() {
-        this.locale = Locale.getLocale(getConfig().getString("System.Language Mode"));
+    public GuiManager getGuiManager() {
+        return guiManager;
+    }
+
+    @Override
+    public List<Config> getExtraConfig() {
+        return Arrays.asList(mobFile, itemFile, spawnerFile);
+    }
+    
+    @Override
+    public void onConfigReload() {
+        whitelist = Setting.ITEM_WHITELIST.getStringList();
+        blacklist = Setting.ITEM_BLACKLIST.getStringList();
+        
+		this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
         this.entityUtils = new EntityUtils();
@@ -247,39 +264,14 @@ public class UltimateStacker extends JavaPlugin {
         this.stackingTask.cancel();
         this.stackingTask = new StackingTask(this);
 
-        this.mobFile = new ConfigWrapper(this, "", "mobs.yml");
-        this.itemFile = new ConfigWrapper(this, "", "items.yml");
-        this.spawnerFile = new ConfigWrapper(this, "", "spawners.yml");
-        this.settingsManager.reloadConfig();
+        this.mobFile.load();
+        this.itemFile.load();
+        this.spawnerFile.load();
         this.getLootablesManager().getLootManager().loadLootables();
     }
 
     public boolean spawnersEnabled() {
         return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Setting.SPAWNERS_ENABLED.getBoolean();
-    }
-
-    public Hologram getHologram() {
-        return hologram;
-    }
-
-    public ServerVersion getServerVersion() {
-        return serverVersion;
-    }
-
-    public boolean isServerVersion(ServerVersion version) {
-        return serverVersion == version;
-    }
-
-    public boolean isServerVersion(ServerVersion... versions) {
-        return ArrayUtils.contains(versions, serverVersion);
-    }
-
-    public boolean isServerVersionAtLeast(ServerVersion version) {
-        return serverVersion.ordinal() >= version.ordinal();
-    }
-
-    public Locale getLocale() {
-        return locale;
     }
 
     public CommandManager getCommandManager() {
@@ -302,19 +294,15 @@ public class UltimateStacker extends JavaPlugin {
         return stackingTask;
     }
 
-    public SettingsManager getSettingsManager() {
-        return settingsManager;
-    }
-
-    public ConfigWrapper getMobFile() {
+    public Config getMobFile() {
         return mobFile;
     }
 
-    public ConfigWrapper getItemFile() {
+    public Config getItemFile() {
         return itemFile;
     }
 
-    public ConfigWrapper getSpawnerFile() {
+    public Config getSpawnerFile() {
         return spawnerFile;
     }
 
@@ -329,4 +317,161 @@ public class UltimateStacker extends JavaPlugin {
     public DataManager getDataManager() {
         return dataManager;
     }
+
+    void loadHolograms() {
+        Collection<SpawnerStack> spawners = getSpawnerStackManager().getStacks();
+        if (spawners.isEmpty()) return;
+
+        for (SpawnerStack spawner : spawners) {
+            if (spawner.getLocation().getWorld() != null) {
+                updateHologram(spawner);
+            }
+        }
+    }
+
+    public void clearHologram(SpawnerStack stack) {
+        HologramManager.removeHologram(stack.getLocation());
+    }
+
+    public void updateHologram(SpawnerStack stack) {
+        // are holograms enabled?
+        if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        // verify that this is a spawner stack
+        if (stack.getLocation().getBlock().getType() != LegacyMaterials.SPAWNER.getMaterial()) return;
+        // grab the spawner block
+        CreatureSpawner creatureSpawner = (CreatureSpawner) stack.getLocation().getBlock().getState();
+        String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), stack.getAmount());
+        // create the hologram
+        HologramManager.updateHologram(stack.getLocation(), name);
+    }
+
+    public void updateHologram(Block block) {
+        // verify that this is a spawner
+        if (block.getType() != LegacyMaterials.SPAWNER.getMaterial()) return;
+        // are holograms enabled?
+        if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        // update this hologram in a tick
+        SpawnerStack spawner = getSpawnerStackManager().getSpawner(block);
+        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> updateHologram(spawner), 10L);
+    }
+
+    //////// Convenient API //////////
+    /**
+     * Change the stacked amount for this item
+     * 
+     * @param item item entity to update
+     * @param newAmount number of items this item represents
+     */
+    public static void updateItemAmount(Item item, int newAmount) {
+        updateItemAmount(item, item.getItemStack(), newAmount);
+    }
+
+    /**
+     * Change the stacked amount for this item
+     *
+     * @param item item entity to update
+     * @param itemStack ItemStack that will represent this item
+     * @param newAmount number of items this item represents
+     */
+    public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
+        Material material = itemStack.getType();
+        String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
+
+        boolean blacklisted = isMaterialBlacklisted(itemStack);
+        //boolean blacklisted = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+        //        ? isMaterialBlacklisted(material) : isMaterialBlacklisted(material, itemStack.getData().getData());
+
+        if (newAmount > 32 && !blacklisted) {
+            item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
+            itemStack.setAmount(32);
+        } else {
+            item.removeMetadata("US_AMT", INSTANCE);
+            itemStack.setAmount(newAmount);
+        }
+        item.setItemStack(itemStack);
+
+        if ((blacklisted && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
+                || !INSTANCE.getItemFile().getBoolean("Items." + material + ".Has Hologram")
+                || !Setting.ITEM_HOLOGRAMS.getBoolean()
+                || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean())
+            return;
+
+        item.setCustomName(name);
+        item.setCustomNameVisible(true);
+    }
+
+    /**
+     * Lookup the stacked size of this item
+     *
+     * @param item item to check
+     * @return stacker-corrected value for the stack size
+     */
+    public static int getActualItemAmount(Item item) {
+        int amount = item.getItemStack().getAmount();
+        if (amount >= 32 && item.hasMetadata("US_AMT")) {
+            return item.getMetadata("US_AMT").get(0).asInt();
+        } else {
+            return amount;
+        }
+    }
+
+    /**
+     * Check to see if the amount stored in this itemstack is not the stacked
+     * amount
+     *
+     * @param item item to check
+     * @return true if Item.getItemStack().getAmount() is different from the
+     * stacked amount
+     */
+    public static boolean hasCustomAmount(Item item) {
+        if (item.hasMetadata("US_AMT")) {
+            return item.getItemStack().getAmount() != item.getMetadata("US_AMT").get(0).asInt();
+        }
+        return false;
+    }
+
+    /**
+     * Check to see if this material is not permitted to stack
+     *
+     * @param type Material to check
+     * @return true if this material will not stack
+     */
+    public static boolean isMaterialBlacklisted(Material type) {
+        return !whitelist.isEmpty() && !whitelist.contains(type.name())
+                || !blacklist.isEmpty() && blacklist.contains(type.name());
+    }
+
+    /**
+     * Check to see if this material is not permitted to stack
+     *
+     * @param item Item material to check
+     * @return true if this material will not stack
+     */
+    public static boolean isMaterialBlacklisted(ItemStack item) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
+            return isMaterialBlacklisted(item.getType());
+        } else {
+            LegacyMaterials mat = LegacyMaterials.getMaterial(item);
+            if (mat.usesData()) {
+                return isMaterialBlacklisted(mat.getMaterial(), mat.getData());
+            } else {
+                return isMaterialBlacklisted(mat.getMaterial());
+            }
+        }
+    }
+
+    /**
+     * Check to see if this material is not permitted to stack
+     *
+     * @param type Material to check
+     * @param data daya value for this item (for 1.12 and older servers)
+     * @return true if this material will not stack
+     */
+    public static boolean isMaterialBlacklisted(Material type, byte data) {
+        String combined = type.toString() + ":" + data;
+
+        return !whitelist.isEmpty() && !whitelist.contains(combined)
+                || !blacklist.isEmpty() && blacklist.contains(combined);
+    }
+
 }

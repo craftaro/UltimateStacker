@@ -21,7 +21,7 @@ public class StackingTask extends BukkitRunnable {
 
     private EntityStackManager stackManager;
 
-    ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile().getConfig();
+    ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
 
     private List<UUID> processed = new ArrayList<>();
 

@@ -1,50 +1,29 @@
 package com.songoda.ultimatestacker.gui;
 
-import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.gui.Gui;
+import com.songoda.core.gui.GuiUtils;
 import com.songoda.ultimatestacker.convert.StackMobConvert;
 import com.songoda.ultimatestacker.convert.WildStackerConvert;
-import com.songoda.ultimatestacker.utils.gui.AbstractGUI;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 
-public class GUIConvert extends AbstractGUI {
+public class GUIConvert extends Gui {
 
-    private final UltimateStacker plugin;
-
-    public GUIConvert(UltimateStacker plugin, Player player) {
-        super(player);
-        this.plugin = plugin;
-
-        init("Convert", 9);
-    }
-
-    @Override
-    public void constructGUI() {
+    public GUIConvert() {
+        setTitle("Convert");
+        setRows(1);
         int current = 0;
         if (Bukkit.getPluginManager().isPluginEnabled("WildStacker")) {
-            createButton(current, Material.STONE, "&6WildStacker");
-
-            registerClickable(current, ((player1, inventory1, cursor, slot, type) ->
-                    new GUIConvertWhat(plugin, player, new WildStackerConvert(plugin))));
-            current ++;
+            this.setButton(current++, GuiUtils.createButtonItem(LegacyMaterials.STONE, ChatColor.GRAY + "WildStacker"),
+                    (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new WildStackerConvert(), this)));
         }
+
         if (Bukkit.getPluginManager().isPluginEnabled("StackMob")) {
-            createButton(current, Material.STONE, "&6StackMob");
-
-            registerClickable(current, ((player1, inventory1, cursor, slot, type) ->
-                    new GUIConvertWhat(plugin, player, new StackMobConvert(plugin))));
+            this.setButton(current++, GuiUtils.createButtonItem(LegacyMaterials.STONE, ChatColor.GRAY + "StackMob"),
+                    (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new StackMobConvert(), this)));
         }
 
     }
 
-    @Override
-    protected void registerClickables() {
-
-    }
-
-    @Override
-    protected void registerOnCloses() {
-
-    }
 }

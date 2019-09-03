@@ -1,75 +1,65 @@
 package com.songoda.ultimatestacker.gui;
 
-import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.gui.Gui;
+import com.songoda.core.gui.GuiUtils;
 import com.songoda.ultimatestacker.convert.Convert;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.gui.AbstractGUI;
-import org.bukkit.Material;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class GUIConvertWhat extends AbstractGUI {
-
-    private final UltimateStacker plugin;
+public class GUIConvertWhat extends Gui {
 
     private Convert convertFrom = null;
 
     private boolean entities = true;
     private boolean spawners = true;
 
-    public GUIConvertWhat(UltimateStacker plugin, Player player, Convert convertFrom) {
-        super(player);
-        this.plugin = plugin;
+    public GUIConvertWhat(Convert convertFrom, Gui returnTo) {
+        super(returnTo);
+        this.setRows(1);
+        this.setTitle("What Do You Want To Convert?");
         this.convertFrom = convertFrom;
 
-        init("What Do You Want To Convert?", 9);
-    }
-
-    @Override
-    public void constructGUI() {
-        inventory.clear();
-
-        if (convertFrom.canEntities())
-            createButton(0, Material.STONE, "&7Stacked Entities", entities ? "&aYes" : "&cNo");
-
-        if (convertFrom.canSpawners())
-            createButton(1, Material.STONE, "&7Stacked Spawners", spawners ? "&aYes" : "&cNo");
-
-        createButton(8, Material.STONE, "&aRun");
-
-    }
-
-    @Override
-    protected void registerClickables() {
-        if (convertFrom.canSpawners()) {
-            registerClickable(0, ((player1, inventory1, cursor, slot, type) -> {
-                entities = !entities;
-                constructGUI();
-            }));
+        if (convertFrom.canEntities()) {
+            this.setButton(0, GuiUtils.createButtonItem(LegacyMaterials.STONE,
+                    ChatColor.GRAY + "Stacked Entities",
+                    entities ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
+                    (event) -> toggleEntities());
         }
 
         if (convertFrom.canSpawners()) {
-            registerClickable(1, ((player1, inventory1, cursor, slot, type) -> {
-                spawners = !spawners;
-                constructGUI();
-            }));
+            this.setButton(1, GuiUtils.createButtonItem(LegacyMaterials.STONE,
+                    ChatColor.GRAY + "Stacked Spawners",
+                    spawners ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
+                    (event) -> toggleSpawners());
         }
 
-        registerClickable(8, ((player1, inventory1, cursor, slot, type) -> {
-            if (entities)
-                convertFrom.convertEntities();
-            if (spawners)
-                convertFrom.convertSpawners();
-
-            convertFrom.disablePlugin();
-
-            player.closeInventory();
-            player.sendMessage(Methods.formatText("&7Data converted successfully. Remove &6" + convertFrom.getName() + " &7and restart your server to continue."));
-        }));
+        this.setButton(8, GuiUtils.createButtonItem(LegacyMaterials.GREEN_WOOL, ChatColor.GREEN + "Run"),
+                (event) -> run(event.player));
 
     }
 
-    @Override
-    protected void registerOnCloses() {
+    void toggleEntities() {
+        entities = !entities;
+        this.updateItem(0, ChatColor.GRAY + "Stacked Entities", entities ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No");
+    }
 
+    void toggleSpawners() {
+        spawners = !spawners;
+        this.updateItem(1, ChatColor.GRAY + "Stacked Spawners", spawners ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No");
+    }
+
+    void run(Player player) {
+        if (entities) {
+            convertFrom.convertEntities();
+        }
+        if (spawners) {
+            convertFrom.convertSpawners();
+        }
+
+        convertFrom.disablePlugin();
+        exit();
+        player.sendMessage(Methods.formatText("&7Data converted successfully. Remove &6" + convertFrom.getName() + " &7and restart your server to continue."));
     }
 }

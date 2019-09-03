@@ -1,10 +1,11 @@
 package com.songoda.ultimatestacker.lootables;
 
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.Lootables;
 import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -90,7 +91,7 @@ public class LootablesManager {
     public void createDefaultLootables() {
         UltimateStacker plugin = UltimateStacker.getInstance();
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_14)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             // Add Trader Llama.
             lootManager.addLootable(new Lootable("TRADER_LLAMA",
                     new LootBuilder()
@@ -123,7 +124,7 @@ public class LootablesManager {
                             .setMax(2).build()));
         }
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_13)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
 
 
             // Add Phantom.
@@ -201,7 +202,7 @@ public class LootablesManager {
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_12)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
             // Add Parrot.
             lootManager.addLootable(new Lootable("PARROT",
                     new LootBuilder()
@@ -211,7 +212,7 @@ public class LootablesManager {
         }
 
 
-        Loot fish1 = plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
+        Loot fish1 = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
                 .addChildLoot(new LootBuilder()
                                 .setMaterial(Material.COD)
                                 .setBurnedMaterial(Material.COOKED_COD)
@@ -231,7 +232,7 @@ public class LootablesManager {
                                         .setChance(33).build())
                         .build();
 
-        Loot fish2 = plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
+        Loot fish2 = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ? new LootBuilder()
                 .setChance(2.5)
                 .addChildLoot(new LootBuilder()
                                 .setMaterial(Material.COD)
@@ -274,7 +275,7 @@ public class LootablesManager {
                                         .setAllowLootingEnchant(false).build())
                         .addOnlyDropFors(EntityType.PLAYER).build();
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_11)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
             // Add Zombie Villager.
             lootManager.addLootable(new Lootable("ZOMBIE_VILLAGER",
                     new LootBuilder()
@@ -337,7 +338,7 @@ public class LootablesManager {
                             .setMin(0)
                             .setMax(2).build()));
 
-            Loot witherSkull = plugin.isServerVersionAtLeast(ServerVersion.V1_13) ?
+            Loot witherSkull = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ?
                     new LootBuilder()
                             .setMaterial(Material.WITHER_SKELETON_SKULL)
                             .setChance(2.5)
@@ -383,8 +384,7 @@ public class LootablesManager {
             // Add Evoker.
             lootManager.addLootable(new Lootable("EVOKER",
                     new LootBuilder()
-                            .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                    ? Material.TOTEM_OF_UNDYING : Material.valueOf("TOTEM"))
+                            .setMaterial(LegacyMaterials.TOTEM_OF_UNDYING.getMaterial())
                             .setAllowLootingEnchant(false).build(),
                     new LootBuilder()
                             .setMaterial(Material.EMERALD)
@@ -392,7 +392,7 @@ public class LootablesManager {
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_11)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
 
 
             // Shulker.
@@ -403,7 +403,7 @@ public class LootablesManager {
                             .setLootingIncrease(6.25).build()));
         }
 
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_13)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
             // Add Polar Bear.
             lootManager.addLootable(new Lootable("POLAR_BEAR",
                     new LootBuilder()
@@ -416,17 +416,17 @@ public class LootablesManager {
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));
-        } else if (plugin.isServerVersionAtLeast(ServerVersion.V1_10)) {
+        } else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_10)) {
             // Add Polar Bear.
             lootManager.addLootable(new Lootable("POLAR_BEAR",
                     new LootBuilder()
-                            .setMaterial(Material.valueOf("RAW_FISH"))
+                            .setMaterial(LegacyMaterials.COD.getMaterial())
                             .setChance(75)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(Material.valueOf("RAW_FISH"))
-                            .setData(1)
+                            .setMaterial(LegacyMaterials.COD.getMaterial())
+                            .setData(LegacyMaterials.COD.getData())
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));
@@ -435,10 +435,8 @@ public class LootablesManager {
         // Add Pig.
         lootManager.addLootable(new Lootable("PIG",
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.PORKCHOP : Material.valueOf("PORK"))
-                        .setBurnedMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.COOKED_PORKCHOP : Material.valueOf("GRILLED_PORK"))
+                        .setMaterial(LegacyMaterials.PORKCHOP.getMaterial())
+                        .setBurnedMaterial(LegacyMaterials.COOKED_PORKCHOP.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -450,9 +448,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.BEEF : Material.valueOf("RAW_BEEF"))
-                        .setBurnedMaterial(Material.COOKED_BEEF)
+                        .setMaterial(LegacyMaterials.BEEF.getMaterial())
+                        .setBurnedMaterial(LegacyMaterials.COOKED_BEEF.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -463,9 +460,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.BEEF : Material.valueOf("RAW_BEEF"))
-                        .setBurnedMaterial(Material.COOKED_BEEF)
+                        .setMaterial(LegacyMaterials.BEEF.getMaterial())
+                        .setBurnedMaterial(LegacyMaterials.COOKED_BEEF.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -476,9 +472,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.CHICKEN : Material.valueOf("RAW_CHICKEN"))
-                        .setBurnedMaterial(Material.COOKED_CHICKEN).build()));
+                        .setMaterial(LegacyMaterials.CHICKEN.getMaterial())
+                        .setBurnedMaterial(LegacyMaterials.COOKED_CHICKEN.getMaterial()).build()));
         // Add Zombie.
         lootManager.addLootable(new Lootable("ZOMBIE",
                 new LootBuilder()
@@ -518,7 +513,7 @@ public class LootablesManager {
                         .build()));
 
         Loot discs;
-        if (plugin.isServerVersionAtLeast(ServerVersion.V1_13)) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
             discs = new LootBuilder()
                     .setChildDropCount(1)
                     .addOnlyDropFors(EntityType.SKELETON,
@@ -536,7 +531,7 @@ public class LootablesManager {
                             new LootBuilder().setMaterial(Material.MUSIC_DISC_WAIT).build(),
                             new LootBuilder().setMaterial(Material.MUSIC_DISC_WARD).build())
                     .build();
-        } else if (plugin.isServerVersionAtLeast(ServerVersion.V1_11)) {
+        } else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
             discs = new LootBuilder()
                     .setChildDropCount(1)
                     .addOnlyDropFors(EntityType.SKELETON,
@@ -576,8 +571,7 @@ public class LootablesManager {
         // Add Creeper.
         lootManager.addLootable(new Lootable("CREEPER",
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.GUNPOWDER : Material.valueOf("SULPHUR"))
+                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
                         .setMin(0)
                         .setMax(2).build(),
                 discs));
@@ -622,8 +616,7 @@ public class LootablesManager {
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                                ? Material.GUNPOWDER : Material.valueOf("SULPHUR"))
+                                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
@@ -642,16 +635,14 @@ public class LootablesManager {
                         .setMin(1)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.WHITE_WOOL : Material.valueOf("WOOL"))
+                        .setMaterial(LegacyMaterials.WHITE_WOOL.getMaterial())
                         .setMin(2)
                         .setMax(2).build()));
 
         // Add Squid.
         lootManager.addLootable(new Lootable("SQUID",
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.INK_SAC : Material.valueOf("INK_SACK"))
+                        .setMaterial(LegacyMaterials.INK_SAC.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -718,8 +709,7 @@ public class LootablesManager {
         // Add Snowman.
         lootManager.addLootable(new Lootable("SNOWMAN",
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.SNOWBALL : Material.valueOf("SNOW_BALL"))
+                        .setMaterial(LegacyMaterials.SNOWBALL.getMaterial())
                         .setMin(0)
                         .setMax(15).build()));
 
@@ -738,8 +728,7 @@ public class LootablesManager {
         // Add Iron Golem.
         lootManager.addLootable(new Lootable("IRON_GOLEM",
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.POPPY : Material.valueOf("RED_ROSE"))
+                        .setMaterial(LegacyMaterials.POPPY.getMaterial())
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
@@ -761,8 +750,7 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(plugin.isServerVersionAtLeast(ServerVersion.V1_13)
-                                ? Material.GUNPOWDER : Material.valueOf("SULPHUR"))
+                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
                         .setMin(0)
                         .setMax(2).build()));
 

@@ -1,14 +1,20 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.Split;
-import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.Cat;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -69,44 +75,43 @@ public class InteractListeners implements Listener {
     }
 
     private boolean correctFood(ItemStack is, Entity entity) {
-        boolean is13 = plugin.isServerVersionAtLeast(ServerVersion.V1_13);
         Material type = is.getType();
         switch (entity.getType().name()) {
             case "COW":
             case "SHEEP":
                 return type == Material.WHEAT;
             case "PIG":
-                return type == Material.CARROT || (plugin.isServerVersionAtLeast(ServerVersion.V1_9) && type == Material.BEETROOT) || type == Material.POTATO;
+                return type == Material.CARROT || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9) && type == Material.BEETROOT) || type == Material.POTATO;
             case "CHICKEN":
-                return type == (is13 ? Material.WHEAT_SEEDS : Material.valueOf("SEEDS"))
+                return type == LegacyMaterials.WHEAT_SEEDS.getMaterial()
                         || type == Material.MELON_SEEDS
                         || type == Material.BEETROOT_SEEDS
                         || type == Material.PUMPKIN_SEEDS;
             case "HORSE":
                 return (type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT) && ((Horse)entity).isTamed();
             case "WOLF":
-                return type == (is13 ? Material.BEEF : Material.valueOf("RAW_BEEF"))
-                        || type == (is13 ? Material.CHICKEN : Material.valueOf("RAW_CHICKEN"))
-                        || (is13 && type == Material.COD)
-                        || type == Material.MUTTON
-                        || type == (is13 ? Material.PORKCHOP : Material.valueOf("PORK"))
-                        || type == Material.RABBIT
-                        || (is13 && type == Material.SALMON)
-                        || type == Material.COOKED_BEEF
-                        || type == Material.COOKED_CHICKEN
-                        || (is13 && type == Material.COOKED_COD)
-                        || type == Material.COOKED_MUTTON
-                        || type == (is13 ? Material.COOKED_PORKCHOP : Material.valueOf("GRILLED_PORK"))
-                        || type == Material.COOKED_RABBIT
-                        || (is13 && type == Material.COOKED_SALMON)
+                return type == LegacyMaterials.BEEF.getMaterial()
+                        || type == LegacyMaterials.CHICKEN.getMaterial()
+                        || type == LegacyMaterials.COD.getMaterial()
+                        || type == LegacyMaterials.MUTTON.getMaterial()
+                        || type == LegacyMaterials.PORKCHOP.getMaterial()
+                        || type == LegacyMaterials.RABBIT.getMaterial()
+                        || LegacyMaterials.SALMON.matches(is)
+                        || type == LegacyMaterials.COOKED_BEEF.getMaterial()
+                        || type == LegacyMaterials.COOKED_CHICKEN.getMaterial()
+                        || type == LegacyMaterials.COOKED_COD.getMaterial()
+                        || type == LegacyMaterials.COOKED_MUTTON.getMaterial()
+                        || type == LegacyMaterials.COOKED_PORKCHOP.getMaterial()
+                        || type == LegacyMaterials.COOKED_RABBIT.getMaterial()
+                        || LegacyMaterials.COOKED_SALMON.matches(is)
                         && ((Wolf) entity).isTamed();
             case "OCELOT":
-                return (is13 ? type == Material.SALMON
+                return (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                        ? type == Material.SALMON
                         || type == Material.COD
                         || type == Material.PUFFERFISH
                         || type == Material.TROPICAL_FISH
-
-                        : type == Material.valueOf("RAW_FISH")); // Now broken in 1.13 ((Ocelot) entity).isTamed()
+                        : type == LegacyMaterials.COD.getMaterial()); // Now broken in 1.13 ((Ocelot) entity).isTamed()
             case "PANDA":
                 return (type == Material.BAMBOO);
             case "FOX":

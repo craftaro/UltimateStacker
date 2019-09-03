@@ -1,18 +1,25 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.LegacyMaterials;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ServerVersion;
 import com.songoda.ultimatestacker.utils.settings.Setting;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,10 +28,6 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class EntityListeners implements Listener {
 
@@ -80,7 +83,7 @@ public class EntityListeners implements Listener {
         List<Block> toCancel = new ArrayList<>();
         while (it.hasNext()) {
             Block block = it.next();
-            if (block.getType() != (plugin.isServerVersionAtLeast(ServerVersion.V1_13) ? Material.SPAWNER : Material.valueOf("MOB_SPAWNER")))
+            if (block.getType() != LegacyMaterials.SPAWNER.getMaterial())
                 continue;
 
             Location spawnLocation = block.getLocation();
@@ -105,8 +108,7 @@ public class EntityListeners implements Listener {
 
                     SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(spawnLocation);
                     plugin.getDataManager().deleteSpawner(spawnerStack);
-                    if (plugin.getHologram() != null)
-                        plugin.getHologram().remove(spawner);
+                    plugin.updateHologram(spawner);
                 }
             }
 

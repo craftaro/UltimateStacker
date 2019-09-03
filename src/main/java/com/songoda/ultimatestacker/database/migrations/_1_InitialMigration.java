@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.database.migrations;
 
+import com.songoda.core.database.DataMigration;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.database.DataMigration;
 import com.songoda.ultimatestacker.database.MySQLConnector;
 
 import java.sql.Connection;

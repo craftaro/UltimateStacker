@@ -1,27 +1,21 @@
 package com.songoda.ultimatestacker.storage;
 
+import com.songoda.core.configuration.Config;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.utils.ConfigWrapper;
-import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.bukkit.Material;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Storage {
 
     protected final UltimateStacker instance;
-    protected final ConfigWrapper dataFile;
+    protected final Config dataFile;
 
     public Storage(UltimateStacker instance) {
         this.instance = instance;
-        this.dataFile = new ConfigWrapper(instance, "", "data.yml");
-        this.dataFile.createNewFile(null, "UltimateStacker Data File");
-        this.dataFile.getConfig().options().copyDefaults(true);
-        this.dataFile.saveConfig();
+        this.dataFile = new Config(instance, "data.yml");
+        this.dataFile.setHeader("UltimateStacker Data File");
+        this.dataFile.setAutosave(true).setAutosaveInterval(120);
     }
 
     public abstract boolean containsGroup(String group);

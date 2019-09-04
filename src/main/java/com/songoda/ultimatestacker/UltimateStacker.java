@@ -172,6 +172,7 @@ public class UltimateStacker extends SongodaPlugin {
         if (pluginManager.isPluginEnabled("Jobs")) {
             stackerHooks.add(new JobsHook());
         }
+        HologramManager.load(this);
 
         // Legacy Data
         Bukkit.getScheduler().runTaskLater(this, () -> {

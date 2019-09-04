@@ -20,6 +20,7 @@ public class Setting {
     public static final ConfigSetting DISABLED_WORLDS = new ConfigSetting(config, "Main.Disabled Worlds", Arrays.asList("World1", "World2", "World3"),
             "Worlds that stacking doesn't happen in.");
 
+    // Note: this setting is also referenced in EpicSpawners
     public static final ConfigSetting STACK_ENTITIES = new ConfigSetting(config, "Entities.Enabled", true,
             "Should entities be stacked?");
 
@@ -33,6 +34,7 @@ public class Setting {
     public static final ConfigSetting MAX_STACK_ENTITIES = new ConfigSetting(config, "Entities.Max Stack Size", 15,
             "The max amount of entities in a single stack.");
 
+    // Note: this setting is also referenced in EpicSpawners
     public static final ConfigSetting MIN_STACK_ENTITIES = new ConfigSetting(config, "Entities.Min Stack Amount", 5,
             "The minimum amount required before a stack can be formed.",
             "Do not set this to lower than 2.");

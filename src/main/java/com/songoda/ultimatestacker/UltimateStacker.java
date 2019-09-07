@@ -107,11 +107,11 @@ public class UltimateStacker extends SongodaPlugin {
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addCommand(new CommandUltimateStacker())
-                .addSubCommand(new CommandSettings())
+                .addSubCommand(new CommandSettings(guiManager))
                 .addSubCommand(new CommandRemoveAll())
                 .addSubCommand(new CommandReload())
                 .addSubCommand(new CommandGiveSpawner())
-                .addSubCommand(new CommandConvert());
+                .addSubCommand(new CommandConvert(guiManager));
 
         this.entityUtils = new EntityUtils();
 
@@ -241,10 +241,6 @@ public class UltimateStacker extends SongodaPlugin {
         for (StackerHook stackerHook : stackerHooks) {
             stackerHook.applyExperience(player, stack);
         }
-    }
-
-    public GuiManager getGuiManager() {
-        return guiManager;
     }
 
     @Override

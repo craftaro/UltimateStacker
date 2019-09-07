@@ -238,10 +238,6 @@ public class Settings {
     public static final ConfigSetting MYSQL_PASSWORD = new ConfigSetting(config, "MySQL.Password", "pass");
     public static final ConfigSetting MYSQL_USE_SSL = new ConfigSetting(config, "MySQL.Use SSL", false);
 
-    /**
-     * In order to set dynamic economy comment correctly, this needs to be
-     * called after EconomyManager load
-     */
     public static void setupConfig() {
         config.load();
         config.setAutoremove(true).setAutosave(true);

@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.LegacyMaterials;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.DropUtils;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -39,14 +39,14 @@ public class EntityStack {
     }
 
     public void updateStack() {
-        if (!Setting.ENTITY_HOLOGRAMS.getBoolean()) return;
+        if (!Settings.ENTITY_HOLOGRAMS.getBoolean()) return;
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () -> {
             Entity entit = getEntityByUniqueId(this.entity);
             if (entit == null ||
                     !UltimateStacker.getInstance().getEntityStackManager().isStacked(entity)) return;
 
-            entit.setCustomNameVisible(!Setting.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
+            entit.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
             entit.setCustomName(Methods.compileEntityName(entit, amount));
         }, entity == null ? 1L : 0L);
 
@@ -142,7 +142,7 @@ public class EntityStack {
         if (killed.getType() == EntityType.PIG_ZOMBIE)
             newEntity.getEquipment().setItemInHand(LegacyMaterials.GOLDEN_SWORD.getItem());
 
-        if (Setting.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
+        if (Settings.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
             if (killed.hasMetadata("ES"))
                 newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
 
@@ -169,20 +169,20 @@ public class EntityStack {
         killed.setCustomNameVisible(true);
         killed.setCustomName(Methods.formatText("&7"));
 
-        boolean killWholeStack = Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
+        boolean killWholeStack = Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
                 || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
 
         if (killWholeStack && getAmount() != 1) {
             handleWholeStackDeath(killed, drops, custom, droppedExp);
         } else if (getAmount() != 1) {
-            List<String> reasons = Setting.INSTANT_KILL.getStringList();
+            List<String> reasons = Settings.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
             if (lastDamageCause != null) {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for (String s : reasons) {
                     if (!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, drops, custom, Setting.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
+                    handleWholeStackDeath(killed, drops, custom, Settings.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
                     return;
                 }
             }
@@ -192,7 +192,7 @@ public class EntityStack {
 
     public void updateHealth(LivingEntity entity) {
         if (entity == null) return;
-        entity.setHealth(Setting.STACK_ENTITY_HEALTH.getBoolean()
+        entity.setHealth(Settings.STACK_ENTITY_HEALTH.getBoolean()
                 && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
     }
 

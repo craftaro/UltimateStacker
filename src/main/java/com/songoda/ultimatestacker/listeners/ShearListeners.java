@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.entity.Split;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -29,9 +29,9 @@ public class ShearListeners implements Listener {
         if (!stackManager.isStacked(entity)) return;
 
         if (event.getEntity().getType() == EntityType.SHEEP
-                && Setting.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_SHEAR)
+                && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_SHEAR)
                 || event.getEntity().getType() == EntityType.MUSHROOM_COW
-                && Setting.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.MUSHROOM_SHEAR))
+                && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.MUSHROOM_SHEAR))
             return;
 
         plugin.getEntityUtils().splitFromStack((LivingEntity)entity);

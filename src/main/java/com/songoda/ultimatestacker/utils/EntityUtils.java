@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -17,12 +17,12 @@ public class EntityUtils {
 
     UltimateStacker plugin = UltimateStacker.getInstance();
 
-    private List<String> checks = Setting.STACK_CHECKS.getStringList();
-    private boolean stackFlyingDown = Setting.ONLY_STACK_FLYING_DOWN.getBoolean();
-    private boolean keepFire = Setting.KEEP_FIRE.getBoolean();
-    private boolean keepPotion = Setting.KEEP_POTION.getBoolean();
-    private boolean stackWholeChunk = Setting.STACK_WHOLE_CHUNK.getBoolean();
-    private int searchRadius = Setting.SEARCH_RADIUS.getInt();
+    private List<String> checks = Settings.STACK_CHECKS.getStringList();
+    private boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean();
+    private boolean keepFire = Settings.KEEP_FIRE.getBoolean();
+    private boolean keepPotion = Settings.KEEP_POTION.getBoolean();
+    private boolean stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean();
+    private int searchRadius = Settings.SEARCH_RADIUS.getInt();
 
     private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
 

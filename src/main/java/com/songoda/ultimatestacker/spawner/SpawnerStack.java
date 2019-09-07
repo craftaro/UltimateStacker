@@ -2,7 +2,7 @@ package com.songoda.ultimatestacker.spawner;
 
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -34,7 +34,7 @@ public class SpawnerStack {
 
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
-            int count = Setting.STACK_ENTITIES.getBoolean()
+            int count = Settings.STACK_ENTITIES.getBoolean()
                     && !plugin.getStackingTask().isWorldDisabled(location.getWorld()) ? 1 : calculateSpawnCount();
             int maxNearby = amount > 6 ? amount + 3 : 6;
             CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();

@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.entity.Split;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,7 +25,7 @@ public class SheepDyeListeners implements Listener {
         EntityStackManager stackManager = plugin.getEntityStackManager();
         if (!stackManager.isStacked(entity)) return;
 
-        if (Setting.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_DYE))
+        if (Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_DYE))
             return;
 
         plugin.getEntityUtils().splitFromStack(entity);

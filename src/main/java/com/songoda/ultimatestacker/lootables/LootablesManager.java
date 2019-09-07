@@ -6,7 +6,7 @@ import com.songoda.lootables.Lootables;
 import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -41,7 +41,7 @@ public class LootablesManager {
                 ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
                 : 0;
 
-        int rerollChance = Setting.REROLL.getBoolean() ? looting / (looting + 1) : 0;
+        int rerollChance = Settings.REROLL.getBoolean() ? looting / (looting + 1) : 0;
 
         for (Loot loot : lootable.getRegisteredLoot())
             toDrop.addAll(runLoot(entity, loot, rerollChance, looting));

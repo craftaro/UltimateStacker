@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.tasks;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,23 +25,23 @@ public class StackingTask extends BukkitRunnable {
 
     private List<UUID> processed = new ArrayList<>();
 
-    private int maxEntityStackSize = Setting.MAX_STACK_ENTITIES.getInt();
-    private int minEntityStackSize = Setting.MIN_STACK_ENTITIES.getInt();
+    private int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt();
+    private int minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt();
 
-    private int maxPerTypeStacksPerChunk = Setting.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
+    private int maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
         this.stackManager = plugin.getEntityStackManager();
 
         // Start stacking task.
-        runTaskTimer(plugin, 0, Setting.STACK_SEARCH_TICK_SPEED.getInt());
+        runTaskTimer(plugin, 0, Settings.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override
     public void run() {
         // Should entities be stacked?
-        if (!Setting.STACK_ENTITIES.getBoolean()) return;
+        if (!Settings.STACK_ENTITIES.getBoolean()) return;
 
         // Loop through each world.
         for (World world : Bukkit.getWorlds()) {
@@ -76,7 +76,7 @@ public class StackingTask extends BukkitRunnable {
     }
 
     public boolean isWorldDisabled(World world) {
-        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
         return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
@@ -96,11 +96,11 @@ public class StackingTask extends BukkitRunnable {
         // Allow spawn if stackreasons are set and match, or if from a spawner
         final String spawnReason = entity.hasMetadata("US_REASON") ? entity.getMetadata("US_REASON").get(0).asString() : null;
         List<String> stackReasons;
-        if (Setting.ONLY_STACK_FROM_SPAWNERS.getBoolean()) {
+        if (Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean()) {
             // If only stack from spawners is enabled, make sure the entity spawned from a spawner.
             if (!"SPAWNER".equals(spawnReason))
                 return false;
-        } else if (!(stackReasons = Setting.STACK_REASONS.getStringList()).isEmpty() && !stackReasons.contains(spawnReason))
+        } else if (!(stackReasons = Settings.STACK_REASONS.getStringList()).isEmpty() && !stackReasons.contains(spawnReason))
             // Only stack if on the list of events to stack
             return false;
 
@@ -108,7 +108,7 @@ public class StackingTask extends BukkitRunnable {
         LivingEntity livingEntity = (LivingEntity) entity;
 
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
-        return !Setting.ONLY_STACK_ON_SURFACE.getBoolean()
+        return !Settings.ONLY_STACK_ON_SURFACE.getBoolean()
                 || Methods.canFly(livingEntity)
                 || entity.getType().name().equals("SHULKER")
                 || (livingEntity.isOnGround() || location.getBlock().isLiquid());
@@ -169,7 +169,7 @@ public class StackingTask extends BukkitRunnable {
 
 
                 fixHealth(entity, livingEntity);
-                if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+                if (Settings.STACK_ENTITY_HEALTH.getBoolean())
                     entity.setHealth(entity.getMaxHealth() < livingEntity.getHealth()
                             ? entity.getMaxHealth() : livingEntity.getHealth());
 
@@ -183,7 +183,7 @@ public class StackingTask extends BukkitRunnable {
                     && isStack
                     && (stack.getAmount() + 1) <= maxEntityStackSize
                     && Methods.canFly(entity)
-                    && Setting.ONLY_STACK_FLYING_DOWN.getBoolean()
+                    && Settings.ONLY_STACK_FLYING_DOWN.getBoolean()
                     && location.getY() > entity.getLocation().getY()) {
 
                 // Create a new stack with the current stacks amount and add one to it.
@@ -193,7 +193,7 @@ public class StackingTask extends BukkitRunnable {
                 newStack.mergeHealth(stack);
                 newStack.addHealth(livingEntity.getHealth());
                 fixHealth(livingEntity, entity);
-                if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+                if (Settings.STACK_ENTITY_HEALTH.getBoolean())
                     entity.setHealth(entity.getHealth());
 
                 // Remove our entities stack from the stack manager.
@@ -259,7 +259,7 @@ public class StackingTask extends BukkitRunnable {
     }
 
     private void updateHealth(EntityStack stack) {
-        if (Setting.STACK_ENTITY_HEALTH.getBoolean())
+        if (Settings.STACK_ENTITY_HEALTH.getBoolean())
             stack.updateHealth(stack.getEntity());
     }
 
@@ -285,7 +285,7 @@ public class StackingTask extends BukkitRunnable {
 
 
     private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
-        if (!Setting.STACK_ENTITY_HEALTH.getBoolean() && Setting.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
+        if (!Settings.STACK_ENTITY_HEALTH.getBoolean() && Settings.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
             entity.setHealth(initialEntity.getHealth());
     }
 

@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.gui;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.gui.Gui;
 import com.songoda.core.gui.GuiUtils;
 import com.songoda.ultimatestacker.convert.StackMobConvert;
@@ -15,12 +15,12 @@ public class GUIConvert extends Gui {
         setRows(1);
         int current = 0;
         if (Bukkit.getPluginManager().isPluginEnabled("WildStacker")) {
-            this.setButton(current++, GuiUtils.createButtonItem(LegacyMaterials.STONE, ChatColor.GRAY + "WildStacker"),
+            this.setButton(current++, GuiUtils.createButtonItem(CompatibleMaterial.STONE, ChatColor.GRAY + "WildStacker"),
                     (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new WildStackerConvert(), this)));
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("StackMob")) {
-            this.setButton(current++, GuiUtils.createButtonItem(LegacyMaterials.STONE, ChatColor.GRAY + "StackMob"),
+            this.setButton(current++, GuiUtils.createButtonItem(CompatibleMaterial.STONE, ChatColor.GRAY + "StackMob"),
                     (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new StackMobConvert(), this)));
         }
 

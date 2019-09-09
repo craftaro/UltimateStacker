@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
@@ -41,8 +41,8 @@ public class BlockListeners implements Listener {
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
         if (block == null
-                || block.getType() != LegacyMaterials.SPAWNER.getMaterial()
-                || item.getType() != LegacyMaterials.SPAWNER.getMaterial()
+                || block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+                || item.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
@@ -106,7 +106,7 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
 
         if (!event.isCancelled()) {
-            if (block.getType() != LegacyMaterials.SPAWNER.getMaterial()
+            if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                     || !plugin.spawnersEnabled())
                 return;
 
@@ -136,7 +136,7 @@ public class BlockListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (block.getType() != LegacyMaterials.SPAWNER.getMaterial()) return;
+        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
 
         if (!plugin.spawnersEnabled()) return;
         event.setExpToDrop(0);

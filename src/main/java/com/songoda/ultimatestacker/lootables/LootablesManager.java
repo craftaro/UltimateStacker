@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.lootables;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.Lootables;
 import com.songoda.lootables.Modify;
@@ -211,8 +211,8 @@ public class LootablesManager {
 
         Loot fish1 = new LootBuilder()
                         .addChildLoot(new LootBuilder()
-                                        .setMaterial(LegacyMaterials.COD.getMaterial())
-                                        .setBurnedMaterial(LegacyMaterials.COOKED_COD.getMaterial())
+                                        .setMaterial(CompatibleMaterial.COD.getMaterial())
+                                        .setBurnedMaterial(CompatibleMaterial.COOKED_COD.getMaterial())
                                         .setChance(50).build(),
                                 new LootBuilder()
                                         .setMaterial(Material.PRISMARINE_CRYSTALS)
@@ -222,23 +222,23 @@ public class LootablesManager {
         Loot fish2 = new LootBuilder()
                 .setChance(2.5)
                 .addChildLoot(new LootBuilder()
-                                .setMaterial(LegacyMaterials.COD.getMaterial())
-                                .setData(LegacyMaterials.COD.getData())
+                                .setMaterial(CompatibleMaterial.COD.getMaterial())
+                                .setData(CompatibleMaterial.COD.getData())
                                 .setChance(60)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(LegacyMaterials.SALMON.getMaterial())
-                                .setData(LegacyMaterials.SALMON.getData())
+                                .setMaterial(CompatibleMaterial.SALMON.getMaterial())
+                                .setData(CompatibleMaterial.SALMON.getData())
                                 .setChance(25)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(LegacyMaterials.PUFFERFISH.getMaterial())
-                                .setData(LegacyMaterials.PUFFERFISH.getData())
+                                .setMaterial(CompatibleMaterial.PUFFERFISH.getMaterial())
+                                .setData(CompatibleMaterial.PUFFERFISH.getData())
                                 .setChance(13)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(LegacyMaterials.TROPICAL_FISH.getMaterial())
-                                .setData(LegacyMaterials.TROPICAL_FISH.getData())
+                                .setMaterial(CompatibleMaterial.TROPICAL_FISH.getMaterial())
+                                .setData(CompatibleMaterial.TROPICAL_FISH.getData())
                                 .setChance(2)
                                 .setAllowLootingEnchant(false).build())
                 .addOnlyDropFors(EntityType.PLAYER).build();
@@ -307,8 +307,8 @@ public class LootablesManager {
                             .setMax(2).build()));
 
             Loot witherSkull = new LootBuilder()
-                            .setMaterial(LegacyMaterials.WITHER_SKELETON_SKULL.getMaterial())
-                            .setData(LegacyMaterials.WITHER_SKELETON_SKULL.getData())
+                            .setMaterial(CompatibleMaterial.WITHER_SKELETON_SKULL.getMaterial())
+                            .setData(CompatibleMaterial.WITHER_SKELETON_SKULL.getData())
                             .setChance(2.5)
                             .addOnlyDropFors(EntityType.PLAYER).build();
 
@@ -346,7 +346,7 @@ public class LootablesManager {
             // Add Evoker.
             lootManager.addLootable(new Lootable("EVOKER",
                     new LootBuilder()
-                            .setMaterial(LegacyMaterials.TOTEM_OF_UNDYING.getMaterial())
+                            .setMaterial(CompatibleMaterial.TOTEM_OF_UNDYING.getMaterial())
                             .setAllowLootingEnchant(false).build(),
                     new LootBuilder()
                             .setMaterial(Material.EMERALD)
@@ -382,13 +382,13 @@ public class LootablesManager {
             // Add Polar Bear.
             lootManager.addLootable(new Lootable("POLAR_BEAR",
                     new LootBuilder()
-                            .setMaterial(LegacyMaterials.COD.getMaterial())
+                            .setMaterial(CompatibleMaterial.COD.getMaterial())
                             .setChance(75)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(LegacyMaterials.SALMON.getMaterial())
-                            .setData(LegacyMaterials.SALMON.getData())
+                            .setMaterial(CompatibleMaterial.SALMON.getMaterial())
+                            .setData(CompatibleMaterial.SALMON.getData())
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));
@@ -397,8 +397,8 @@ public class LootablesManager {
         // Add Pig.
         lootManager.addLootable(new Lootable("PIG",
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.PORKCHOP.getMaterial())
-                        .setBurnedMaterial(LegacyMaterials.COOKED_PORKCHOP.getMaterial())
+                        .setMaterial(CompatibleMaterial.PORKCHOP.getMaterial())
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_PORKCHOP.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -410,8 +410,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.BEEF.getMaterial())
-                        .setBurnedMaterial(LegacyMaterials.COOKED_BEEF.getMaterial())
+                        .setMaterial(CompatibleMaterial.BEEF.getMaterial())
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -422,8 +422,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.BEEF.getMaterial())
-                        .setBurnedMaterial(LegacyMaterials.COOKED_BEEF.getMaterial())
+                        .setMaterial(CompatibleMaterial.BEEF.getMaterial())
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -434,8 +434,8 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.CHICKEN.getMaterial())
-                        .setBurnedMaterial(LegacyMaterials.COOKED_CHICKEN.getMaterial()).build()));
+                        .setMaterial(CompatibleMaterial.CHICKEN.getMaterial())
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_CHICKEN.getMaterial()).build()));
         // Add Zombie.
         lootManager.addLootable(new Lootable("ZOMBIE",
                 new LootBuilder()
@@ -533,7 +533,7 @@ public class LootablesManager {
         // Add Creeper.
         lootManager.addLootable(new Lootable("CREEPER",
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
+                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
                         .setMin(0)
                         .setMax(2).build(),
                 discs));
@@ -578,7 +578,7 @@ public class LootablesManager {
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
+                                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
@@ -597,14 +597,14 @@ public class LootablesManager {
                         .setMin(1)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.WHITE_WOOL.getMaterial())
+                        .setMaterial(CompatibleMaterial.WHITE_WOOL.getMaterial())
                         .setMin(2)
                         .setMax(2).build()));
 
         // Add Squid.
         lootManager.addLootable(new Lootable("SQUID",
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.INK_SAC.getMaterial())
+                        .setMaterial(CompatibleMaterial.INK_SAC.getMaterial())
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -671,7 +671,7 @@ public class LootablesManager {
         // Add Snowman.
         lootManager.addLootable(new Lootable("SNOWMAN",
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.SNOWBALL.getMaterial())
+                        .setMaterial(CompatibleMaterial.SNOWBALL.getMaterial())
                         .setMin(0)
                         .setMax(15).build()));
 
@@ -690,7 +690,7 @@ public class LootablesManager {
         // Add Iron Golem.
         lootManager.addLootable(new Lootable("IRON_GOLEM",
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.POPPY.getMaterial())
+                        .setMaterial(CompatibleMaterial.POPPY.getMaterial())
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
@@ -712,7 +712,7 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(LegacyMaterials.GUNPOWDER.getMaterial())
+                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
                         .setMin(0)
                         .setMax(2).build()));
 

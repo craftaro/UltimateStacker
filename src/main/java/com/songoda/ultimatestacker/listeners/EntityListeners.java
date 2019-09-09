@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
@@ -83,7 +83,7 @@ public class EntityListeners implements Listener {
         List<Block> toCancel = new ArrayList<>();
         while (it.hasNext()) {
             Block block = it.next();
-            if (block.getType() != LegacyMaterials.SPAWNER.getMaterial())
+            if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial())
                 continue;
 
             Location spawnLocation = block.getLocation();

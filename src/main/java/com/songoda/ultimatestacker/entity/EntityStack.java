@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.entity;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
@@ -140,7 +140,7 @@ public class EntityStack {
         newEntity.getEquipment().clear();
 
         if (killed.getType() == EntityType.PIG_ZOMBIE)
-            newEntity.getEquipment().setItemInHand(LegacyMaterials.GOLDEN_SWORD.getItem());
+            newEntity.getEquipment().setItemInHand(CompatibleMaterial.GOLDEN_SWORD.getItem());
 
         if (Setting.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
             if (killed.hasMetadata("ES"))

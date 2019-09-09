@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -83,27 +83,27 @@ public class InteractListeners implements Listener {
             case "PIG":
                 return type == Material.CARROT || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9) && type == Material.BEETROOT) || type == Material.POTATO;
             case "CHICKEN":
-                return type == LegacyMaterials.WHEAT_SEEDS.getMaterial()
+                return type == CompatibleMaterial.WHEAT_SEEDS.getMaterial()
                         || type == Material.MELON_SEEDS
                         || type == Material.BEETROOT_SEEDS
                         || type == Material.PUMPKIN_SEEDS;
             case "HORSE":
                 return (type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT) && ((Horse)entity).isTamed();
             case "WOLF":
-                return type == LegacyMaterials.BEEF.getMaterial()
-                        || type == LegacyMaterials.CHICKEN.getMaterial()
-                        || type == LegacyMaterials.COD.getMaterial()
-                        || type == LegacyMaterials.MUTTON.getMaterial()
-                        || type == LegacyMaterials.PORKCHOP.getMaterial()
-                        || type == LegacyMaterials.RABBIT.getMaterial()
-                        || LegacyMaterials.SALMON.matches(is)
-                        || type == LegacyMaterials.COOKED_BEEF.getMaterial()
-                        || type == LegacyMaterials.COOKED_CHICKEN.getMaterial()
-                        || type == LegacyMaterials.COOKED_COD.getMaterial()
-                        || type == LegacyMaterials.COOKED_MUTTON.getMaterial()
-                        || type == LegacyMaterials.COOKED_PORKCHOP.getMaterial()
-                        || type == LegacyMaterials.COOKED_RABBIT.getMaterial()
-                        || LegacyMaterials.COOKED_SALMON.matches(is)
+                return type == CompatibleMaterial.BEEF.getMaterial()
+                        || type == CompatibleMaterial.CHICKEN.getMaterial()
+                        || type == CompatibleMaterial.COD.getMaterial()
+                        || type == CompatibleMaterial.MUTTON.getMaterial()
+                        || type == CompatibleMaterial.PORKCHOP.getMaterial()
+                        || type == CompatibleMaterial.RABBIT.getMaterial()
+                        || CompatibleMaterial.SALMON.matches(is)
+                        || type == CompatibleMaterial.COOKED_BEEF.getMaterial()
+                        || type == CompatibleMaterial.COOKED_CHICKEN.getMaterial()
+                        || type == CompatibleMaterial.COOKED_COD.getMaterial()
+                        || type == CompatibleMaterial.COOKED_MUTTON.getMaterial()
+                        || type == CompatibleMaterial.COOKED_PORKCHOP.getMaterial()
+                        || type == CompatibleMaterial.COOKED_RABBIT.getMaterial()
+                        || CompatibleMaterial.COOKED_SALMON.matches(is)
                         && ((Wolf) entity).isTamed();
             case "OCELOT":
                 return (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
@@ -111,7 +111,7 @@ public class InteractListeners implements Listener {
                         || type == Material.COD
                         || type == Material.PUFFERFISH
                         || type == Material.TROPICAL_FISH
-                        : type == LegacyMaterials.COD.getMaterial()); // Now broken in 1.13 ((Ocelot) entity).isTamed()
+                        : type == CompatibleMaterial.COD.getMaterial()); // Now broken in 1.13 ((Ocelot) entity).isTamed()
             case "PANDA":
                 return (type == Material.BAMBOO);
             case "FOX":

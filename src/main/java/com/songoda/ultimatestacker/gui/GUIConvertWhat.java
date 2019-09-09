@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.gui;
 
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.gui.Gui;
 import com.songoda.core.gui.GuiUtils;
 import com.songoda.ultimatestacker.convert.Convert;
@@ -22,20 +22,20 @@ public class GUIConvertWhat extends Gui {
         this.convertFrom = convertFrom;
 
         if (convertFrom.canEntities()) {
-            this.setButton(0, GuiUtils.createButtonItem(LegacyMaterials.STONE,
+            this.setButton(0, GuiUtils.createButtonItem(CompatibleMaterial.STONE,
                     ChatColor.GRAY + "Stacked Entities",
                     entities ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
                     (event) -> toggleEntities());
         }
 
         if (convertFrom.canSpawners()) {
-            this.setButton(1, GuiUtils.createButtonItem(LegacyMaterials.STONE,
+            this.setButton(1, GuiUtils.createButtonItem(CompatibleMaterial.STONE,
                     ChatColor.GRAY + "Stacked Spawners",
                     spawners ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
                     (event) -> toggleSpawners());
         }
 
-        this.setButton(8, GuiUtils.createButtonItem(LegacyMaterials.GREEN_WOOL, ChatColor.GREEN + "Run"),
+        this.setButton(8, GuiUtils.createButtonItem(CompatibleMaterial.GREEN_WOOL, ChatColor.GREEN + "Run"),
                 (event) -> run(event.player));
 
     }

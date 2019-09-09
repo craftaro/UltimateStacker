@@ -1,6 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.songoda.core.compatibility.CompatibleSounds;
+import com.songoda.core.compatibility.CompatibleSound;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.BlockUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
@@ -86,7 +86,7 @@ public class ItemListeners implements Listener {
         if (event.getItem().getItemStack().getAmount() < 32) return;
         event.setCancelled(true);
 
-        event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSounds.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
+        event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
 
         Methods.updateInventory(event.getItem(), event.getPlayer().getInventory());
     }

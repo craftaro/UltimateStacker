@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker;
 import com.songoda.core.SongodaCore;
 import com.songoda.core.SongodaPlugin;
 import com.songoda.core.commands.CommandManager;
-import com.songoda.core.compatibility.LegacyMaterials;
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.configuration.Config;
 import com.songoda.core.database.DataMigrationManager;
@@ -96,7 +96,7 @@ public class UltimateStacker extends SongodaPlugin {
     @Override
     public void onPluginEnable() {
         // Run Songoda Updater
-        SongodaCore.registerPlugin(this, 16, LegacyMaterials.IRON_INGOT);
+        SongodaCore.registerPlugin(this, 16, CompatibleMaterial.IRON_INGOT);
 
         // Setup Config
         Setting.setupConfig();
@@ -334,7 +334,7 @@ public class UltimateStacker extends SongodaPlugin {
         // are holograms enabled?
         if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         // verify that this is a spawner stack
-        if (stack.getLocation().getBlock().getType() != LegacyMaterials.SPAWNER.getMaterial()) return;
+        if (stack.getLocation().getBlock().getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // grab the spawner block
         CreatureSpawner creatureSpawner = (CreatureSpawner) stack.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), stack.getAmount());
@@ -344,7 +344,7 @@ public class UltimateStacker extends SongodaPlugin {
 
     public void updateHologram(Block block) {
         // verify that this is a spawner
-        if (block.getType() != LegacyMaterials.SPAWNER.getMaterial()) return;
+        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // are holograms enabled?
         if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         // update this hologram in a tick
@@ -448,7 +448,7 @@ public class UltimateStacker extends SongodaPlugin {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
             return isMaterialBlacklisted(item.getType());
         } else {
-            LegacyMaterials mat = LegacyMaterials.getMaterial(item);
+            CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
             if (mat.usesData()) {
                 return isMaterialBlacklisted(mat.getMaterial(), mat.getData());
             } else {

@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.math.NumberUtils;
@@ -45,7 +45,7 @@ public class BlockListeners implements Listener {
                 || item.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
-        List<String> disabledWorlds = Setting.DISABLED_WORLDS.getStringList();
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         if (!plugin.spawnersEnabled()) return;
@@ -57,7 +57,7 @@ public class BlockListeners implements Listener {
 
         int itemAmount = getSpawnerAmount(item);
         int specific = plugin.getSpawnerFile().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
-        int maxStackSize = specific == -1 ? Setting.MAX_STACK_SPAWNERS.getInt() : specific;
+        int maxStackSize = specific == -1 ? Settings.MAX_STACK_SPAWNERS.getInt() : specific;
 
         cs = (CreatureSpawner) block.getState();
 
@@ -155,7 +155,7 @@ public class BlockListeners implements Listener {
         int amt = 1;
         boolean remove = false;
 
-        if (player.isSneaking() && Setting.SNEAK_FOR_STACK.getBoolean()) {
+        if (player.isSneaking() && Settings.SNEAK_FOR_STACK.getBoolean()) {
             amt = stack.getAmount();
             remove = true;
         } else if (stack.getAmount() <= 1) {

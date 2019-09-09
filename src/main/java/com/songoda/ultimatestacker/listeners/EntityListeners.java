@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import java.util.ArrayList;
@@ -90,14 +90,14 @@ public class EntityListeners implements Listener {
 
             SpawnerStack spawner = plugin.getSpawnerStackManager().getSpawner(block);
 
-            if (Setting.SPAWNERS_DONT_EXPLODE.getBoolean())
+            if (Settings.SPAWNERS_DONT_EXPLODE.getBoolean())
                 toCancel.add(block);
             else {
                 String chance = "";
                 if (event.getEntity() instanceof Creeper)
-                    chance = Setting.EXPLOSION_DROP_CHANCE_TNT.getString();
+                    chance = Settings.EXPLOSION_DROP_CHANCE_TNT.getString();
                 else if (event.getEntity() instanceof TNTPrimed)
-                    chance = Setting.EXPLOSION_DROP_CHANCE_CREEPER.getString();
+                    chance = Settings.EXPLOSION_DROP_CHANCE_CREEPER.getString();
                 int ch = Integer.parseInt(chance.replace("%", ""));
                 double rand = Math.random() * 100;
                 if (rand - ch < 0 || ch == 100) {

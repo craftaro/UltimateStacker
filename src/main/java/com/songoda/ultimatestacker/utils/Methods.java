@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -91,18 +91,18 @@ public class Methods {
     }
 
     public static String compileItemName(ItemStack item, int amount) {
-        String nameFormat = Setting.NAME_FORMAT_ITEM.getString();
+        String nameFormat = Settings.NAME_FORMAT_ITEM.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile()
                 .getString("Items." + item.getType().name() + ".Display Name"));
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
-            displayName = Setting.NAME_FORMAT_RESET.getBoolean() ?
+            displayName = Settings.NAME_FORMAT_RESET.getBoolean() ?
                     ChatColor.stripColor(item.getItemMeta().getDisplayName()) : item.getItemMeta().getDisplayName();
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        if (amount == 1 && !Setting.SHOW_STACK_SIZE_SINGLE.getBoolean()) {
+        if (amount == 1 && !Settings.SHOW_STACK_SIZE_SINGLE.getBoolean()) {
             nameFormat = nameFormat.replaceAll("\\[.*?]", "");
         } else {
             nameFormat = nameFormat.replace("[", "").replace("]", "");
@@ -141,7 +141,7 @@ public class Methods {
     }
 
     public static String compileEntityName(Entity entity, int amount) {
-        String nameFormat = Setting.NAME_FORMAT_ENTITY.getString();
+        String nameFormat = Settings.NAME_FORMAT_ENTITY.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);

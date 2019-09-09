@@ -5,7 +5,7 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.DropUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -40,7 +40,7 @@ public class DeathListeners implements Listener {
     public void onEntityDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) return;
 
-        boolean custom = Setting.CUSTOM_DROPS.getBoolean();
+        boolean custom = Settings.CUSTOM_DROPS.getBoolean();
         List<Drop> drops = custom ? instance.getLootablesManager().getDrops(event.getEntity()) : new ArrayList<>();
 
         if (!custom) {
@@ -112,7 +112,7 @@ public class DeathListeners implements Listener {
         if (!instance.getEntityStackManager().isStacked(event.getEntity())) return;
         EntityStack stack = instance.getEntityStackManager().getStack(event.getEntity());
 
-        if (Setting.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Setting.REALISTIC_DAMAGE.getBoolean()) {
+        if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();
             ItemStack tool = player.getInventory().getItemInMainHand();
             if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()

@@ -4,7 +4,7 @@ import com.songoda.core.compatibility.CompatibleSound;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.BlockUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.block.BlockState;
@@ -28,8 +28,8 @@ public class ItemListeners implements Listener {
 
     @EventHandler
     public void onMerge(ItemMergeEvent event) {
-        int maxItemStackSize = Setting.MAX_STACK_ITEMS.getInt();
-        if (!Setting.STACK_ITEMS.getBoolean()) return;
+        int maxItemStackSize = Settings.MAX_STACK_ITEMS.getInt();
+        if (!Settings.STACK_ITEMS.getBoolean()) return;
 
         Item item = event.getTarget();
         ItemStack itemStack = item.getItemStack();
@@ -58,7 +58,7 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
-        if (!Setting.STACK_ITEMS.getBoolean() || !Methods.hasCustomAmount(event.getItem())) return;
+        if (!Settings.STACK_ITEMS.getBoolean() || !Methods.hasCustomAmount(event.getItem())) return;
         event.setCancelled(true);
 
         Methods.updateInventory(event.getItem(), event.getInventory());
@@ -68,7 +68,7 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onExist(ItemSpawnEvent event) {
-        if (!Setting.STACK_ITEMS.getBoolean()) return;
+        if (!Settings.STACK_ITEMS.getBoolean()) return;
 
         ItemStack itemStack = event.getEntity().getItemStack();
 
@@ -82,7 +82,7 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
-        if (!Setting.STACK_ITEMS.getBoolean()) return;
+        if (!Settings.STACK_ITEMS.getBoolean()) return;
         if (event.getItem().getItemStack().getAmount() < 32) return;
         event.setCancelled(true);
 

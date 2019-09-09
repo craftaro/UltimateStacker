@@ -27,7 +27,7 @@ import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
 import com.songoda.ultimatestacker.lootables.LootablesManager;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
@@ -99,10 +99,10 @@ public class UltimateStacker extends SongodaPlugin {
         SongodaCore.registerPlugin(this, 16, CompatibleMaterial.IRON_INGOT);
 
         // Setup Config
-        Setting.setupConfig();
-		this.setLocale(Setting.LANGUGE_MODE.getString(), false);
-        whitelist = Setting.ITEM_WHITELIST.getStringList();
-        blacklist = Setting.ITEM_BLACKLIST.getStringList();
+        Settings.setupConfig();
+		this.setLocale(Settings.LANGUGE_MODE.getString(), false);
+        whitelist = Settings.ITEM_WHITELIST.getStringList();
+        blacklist = Settings.ITEM_BLACKLIST.getStringList();
         
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
@@ -165,7 +165,7 @@ public class UltimateStacker extends SongodaPlugin {
         pluginManager.registerEvents(new SpawnerListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
 
-        if (Setting.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
+        if (Settings.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
             pluginManager.registerEvents(new ClearLagListeners(this), this);
 
         // Register Hooks
@@ -203,13 +203,13 @@ public class UltimateStacker extends SongodaPlugin {
 
         // Database stuff, go!
         try {
-            if (Setting.MYSQL_ENABLED.getBoolean()) {
-                String hostname = Setting.MYSQL_HOSTNAME.getString();
-                int port = Setting.MYSQL_PORT.getInt();
-                String database = Setting.MYSQL_DATABASE.getString();
-                String username = Setting.MYSQL_USERNAME.getString();
-                String password = Setting.MYSQL_PASSWORD.getString();
-                boolean useSSL = Setting.MYSQL_USE_SSL.getBoolean();
+            if (Settings.MYSQL_ENABLED.getBoolean()) {
+                String hostname = Settings.MYSQL_HOSTNAME.getString();
+                int port = Settings.MYSQL_PORT.getInt();
+                String database = Settings.MYSQL_DATABASE.getString();
+                String username = Settings.MYSQL_USERNAME.getString();
+                String password = Settings.MYSQL_PASSWORD.getString();
+                boolean useSSL = Settings.MYSQL_USE_SSL.getBoolean();
 
                 this.databaseConnector = new MySQLConnector(this, hostname, port, database, username, password, useSSL);
                 this.getLogger().info("Data handler connected using MySQL.");
@@ -228,7 +228,7 @@ public class UltimateStacker extends SongodaPlugin {
         this.dataMigrationManager.runMigrations();
 
         Bukkit.getScheduler().runTaskLater(this, () -> {
-            final boolean useHolo = Setting.SPAWNER_HOLOGRAMS.getBoolean();
+            final boolean useHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
             this.dataManager.getSpawners((spawners) -> {
                 this.spawnerStackManager.addSpawners(spawners);
                 if (useHolo)
@@ -250,8 +250,8 @@ public class UltimateStacker extends SongodaPlugin {
     
     @Override
     public void onConfigReload() {
-        whitelist = Setting.ITEM_WHITELIST.getStringList();
-        blacklist = Setting.ITEM_BLACKLIST.getStringList();
+        whitelist = Settings.ITEM_WHITELIST.getStringList();
+        blacklist = Settings.ITEM_BLACKLIST.getStringList();
         
 		this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
@@ -268,7 +268,7 @@ public class UltimateStacker extends SongodaPlugin {
     }
 
     public boolean spawnersEnabled() {
-        return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Setting.SPAWNERS_ENABLED.getBoolean();
+        return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Settings.SPAWNERS_ENABLED.getBoolean();
     }
 
     public CommandManager getCommandManager() {
@@ -332,7 +332,7 @@ public class UltimateStacker extends SongodaPlugin {
 
     public void updateHologram(SpawnerStack stack) {
         // are holograms enabled?
-        if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        if(!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         // verify that this is a spawner stack
         if (stack.getLocation().getBlock().getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // grab the spawner block
@@ -346,7 +346,7 @@ public class UltimateStacker extends SongodaPlugin {
         // verify that this is a spawner
         if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // are holograms enabled?
-        if(!Setting.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        if(!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         // update this hologram in a tick
         SpawnerStack spawner = getSpawnerStackManager().getSpawner(block);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> updateHologram(spawner), 10L);
@@ -387,10 +387,10 @@ public class UltimateStacker extends SongodaPlugin {
         }
         item.setItemStack(itemStack);
 
-        if ((blacklisted && !Setting.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
+        if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
                 || !INSTANCE.getItemFile().getBoolean("Items." + material + ".Has Hologram")
-                || !Setting.ITEM_HOLOGRAMS.getBoolean()
-                || newAmount == 1 && !Setting.ITEM_HOLOGRAM_SINGLE.getBoolean())
+                || !Settings.ITEM_HOLOGRAMS.getBoolean()
+                || newAmount == 1 && !Settings.ITEM_HOLOGRAM_SINGLE.getBoolean())
             return;
 
         item.setCustomName(name);

@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.settings.Setting;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
@@ -33,7 +33,7 @@ public class SpawnerListeners implements Listener {
 
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
-        if (!Setting.STACK_ENTITIES.getBoolean()
+        if (!Settings.STACK_ENTITIES.getBoolean()
                 || !plugin.spawnersEnabled()
                 || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;
         SpawnerStackManager spawnerStackManager = plugin.getSpawnerStackManager();
@@ -67,7 +67,7 @@ public class SpawnerListeners implements Listener {
 
         event.setCancelled(true);
 
-        if (!Setting.EGGS_CONVERT_SPAWNERS.getBoolean()
+        if (!Settings.EGGS_CONVERT_SPAWNERS.getBoolean()
                 || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName())) {
             return;
         }

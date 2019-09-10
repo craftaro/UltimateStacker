@@ -32,7 +32,7 @@ import org.bukkit.util.Vector;
 public class Methods {
 
     public static void updateInventory(Item item, Inventory inventory) {
-        int amount = Methods.getActualItemAmount(item);
+        int amount = UltimateStacker.getActualItemAmount(item);
         ItemStack itemStack = item.getItemStack();
         final int maxStack = itemStack.getMaxStackSize();
 
@@ -51,7 +51,7 @@ public class Methods {
         if (amount <= 0)
             item.remove();
         else
-            Methods.updateItemAmount(item, itemStack, amount);
+            UltimateStacker.updateItemAmount(item, itemStack, amount);
     }
 
     // Do not touch! API for older plugins

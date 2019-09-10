@@ -445,15 +445,13 @@ public class UltimateStacker extends SongodaPlugin {
      * @return true if this material will not stack
      */
     public static boolean isMaterialBlacklisted(ItemStack item) {
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
-            return isMaterialBlacklisted(item.getType());
+        CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
+        if(mat == null) {
+            return true;
+        } else if (mat.usesData()) {
+            return isMaterialBlacklisted(mat.getMaterial(), mat.getData());
         } else {
-            CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
-            if (mat.usesData()) {
-                return isMaterialBlacklisted(mat.getMaterial(), mat.getData());
-            } else {
-                return isMaterialBlacklisted(mat.getMaterial());
-            }
+            return isMaterialBlacklisted(mat.getMaterial());
         }
     }
 
@@ -461,7 +459,7 @@ public class UltimateStacker extends SongodaPlugin {
      * Check to see if this material is not permitted to stack
      *
      * @param type Material to check
-     * @param data daya value for this item (for 1.12 and older servers)
+     * @param data data value for this item (for 1.12 and older servers)
      * @return true if this material will not stack
      */
     public static boolean isMaterialBlacklisted(Material type, byte data) {

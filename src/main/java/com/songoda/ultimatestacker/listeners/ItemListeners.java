@@ -1,7 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.core.compatibility.CompatibleSound;
-import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.BlockUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -37,28 +36,27 @@ public class ItemListeners implements Listener {
         event.setCancelled(true);
 
         int specific = instance.getItemFile().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
-        int max = specific == -1 && new ItemStack(itemStack.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
+        int max;
 
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType()))
+        if (UltimateStacker.isMaterialBlacklisted(itemStack))
             max = new ItemStack(itemStack.getType()).getMaxStackSize();
-
-        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && Methods.isMaterialBlacklisted(itemStack.getType(), itemStack.getData().getData()))
-            max = new ItemStack(itemStack.getType()).getMaxStackSize();
+        else
+            max = specific == -1 && new ItemStack(itemStack.getType()).getMaxStackSize() != 1 ? maxItemStackSize : specific;
 
         if (max == -1) max = 1;
 
-        int newAmount = Methods.getActualItemAmount(event.getEntity())
-                + Methods.getActualItemAmount(item);
+        int newAmount = UltimateStacker.getActualItemAmount(event.getEntity())
+                + UltimateStacker.getActualItemAmount(item);
 
         if (newAmount > max) return;
 
-        Methods.updateItemAmount(item, itemStack, newAmount);
+        UltimateStacker.updateItemAmount(item, itemStack, newAmount);
         event.getEntity().remove();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
-        if (!Settings.STACK_ITEMS.getBoolean() || !Methods.hasCustomAmount(event.getItem())) return;
+        if (!Settings.STACK_ITEMS.getBoolean() || !UltimateStacker.hasCustomAmount(event.getItem())) return;
         event.setCancelled(true);
 
         Methods.updateInventory(event.getItem(), event.getInventory());
@@ -77,7 +75,7 @@ public class ItemListeners implements Listener {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
 
-        Methods.updateItemAmount(event.getEntity(), itemStack, event.getEntity().getItemStack().getAmount());
+        UltimateStacker.updateItemAmount(event.getEntity(), itemStack, event.getEntity().getItemStack().getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

@@ -85,8 +85,8 @@ public class InteractListeners implements Listener {
             case "CHICKEN":
                 return type == CompatibleMaterial.WHEAT_SEEDS.getMaterial()
                         || type == Material.MELON_SEEDS
-                        || type == Material.BEETROOT_SEEDS
-                        || type == Material.PUMPKIN_SEEDS;
+                        || type == Material.PUMPKIN_SEEDS
+                        || type == CompatibleMaterial.BEETROOT_SEEDS.getMaterial();
             case "HORSE":
                 return (type == Material.GOLDEN_APPLE || type == Material.GOLDEN_CARROT) && ((Horse)entity).isTamed();
             case "WOLF":

@@ -380,8 +380,6 @@ public class UltimateStacker extends SongodaPlugin {
         String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
 
         boolean blacklisted = isMaterialBlacklisted(itemStack);
-        //boolean blacklisted = ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-        //        ? isMaterialBlacklisted(material) : isMaterialBlacklisted(material, itemStack.getData().getData());
 
         if (newAmount > 32 && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
@@ -441,7 +439,9 @@ public class UltimateStacker extends SongodaPlugin {
     public static boolean isMaterialBlacklisted(ItemStack item) {
         CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
         if(mat == null) {
-            return false;
+            // this shouldn't happen, but just in case?
+            return item == null ? false : (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                ? isMaterialBlacklisted(item.getType()) : isMaterialBlacklisted(item.getType(), item.getData().getData()));
         } else if (mat.usesData()) {
             return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial(), mat.getData());
         } else {

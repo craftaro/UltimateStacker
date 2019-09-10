@@ -40,7 +40,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,14 +58,15 @@ import org.bukkit.plugin.PluginManager;
 public class UltimateStacker extends SongodaPlugin {
 
     private static UltimateStacker INSTANCE;
-    private static List<String> whitelist;
-    private static List<String> blacklist;
+    private final static Set<String> whitelist = new HashSet();
+    private final static Set<String> blacklist = new HashSet();;
 
     private final Config mobFile = new Config(this, "mobs.yml");
     private final Config itemFile = new Config(this, "items.yml");
     private final Config spawnerFile = new Config(this, "spawners.yml");
 
     private final GuiManager guiManager = new GuiManager(this);
+    private final List<StackerHook> stackerHooks = new ArrayList<>();
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
     private LootablesManager lootablesManager;
@@ -75,8 +78,6 @@ public class UltimateStacker extends SongodaPlugin {
     private DataManager dataManager;
 
     private EntityUtils entityUtils;
-
-    private List<StackerHook> stackerHooks = new ArrayList<>();
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
@@ -101,8 +102,10 @@ public class UltimateStacker extends SongodaPlugin {
         // Setup Config
         Settings.setupConfig();
 		this.setLocale(Settings.LANGUGE_MODE.getString(), false);
-        whitelist = Settings.ITEM_WHITELIST.getStringList();
-        blacklist = Settings.ITEM_BLACKLIST.getStringList();
+        blacklist.clear();
+        whitelist.clear();
+        whitelist.addAll(Settings.ITEM_WHITELIST.getStringList());
+        blacklist.addAll(Settings.ITEM_BLACKLIST.getStringList());
         
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
@@ -250,8 +253,10 @@ public class UltimateStacker extends SongodaPlugin {
     
     @Override
     public void onConfigReload() {
-        whitelist = Settings.ITEM_WHITELIST.getStringList();
-        blacklist = Settings.ITEM_BLACKLIST.getStringList();
+        blacklist.clear();
+        whitelist.clear();
+        whitelist.addAll(Settings.ITEM_WHITELIST.getStringList());
+        blacklist.addAll(Settings.ITEM_BLACKLIST.getStringList());
         
 		this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
@@ -430,29 +435,40 @@ public class UltimateStacker extends SongodaPlugin {
     /**
      * Check to see if this material is not permitted to stack
      *
-     * @param type Material to check
-     * @return true if this material will not stack
-     */
-    public static boolean isMaterialBlacklisted(Material type) {
-        return !whitelist.isEmpty() && !whitelist.contains(type.name())
-                || !blacklist.isEmpty() && blacklist.contains(type.name());
-    }
-
-    /**
-     * Check to see if this material is not permitted to stack
-     *
      * @param item Item material to check
      * @return true if this material will not stack
      */
     public static boolean isMaterialBlacklisted(ItemStack item) {
         CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
         if(mat == null) {
-            return true;
+            return false;
         } else if (mat.usesData()) {
-            return isMaterialBlacklisted(mat.getMaterial(), mat.getData());
+            return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial(), mat.getData());
         } else {
-            return isMaterialBlacklisted(mat.getMaterial());
+            return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial());
         }
+    }
+
+    /**
+     * Check to see if this material is not permitted to stack
+     *
+     * @param type Material to check
+     * @return true if this material will not stack
+     */
+    public static boolean isMaterialBlacklisted(String type) {
+        return !whitelist.isEmpty() && !whitelist.contains(type)
+                || !blacklist.isEmpty() && blacklist.contains(type);
+    }
+
+    /**
+     * Check to see if this material is not permitted to stack
+     *
+     * @param type Material to check
+     * @return true if this material will not stack
+     */
+    public static boolean isMaterialBlacklisted(Material type) {
+        return !whitelist.isEmpty() && !whitelist.contains(type.name())
+                || !blacklist.isEmpty() && blacklist.contains(type.name());
     }
 
     /**

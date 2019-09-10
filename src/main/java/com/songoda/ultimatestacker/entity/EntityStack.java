@@ -25,7 +25,8 @@ public class EntityStack {
     private UUID entity;
     private int amount;
 
-    private Deque<Double> health = new ArrayDeque<>();
+    private final Deque<Double> health = new ArrayDeque<>();
+    final Object healthLock = new Object();
     UltimateStacker plugin = UltimateStacker.getInstance();
 
     public EntityStack(LivingEntity entity, int amount) {
@@ -192,16 +193,22 @@ public class EntityStack {
 
     public void updateHealth(LivingEntity entity) {
         if (entity == null) return;
-        entity.setHealth(Settings.STACK_ENTITY_HEALTH.getBoolean()
-                && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
+        synchronized (healthLock) {
+            entity.setHealth(Settings.STACK_ENTITY_HEALTH.getBoolean()
+                    && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
+        }
     }
 
     public void addHealth(double health) {
-        this.health.addLast(health);
+        synchronized(healthLock) {
+            this.health.addLast(health);
+        }
     }
 
     public void mergeHealth(EntityStack stack) {
-        this.health.addAll(stack.health);
+        synchronized(healthLock) {
+            this.health.addAll(stack.health);
+        }
     }
 
     @Override

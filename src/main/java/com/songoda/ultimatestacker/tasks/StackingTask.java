@@ -19,16 +19,17 @@ public class StackingTask extends BukkitRunnable {
 
     private final UltimateStacker plugin;
 
-    private EntityStackManager stackManager;
+    private final EntityStackManager stackManager;
 
     ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
 
-    private List<UUID> processed = new ArrayList<>();
+    private final List<UUID> processed = new ArrayList<>();
 
-    private int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt();
-    private int minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt();
-
-    private int maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
+    private final HashMap<EntityType, Integer> entityStackSizes = new HashMap();
+    private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt();
+    private final int minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt();
+    private final int maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
+    private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
@@ -76,7 +77,6 @@ public class StackingTask extends BukkitRunnable {
     }
 
     public boolean isWorldDisabled(World world) {
-        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
         return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
@@ -290,8 +290,14 @@ public class StackingTask extends BukkitRunnable {
     }
 
     private int getEntityStackSize(LivingEntity initialEntity) {
-        if (configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size") != -1)
-            maxEntityStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
-        return maxEntityStackSize;
+        Integer max = entityStackSizes.get(initialEntity.getType());
+        if(max == null) {
+            max = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
+            if(max == -1) {
+                max = maxEntityStackSize;
+            }
+            entityStackSizes.put(initialEntity.getType(), max);
+        }
+        return max;
     }
 }

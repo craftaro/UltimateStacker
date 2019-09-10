@@ -347,6 +347,10 @@ public class UltimateStacker extends SongodaPlugin {
         HologramManager.updateHologram(stack.getLocation(), name);
     }
 
+    public void removeHologram(Block block) {
+        HologramManager.removeHologram(block.getLocation());
+    }
+
     public void updateHologram(Block block) {
         // verify that this is a spawner
         if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;

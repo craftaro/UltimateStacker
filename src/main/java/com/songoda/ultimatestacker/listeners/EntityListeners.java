@@ -108,7 +108,7 @@ public class EntityListeners implements Listener {
 
                     SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(spawnLocation);
                     plugin.getDataManager().deleteSpawner(spawnerStack);
-                    plugin.updateHologram(spawner);
+                    plugin.removeHologram(block);
                 }
             }
 
@@ -120,7 +120,6 @@ public class EntityListeners implements Listener {
                     ee.remove();
                 }
             }
-
         }
 
         for (Block block : toCancel) {

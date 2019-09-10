@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import java.util.ArrayList;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
@@ -25,6 +26,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 public class BlockListeners implements Listener {
 

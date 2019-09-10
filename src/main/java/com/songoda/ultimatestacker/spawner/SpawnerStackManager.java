@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class SpawnerStackManager {
 
-    private  final Map<Location, SpawnerStack> registeredSpawners = new HashMap<>();
+    private final Map<Location, SpawnerStack> registeredSpawners = new HashMap<>();
 
     public void addSpawners(Map<Location, SpawnerStack> spawners) {
         this.registeredSpawners.putAll(spawners);

@@ -114,7 +114,7 @@ public class DeathListeners implements Listener {
 
         if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();
-            ItemStack tool = player.getInventory().getItemInMainHand();
+            ItemStack tool = player.getInventory().getItemInHand();
             if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()
                     || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().spigot().isUnbreakable()))))
                 return;
@@ -131,7 +131,7 @@ public class DeathListeners implements Listener {
             tool.setItemMeta((ItemMeta) damageable);
 
             if (!this.hasEnoughDurability(tool, 1))
-                player.getInventory().setItemInMainHand(null);
+                player.getInventory().setItemInHand(null);
 
         }
     }

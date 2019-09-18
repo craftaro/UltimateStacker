@@ -12,6 +12,7 @@ import com.songoda.core.database.MySQLConnector;
 import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
+import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.CommandConvert;
 import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
@@ -86,6 +87,9 @@ public class UltimateStacker extends SongodaPlugin {
     @Override
     public void onPluginLoad() {
         INSTANCE = this;
+
+        // Register WorldGuard
+        WorldGuardHook.addHook("mob-stacking", true);
     }
     
     @Override

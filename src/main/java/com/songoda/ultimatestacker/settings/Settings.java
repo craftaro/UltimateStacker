@@ -179,7 +179,7 @@ public class Settings {
             "This is added only because it looks smoother in game. This is only visual and",
             "doesn't actually effect the item.");
 
-    public static final ConfigSetting ITEM_BLACKLIST = new ConfigSetting(config, "Items.Blacklist", Collections.singletonList("EGG"),
+    public static final ConfigSetting ITEM_BLACKLIST = new ConfigSetting(config, "Items.Blacklist", Collections.singletonList("BARRIER"),
             "Items included in this list will stack to default Minecraft amounts.",
             "Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html",
             "Leave this empty by using \"blacklist: []\" if you do not wish to disable",

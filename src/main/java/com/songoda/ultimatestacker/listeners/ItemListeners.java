@@ -75,13 +75,13 @@ public class ItemListeners implements Listener {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
 
-        UltimateStacker.updateItemAmount(event.getEntity(), itemStack, event.getEntity().getItemStack().getAmount());
+        UltimateStacker.updateItemAmount(event.getEntity(), itemStack, itemStack.getAmount());
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
-        if (event.getItem().getItemStack().getAmount() < 32) return;
+        if (event.getItem().getItemStack().getAmount() < (event.getItem().getItemStack().getMaxStackSize() / 2)) return;
         event.setCancelled(true);
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));

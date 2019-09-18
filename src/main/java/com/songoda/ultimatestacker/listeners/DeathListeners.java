@@ -114,35 +114,30 @@ public class DeathListeners implements Listener {
 
         if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();
-            ItemStack tool = player.getInventory().getItemInMainHand();
-            if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()
+            ItemStack tool = player.getInventory().getItemInHand();
+            if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().spigot().isUnbreakable()
                     || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().spigot().isUnbreakable()))))
                 return;
 
             int unbreakingLevel = tool.getEnchantmentLevel(Enchantment.DURABILITY);
-            Damageable damageable = (Damageable) tool.getItemMeta();
 
             int actualDamage = 0;
             for (int i = 0; i < stack.getAmount(); i++)
                 if (checkUnbreakingChance(unbreakingLevel))
                     actualDamage++;
 
-            damageable.setDamage(damageable.getDamage() + actualDamage-1);
-            tool.setItemMeta((ItemMeta) damageable);
+            tool.setDurability((short)(tool.getDurability() + actualDamage));
 
             if (!this.hasEnoughDurability(tool, 1))
-                player.getInventory().setItemInMainHand(null);
+                player.getInventory().setItemInHand(null);
 
         }
     }
 
     public boolean hasEnoughDurability(ItemStack tool, int requiredAmount) {
-        if (!tool.hasItemMeta() || !(tool.getItemMeta() instanceof Damageable) || tool.getType().getMaxDurability() < 1)
+        if (tool.getType().getMaxDurability() <= 1)
             return true;
-
-        Damageable damageable = (Damageable) tool.getItemMeta();
-        int durabilityRemaining = tool.getType().getMaxDurability() - damageable.getDamage();
-        return durabilityRemaining > requiredAmount;
+        return tool.getDurability() + requiredAmount <= tool.getType().getMaxDurability();
     }
 
     public boolean checkUnbreakingChance(int level) {

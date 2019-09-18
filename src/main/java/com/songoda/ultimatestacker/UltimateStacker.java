@@ -12,6 +12,7 @@ import com.songoda.core.database.MySQLConnector;
 import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
+import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.CommandConvert;
 import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
@@ -86,6 +87,9 @@ public class UltimateStacker extends SongodaPlugin {
     @Override
     public void onPluginLoad() {
         INSTANCE = this;
+
+        // Register WorldGuard
+        WorldGuardHook.addHook("mob-stacking", true);
     }
     
     @Override
@@ -385,9 +389,9 @@ public class UltimateStacker extends SongodaPlugin {
 
         boolean blacklisted = isMaterialBlacklisted(itemStack);
 
-        if (newAmount > 32 && !blacklisted) {
+        if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
-            itemStack.setAmount(32);
+            itemStack.setAmount(Math.max(1, itemStack.getMaxStackSize() / 2));
         } else {
             item.removeMetadata("US_AMT", INSTANCE);
             itemStack.setAmount(newAmount);
@@ -411,8 +415,9 @@ public class UltimateStacker extends SongodaPlugin {
      * @return stacker-corrected value for the stack size
      */
     public static int getActualItemAmount(Item item) {
-        int amount = item.getItemStack().getAmount();
-        if (amount >= 32 && item.hasMetadata("US_AMT")) {
+        ItemStack itemStack = item.getItemStack();
+        int amount = itemStack.getAmount();
+        if (amount >= (itemStack.getMaxStackSize() / 2) && item.hasMetadata("US_AMT")) {
             return item.getMetadata("US_AMT").get(0).asInt();
         } else {
             return amount;

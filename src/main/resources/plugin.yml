@@ -1,7 +1,7 @@
 name: UltimateStacker
 description: UltimateStacker
 version: maven-version-number
-softdepend: [HolographicDisplays, WorldGuard, EpicSpawners, mcMMO]
+softdepend: [HolographicDisplays, Holograms, CMI, WorldGuard, EpicSpawners, mcMMO, WildStacker, StackMob]
 loadbefore: [WorldGuard]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda

@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.tasks;
 
+import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.entity.EntityStackManager;
@@ -147,6 +148,10 @@ public class StackingTask extends BukkitRunnable {
             // Make sure the entity has not already been processed.
             if (this.processed.contains(entity.getUniqueId())) continue;
 
+            // Check our WorldGuard flag.
+            if (WorldGuardHook.isEnabled() && !WorldGuardHook.getBooleanFlag(entity.getLocation(), "mob-stacking"))
+                continue;
+
             // Get this entities friendStack.
             EntityStack friendStack = stackManager.getStack(entity);
 
@@ -209,6 +214,10 @@ public class StackingTask extends BukkitRunnable {
 
         // If our entity is stacked then skip this entity.
         if (isStack) return;
+
+        // Check our WorldGuard flag.
+        if (WorldGuardHook.isEnabled() && !WorldGuardHook.getBooleanFlag(livingEntity.getLocation(), "mob-stacking"))
+            return;
 
         // Remove all stacked entities from our stackable friends.
         stackableFriends.removeIf(stackManager::isStacked);

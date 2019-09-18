@@ -391,7 +391,7 @@ public class UltimateStacker extends SongodaPlugin {
 
         if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
-            itemStack.setAmount(itemStack.getMaxStackSize() / 2);
+            itemStack.setAmount(Math.max(1, itemStack.getMaxStackSize() / 2));
         } else {
             item.removeMetadata("US_AMT", INSTANCE);
             itemStack.setAmount(newAmount);

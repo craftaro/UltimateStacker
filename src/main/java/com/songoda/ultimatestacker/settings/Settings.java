@@ -160,9 +160,9 @@ public class Settings {
     public static final ConfigSetting ITEM_HOLOGRAMS = new ConfigSetting(config, "Items.Holograms Enabled", true,
             "Should holograms be displayed above stacked items?");
 
-    public static final ConfigSetting ITEM_HOLOGRAM_SINGLE = new ConfigSetting(config, "Items.Show Hologram For Single", true,
-            "Should holograms be displayed above items when there is only a single",
-            "item in the stack?");
+    public static final ConfigSetting ITEM_MIN_HOLOGRAM_SIZE = new ConfigSetting(config, "Items.Minimum Hologram Stack Size", 0,
+            "What should the minimum item stack size be that will show",
+            "holograms?");
 
     public static final ConfigSetting ITEM_HOLOGRAM_BLACKLIST = new ConfigSetting(config, "Items.Show Holograms For Blacklisted Items", true,
             "Should items that are blacklisted display holograms?");

@@ -401,7 +401,7 @@ public class UltimateStacker extends SongodaPlugin {
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
                 || !INSTANCE.getItemFile().getBoolean("Items." + material + ".Has Hologram")
                 || !Settings.ITEM_HOLOGRAMS.getBoolean()
-                || newAmount == 1 && !Settings.ITEM_HOLOGRAM_SINGLE.getBoolean())
+                || newAmount < Settings.ITEM_MIN_HOLOGRAM_SIZE.getInt())
             return;
 
         item.setCustomName(name);

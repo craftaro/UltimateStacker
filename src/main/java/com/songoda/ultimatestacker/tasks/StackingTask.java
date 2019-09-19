@@ -216,7 +216,8 @@ public class StackingTask extends BukkitRunnable {
         if (isStack) return;
 
         // Check our WorldGuard flag.
-        if (WorldGuardHook.isEnabled() && !WorldGuardHook.getBooleanFlag(livingEntity.getLocation(), "mob-stacking"))
+        Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(livingEntity.getLocation(), "mob-stacking") : null;
+        if (flag != null && !flag)
             return;
 
         // Remove all stacked entities from our stackable friends.

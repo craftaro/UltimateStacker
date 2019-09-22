@@ -24,14 +24,18 @@ public class ShearListeners implements Listener {
     public void onShear(PlayerShearEntityEvent event) {
         Entity entity = event.getEntity();
 
-        if (entity.getType() != EntityType.SHEEP && entity.getType() != EntityType.MUSHROOM_COW) return;
+        if (entity.getType() != EntityType.SHEEP
+                && entity.getType() != EntityType.MUSHROOM_COW
+                && entity.getType() != EntityType.SNOWMAN) return;
         EntityStackManager stackManager = plugin.getEntityStackManager();
         if (!stackManager.isStacked(entity)) return;
 
         if (event.getEntity().getType() == EntityType.SHEEP
                 && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_SHEAR)
                 || event.getEntity().getType() == EntityType.MUSHROOM_COW
-                && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.MUSHROOM_SHEAR))
+                && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.MUSHROOM_SHEAR)
+                || event.getEntity().getType() == EntityType.SNOWMAN
+                && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SNOWMAN_DERP))
             return;
 
         plugin.getEntityUtils().splitFromStack((LivingEntity)entity);

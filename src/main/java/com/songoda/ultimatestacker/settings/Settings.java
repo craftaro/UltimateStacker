@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.Split;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Settings {
@@ -92,8 +93,8 @@ public class Settings {
             "The acceptable check options are:",
             "SPAWN_REASON, NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
             "IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
-            "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEERED",
-            "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",
+            "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEARED",
+            "SNOWMAN_DERPED", "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",
             "HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",
             "HORSE_HAS_SADDLE, HORSE_JUMP, RABBIT_TYPE, VILLAGER_PROFESSION",
             "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
@@ -241,6 +242,17 @@ public class Settings {
     public static void setupConfig() {
         config.load();
         config.setAutoremove(true).setAutosave(true);
+
+        if (config.getStringList("Entities.Stack Checks").contains("SHEEP_SHEERED")) {
+            List<String> stackChecks = config.getStringList("Entities.Stack Checks");
+            stackChecks.remove("SHEEP_SHEERED");
+            stackChecks.addAll(Arrays.asList("SHEEP_SHEARED", "SNOWMAN_DERPED"));
+            config.set("Entities.Stack Checks", stackChecks);
+
+            List<String> splitChecks = config.getStringList("Entities.Split Checks");
+            splitChecks.add("SNOWMAN_DERP");
+            config.set("Entities.Split Checks", splitChecks);
+        }
 
         config.saveChanges();
     }

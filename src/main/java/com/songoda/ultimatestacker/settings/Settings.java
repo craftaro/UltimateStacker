@@ -5,6 +5,9 @@ import com.songoda.core.configuration.ConfigSetting;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.Split;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -75,13 +78,14 @@ public class Settings {
             "Events that will trigger an entire stack to be killed.",
             "It should be noted that this is useless if the above setting is true.",
             "Any of the following can be added to the list:",
-            "CONTACT, ENTITY_ATTACK, ENTITY_SWEEP_ATTACK, PROJECTILE",
-            "SUFFOCATION, FALL, FIRE, FIRE_TICK",
-            "MELTING, LAVA, DROWNING, BLOCK_EXPLOSION",
-            "ENTITY_EXPLOSION, VOID, LIGHTNING, SUICIDE",
-            "STARVATION, POISON, MAGIC, WITHER",
-            "FALLING_BLOCK, THORNS, DRAGON_BREATH, CUSTOM",
-            "FLY_INTO_WALL, HOT_FLOOR, CRAMMING, DRYOUT");
+            "\"CONTACT\", \"ENTITY_ATTACK\", \"ENTITY_SWEEP_ATTACK\", \"PROJECTILE\",",
+            "\"SUFFOCATION\", \"FALL\", \"FIRE\", \"FIRE_TICK\",",
+            "\"MELTING\", \"LAVA\", \"DROWNING\", \"BLOCK_EXPLOSION\",",
+            "\"ENTITY_EXPLOSION\", \"VOID\", \"LIGHTNING\", \"SUICIDE\",",
+            "\"STARVATION\", \"POISON\", \"MAGIC\", \"WITHER\",",
+            "\"FALLING_BLOCK\", \"THORNS\", \"DRAGON_BREATH\", \"CUSTOM\",",
+            "\"FLY_INTO_WALL\", \"HOT_FLOOR\", \"CRAMMING\", \"DRYOUT\".");
+
 
     public static final ConfigSetting NO_EXP_INSTANT_KILL = new ConfigSetting(config, "Entities.No Exp For Instant Kills", false,
             "Should no experience be dropped when an instant kill is performed?");
@@ -91,19 +95,23 @@ public class Settings {
             "These are checks that are processed before an entity is stacked.",
             "You can add and remove from the list at will.",
             "The acceptable check options are:",
-            "SPAWN_REASON, NERFED, AGE, TICK_AGE, PHANTOM_SIZE",
-            "IS_TAMED, ANIMAL_OWNER, SKELETON_TYPE",
-            "ZOMBIE_BABY, SLIME_SIZE,  PIG_SADDLE, SHEEP_SHEARED",
-            "SNOWMAN_DERPED", "SHEEP_COLOR, WOLF_COLLAR_COLOR, OCELOT_TYPE, HORSE_COLOR",
-            "HORSE_STYLE, HORSE_CARRYING_CHEST, HORSE_HAS_ARMOR",
-            "HORSE_HAS_SADDLE, HORSE_JUMP, RABBIT_TYPE, VILLAGER_PROFESSION",
-            "LLAMA_COLOR, LLAMA_STRENGTH, PARROT_TYPE, PUFFERFISH_STATE",
-            "TROPICALFISH_PATTERN, TROPICALFISH_BODY_COLOR, TROPICALFISH_PATTERN_COLOR");
+            "\"SPAWN_REASON\", \"NERFED\", \"AGE\", \"TICK_AGE\",",
+            "\"IS_TAMED\", \"ANIMAL_OWNER\", \"SKELETON_TYPE\", \"ZOMBIE_BABY\",",
+            "\"SLIME_SIZE\", \"PIG_SADDLE\", \"SHEEP_SHEARED\", \"SHEEP_COLOR\",",
+            "\"SNOWMAN_DERPED\", \"WOLF_COLLAR_COLOR\", \"OCELOT_TYPE\", \"HORSE_COLOR\",",
+            "\"HORSE_STYLE\", \"HORSE_CARRYING_CHEST\", \"HORSE_HAS_ARMOR\", \"HORSE_HAS_SADDLE\",",
+            "\"HORSE_JUMP\", \"RABBIT_TYPE\", \"VILLAGER_PROFESSION\", \"LLAMA_COLOR\",",
+            "\"LLAMA_STRENGTH\", \"PARROT_TYPE\", \"PUFFERFISH_STATE\", \"TROPICALFISH_PATTERN\",",
+            "\"TROPICALFISH_BODY_COLOR\", \"TROPICALFISH_PATTERN_COLOR\", \"PHANTOM_SIZE\", \"CAT_TYPE\".");
 
     public static final ConfigSetting SPLIT_CHECKS = new ConfigSetting(config, "Entities.Split Checks", Arrays.asList(Split.values()).stream()
             .map(Split::name).collect(Collectors.toList()),
             "These are checks that when achieved will break separate a single entity",
-            "from a stack.");
+            "from a stack.",
+            "The following reasons can be added to the list:",
+            "\"NAME_TAG\", \"MUSHROOM_SHEAR\", \"SHEEP_SHEAR\", \"SNOWMAN_DERP\",",
+            "\"SHEEP_DYE\", \"ENTITY_BREED\".");
+
 
     public static final ConfigSetting KEEP_FIRE = new ConfigSetting(config, "Entities.Keep Fire", true,
             "Should fire ticks persist to the next entity when an entity dies?");
@@ -126,12 +134,14 @@ public class Settings {
             "This will limit mob stacking to mobs who spawned via the listed reasons.",
             "This list is ignored if Only Stack From Spawners = true.",
             "The following reasons can be added to the list:",
-            "NATURAL, JOCKEY, CHUNK_GEN, SPAWNER, EGG, SPAWNER_EGG, LIGHTNING, BUILD_SNOWMAN, ",
-            "BUILD_IRONGOLEM, BUILD_WITHER, VILLAGE_DEFENSE, VILLAGE_INVASION, BREEDING,",
-            "SLIME_SPLIT, REINFORCEMENTS, NETHER_PORTAL, DISPENSE_EGG, INFECTION,",
-            "CURED, OCELOT_BABY, SILVERFISH_BLOCK, MOUNT, TRAP, ENDER_PEARL, ",
-            "SHOULDER_ENTITY, DROWNED, SHEARED, EXPLOSION"
-    );
+            "\"NATURAL\", \"JOCKEY\", \"CHUNK_GEN\", \"SPAWNER\",",
+            "\"EGG\", \"SPAWNER_EGG\", \"LIGHTNING\", \"BUILD_SNOWMAN\",",
+            "\"BUILD_IRONGOLEM\", \"BUILD_WITHER\", \"VILLAGE_DEFENSE\", \"VILLAGE_INVASION\",",
+            "\"BREEDING\", \"SLIME_SPLIT\", \"REINFORCEMENTS\", \"NETHER_PORTAL\",",
+            "\"DISPENSE_EGG\", \"INFECTION\", \"CURED\", \"OCELOT_BABY\",",
+            "\"SILVERFISH_BLOCK\", \"MOUNT\", \"TRAP\", \"ENDER_PEARL\",",
+            "\"SHOULDER_ENTITY\", \"DROWNED\", \"SHEARED\", \"EXPLOSION\",",
+            "\"CUSTOM\", \"DEFAULT\".");
 
     public static final ConfigSetting CARRY_OVER_METADATA_ON_DEATH = new ConfigSetting(config, "Entities.Carry Over Metadata On Death", true,
             "With this enabled any metadata assigned from supported plugins such",

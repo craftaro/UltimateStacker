@@ -4,7 +4,7 @@ stages:
 variables:
     name: "UltimateStacker"
     path: "/builds/$CI_PROJECT_PATH"
-    version: "1.10.11"
+    version: "1.10.12"
 
 build:
   stage: build

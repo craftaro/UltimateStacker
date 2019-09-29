@@ -118,7 +118,7 @@ public class SpawnerListeners implements Listener {
 
         plugin.updateHologram(spawner);
         if (player.getGameMode() != GameMode.CREATIVE) {
-            Methods.takeItem(player, stackSize - 1);
+            Methods.takeItem(player, stackSize);
         }
     }
 }

@@ -119,9 +119,14 @@ public class EntityUtils {
                     ((Sheep) newEntity).setColor(((Sheep) toClone).getColor());
                     break;
                 }
-                case SHEEP_SHEERED: {
+                case SHEEP_SHEARED: {
                     if (!(toClone instanceof Sheep)) break;
                     ((Sheep) newEntity).setSheared(((Sheep) toClone).isSheared());
+                    break;
+                }
+                case SNOWMAN_DERPED: {
+                    if (!(toClone instanceof Snowman)) break;
+                    ((Snowman) newEntity).setDerp(((Snowman) toClone).isDerp());
                     break;
                 }
                 case LLAMA_COLOR: {
@@ -298,7 +303,7 @@ public class EntityUtils {
                     entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
                     break;
                 }
-                case SHEEP_SHEERED: {
+                case SHEEP_SHEARED: {
                     if (!(initalEntity instanceof Sheep)) break;
 
                     Sheep sheep = ((Sheep) initalEntity);
@@ -306,6 +311,17 @@ public class EntityUtils {
                         entityList.removeIf(entity -> !((Sheep) entity).isSheared());
                     } else {
                         entityList.removeIf(entity -> ((Sheep) entity).isSheared());
+                    }
+                    break;
+                }
+                case SNOWMAN_DERPED: {
+                    if (!(initalEntity instanceof Snowman)) break;
+
+                    Snowman snowman = ((Snowman) initalEntity);
+                    if (snowman.isDerp()) {
+                        entityList.removeIf(entity -> !((Snowman) entity).isDerp());
+                    } else {
+                        entityList.removeIf(entity -> ((Snowman) entity).isDerp());
                     }
                     break;
                 }

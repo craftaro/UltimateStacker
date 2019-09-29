@@ -210,14 +210,14 @@ public class LootablesManager {
 
 
         Loot fish1 = new LootBuilder()
-                        .addChildLoot(new LootBuilder()
-                                        .setMaterial(CompatibleMaterial.COD.getMaterial())
-                                        .setBurnedMaterial(CompatibleMaterial.COOKED_COD.getMaterial())
-                                        .setChance(50).build(),
-                                new LootBuilder()
-                                        .setMaterial(Material.PRISMARINE_CRYSTALS)
-                                        .setChance(33).build())
-                        .build();
+                .addChildLoot(new LootBuilder()
+                                .setMaterial(CompatibleMaterial.COD.getMaterial())
+                                .setBurnedMaterial(CompatibleMaterial.COOKED_COD.getMaterial())
+                                .setChance(50).build(),
+                        new LootBuilder()
+                                .setMaterial(Material.PRISMARINE_CRYSTALS)
+                                .setChance(33).build())
+                .build();
 
         Loot fish2 = new LootBuilder()
                 .setChance(2.5)
@@ -307,10 +307,11 @@ public class LootablesManager {
                             .setMax(2).build()));
 
             Loot witherSkull = new LootBuilder()
-                            .setMaterial(CompatibleMaterial.WITHER_SKELETON_SKULL.getMaterial())
-                            .setData(CompatibleMaterial.WITHER_SKELETON_SKULL.getData())
-                            .setChance(2.5)
-                            .addOnlyDropFors(EntityType.PLAYER).build();
+                    .setMaterial(CompatibleMaterial.WITHER_SKELETON_SKULL.getMaterial())
+                    .setData(CompatibleMaterial.WITHER_SKELETON_SKULL.getData())
+                    .setChance(2.5)
+                    .setAllowLootingEnchant(false)
+                    .addOnlyDropFors(EntityType.PLAYER).build();
 
             // Add Wither Skeleton.
             lootManager.addLootable(new Lootable("WITHER_SKELETON",

@@ -10,6 +10,7 @@ import com.songoda.ultimatestacker.utils.DropUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,7 +39,8 @@ public class DeathListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Player) return;
+        if (event.getEntityType() == EntityType.PLAYER
+                || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
         boolean custom = Settings.CUSTOM_DROPS.getBoolean();
         List<Drop> drops = custom ? instance.getLootablesManager().getDrops(event.getEntity()) : new ArrayList<>();

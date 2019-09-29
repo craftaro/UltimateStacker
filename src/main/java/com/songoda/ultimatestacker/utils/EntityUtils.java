@@ -17,12 +17,12 @@ public class EntityUtils {
 
     UltimateStacker plugin = UltimateStacker.getInstance();
 
-    private List<String> checks = Settings.STACK_CHECKS.getStringList();
-    private boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean();
-    private boolean keepFire = Settings.KEEP_FIRE.getBoolean();
-    private boolean keepPotion = Settings.KEEP_POTION.getBoolean();
-    private boolean stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean();
-    private int searchRadius = Settings.SEARCH_RADIUS.getInt();
+    private final List<String> checks = Settings.STACK_CHECKS.getStringList();
+    private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean();
+    private final boolean keepFire = Settings.KEEP_FIRE.getBoolean();
+    private final boolean keepPotion = Settings.KEEP_POTION.getBoolean();
+    private final boolean stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean();
+    private final int searchRadius = Settings.SEARCH_RADIUS.getInt();
 
     private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
 
@@ -251,7 +251,8 @@ public class EntityUtils {
             entityList.removeIf(entity -> entity.getLocation().getY() > initalEntity.getLocation().getY());
 
         for (String checkStr : checks) {
-            Check check = Check.valueOf(checkStr);
+            Check check = Check.getCheck(checkStr);
+            if (check == null) continue;
             switch (check) {
                 case SPAWN_REASON: {
                     if (initalEntity.hasMetadata("US_REASON"))

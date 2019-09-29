@@ -1,5 +1,8 @@
 package com.songoda.ultimatestacker.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Check {
 
     SPAWN_REASON(false),
@@ -35,7 +38,14 @@ public enum Check {
     PHANTOM_SIZE(true),
     CAT_TYPE(true);
 
-    private boolean isEnabledByDefault;
+    private final boolean isEnabledByDefault;
+    private final static Map<String, Check> checks = new HashMap();
+
+    static {
+        for (Check c : values()) {
+            checks.put(c.name(), c);
+        }
+    }
 
     Check(boolean isEnabledByDefault) {
         this.isEnabledByDefault = isEnabledByDefault;
@@ -43,5 +53,9 @@ public enum Check {
 
     public boolean isEnabledByDefault() {
         return isEnabledByDefault;
+    }
+
+    public static Check getCheck(String name) {
+        return name != null ? checks.get(name.toUpperCase()) : null;
     }
 }

@@ -149,7 +149,8 @@ public class StackingTask extends BukkitRunnable {
             if (this.processed.contains(entity.getUniqueId())) continue;
 
             // Check our WorldGuard flag.
-            if (WorldGuardHook.isEnabled() && !WorldGuardHook.getBooleanFlag(entity.getLocation(), "mob-stacking"))
+            Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(livingEntity.getLocation(), "mob-stacking") : null;
+            if (flag != null && !flag)
                 continue;
 
             // Get this entities friendStack.

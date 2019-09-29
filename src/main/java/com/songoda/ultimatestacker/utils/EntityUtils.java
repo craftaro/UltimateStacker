@@ -125,7 +125,8 @@ public class EntityUtils {
                     break;
                 }
                 case SNOWMAN_DERPED: {
-                    if (!(toClone instanceof Snowman)) break;
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)
+                            || !(toClone instanceof Snowman)) break;
                     ((Snowman) newEntity).setDerp(((Snowman) toClone).isDerp());
                     break;
                 }
@@ -315,7 +316,8 @@ public class EntityUtils {
                     break;
                 }
                 case SNOWMAN_DERPED: {
-                    if (!(initalEntity instanceof Snowman)) break;
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)
+                            || !(initalEntity instanceof Snowman)) break;
 
                     Snowman snowman = ((Snowman) initalEntity);
                     if (snowman.isDerp()) {

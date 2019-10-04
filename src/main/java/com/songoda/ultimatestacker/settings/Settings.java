@@ -5,8 +5,6 @@ import com.songoda.core.configuration.ConfigSetting;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.Split;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Settings {
 
-    static final Config config = UltimateStacker.getInstance().getConfig().getCoreConfig();
+    static final Config config = UltimateStacker.getInstance().getCoreConfig();
 
     public static final ConfigSetting STACK_SEARCH_TICK_SPEED = new ConfigSetting(config, "Main.Stack Search Tick Speed", 5,
             "The speed in which a new stacks will be created.",

@@ -5,8 +5,6 @@ import com.songoda.core.configuration.ConfigSetting;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.Split;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class Settings {
 
-    static final Config config = UltimateStacker.getInstance().getConfig().getCoreConfig();
+    static final Config config = UltimateStacker.getInstance().getCoreConfig();
 
     public static final ConfigSetting STACK_SEARCH_TICK_SPEED = new ConfigSetting(config, "Main.Stack Search Tick Speed", 5,
             "The speed in which a new stacks will be created.",
@@ -216,6 +214,10 @@ public class Settings {
     public static final ConfigSetting EGGS_CONVERT_SPAWNERS = new ConfigSetting(config, "Spawners.Eggs Convert Spawners", true,
             "Should eggs convert spawners? If enabled you will",
             "still need to give perms for it to work.");
+
+    public static final ConfigSetting SPAWNERS_TO_INVENTORY = new ConfigSetting(config, "Spawners.Add Spawners To Inventory On Drop", false,
+            "Should broken spawners be added directly to the players inventory?",
+            "Alternatively they will drop to the ground?");
 
     public static final ConfigSetting MAX_STACK_SPAWNERS = new ConfigSetting(config, "Spawners.Max Stack Size", 5,
             "What should the max a spawner can stack to be?");

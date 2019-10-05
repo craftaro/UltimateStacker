@@ -89,7 +89,7 @@ public class BlockListeners implements Listener {
 
                 if (overflowItem != null) {
                     if (player.getInventory().firstEmpty() == -1)
-                        block.getLocation().getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), overflowItem);
+                        block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), overflowItem);
                     else
                         player.getInventory().addItem(overflowItem);
                 }
@@ -180,8 +180,14 @@ public class BlockListeners implements Listener {
             plugin.updateHologram(stack);
         }
 
-        if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item != null && item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch"))
-            block.getWorld().dropItemNaturally(block.getLocation(), Methods.getSpawnerItem(blockType, amt));
+        if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch")) {
+            ItemStack spawner = Methods.getSpawnerItem(blockType, amt);
+            if (player.getInventory().firstEmpty() == -1 || !Settings.SPAWNERS_TO_INVENTORY.getBoolean())
+                block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), spawner);
+            else
+                player.getInventory().addItem(spawner);
+        }
+
     }
 
     private int getSpawnerAmount(ItemStack item) {

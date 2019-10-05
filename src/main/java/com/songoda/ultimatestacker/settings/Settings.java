@@ -215,6 +215,10 @@ public class Settings {
             "Should eggs convert spawners? If enabled you will",
             "still need to give perms for it to work.");
 
+    public static final ConfigSetting SPAWNERS_TO_INVENTORY = new ConfigSetting(config, "Spawners.Add Spawners To Inventory On Drop", false,
+            "Should broken spawners be added directly to the players inventory?",
+            "Alternatively they will drop to the ground?");
+
     public static final ConfigSetting MAX_STACK_SPAWNERS = new ConfigSetting(config, "Spawners.Max Stack Size", 5,
             "What should the max a spawner can stack to be?");
 

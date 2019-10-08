@@ -126,7 +126,8 @@ public class EntityStack {
         if (!preStackedDrops.isEmpty())
             DropUtils.processStackedDrop(killed, preStackedDrops);
 
-        killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
+        if (droppedExp > 0)
+            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
 
         if (killed.getKiller() == null) return;
         UltimateStacker.getInstance().addExp(killed.getKiller(), this);
@@ -200,13 +201,13 @@ public class EntityStack {
     }
 
     public void addHealth(double health) {
-        synchronized(healthLock) {
+        synchronized (healthLock) {
             this.health.addLast(health);
         }
     }
 
     public void mergeHealth(EntityStack stack) {
-        synchronized(healthLock) {
+        synchronized (healthLock) {
             this.health.addAll(stack.health);
         }
     }

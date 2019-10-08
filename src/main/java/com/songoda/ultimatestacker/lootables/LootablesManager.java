@@ -7,6 +7,7 @@ import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -77,9 +78,8 @@ public class LootablesManager {
                 }
             }
         }
-
         return lootManager.runLoot(modify,
-                entity.getFireTicks() != -1,
+                entity.getFireTicks() > 0,
                 entity.getKiller() != null ? entity.getKiller().getItemInHand() : null,
                 killer,
                 loot,

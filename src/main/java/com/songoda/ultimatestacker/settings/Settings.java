@@ -177,8 +177,7 @@ public class Settings {
             "Should items that are blacklisted display holograms?");
 
     public static final ConfigSetting MAX_STACK_ITEMS = new ConfigSetting(config, "Items.Max Stack Size", 512,
-            "The max stack size for items.",
-            "Currently this can only be set to a max of 120.");
+            "The max stack size for items.");
 
     public static final ConfigSetting NAME_FORMAT_ITEM = new ConfigSetting(config, "Items.Name Format", "&f{TYPE} &r[&6{AMT}x]",
             "The text displayed above a dropped item.");

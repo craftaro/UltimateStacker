@@ -738,6 +738,14 @@ public class LootablesManager {
                         .setMaterial(Material.NETHER_STAR)
                         .setAllowLootingEnchant(false).build()));
 
+        // Add Villager.
+        lootManager.addLootable(new Lootable("VILLAGER",
+                new LootBuilder().build()));
+
+        // Add Silverfish.
+        lootManager.addLootable(new Lootable("SILVERFISH",
+                new LootBuilder().build()));
+
         lootManager.saveLootables();
     }
 

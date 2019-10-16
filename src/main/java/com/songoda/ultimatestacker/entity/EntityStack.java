@@ -15,6 +15,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -108,7 +109,7 @@ public class EntityStack {
         return null;
     }
 
-    private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp) {
+    private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
         Location killedLocation = killed.getLocation();
         List<Drop> preStackedDrops = new ArrayList<>();
         for (int i = 1; i < amount; i++) {
@@ -124,7 +125,7 @@ public class EntityStack {
             preStackedDrops.addAll(drops);
         }
         if (!preStackedDrops.isEmpty())
-            DropUtils.processStackedDrop(killed, preStackedDrops);
+            DropUtils.processStackedDrop(killed, preStackedDrops, event);
 
         if (droppedExp > 0)
             killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * amount);
@@ -133,7 +134,7 @@ public class EntityStack {
         UltimateStacker.getInstance().addExp(killed.getKiller(), this);
     }
 
-    private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops) {
+    private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, EntityDeathEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
         LivingEntity newEntity = plugin.getEntityUtils().newEntity(killed);
 
@@ -153,7 +154,7 @@ public class EntityStack {
                 newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
         }
 
-        DropUtils.processStackedDrop(killed, drops);
+        DropUtils.processStackedDrop(killed, drops, event);
 
         EntityStack entityStack = stackManager.updateStack(killed, newEntity);
 
@@ -166,7 +167,7 @@ public class EntityStack {
         }
     }
 
-    public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp) {
+    public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
         killed.setCustomName(null);
         killed.setCustomNameVisible(true);
         killed.setCustomName(Methods.formatText("&7"));
@@ -175,7 +176,7 @@ public class EntityStack {
                 || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
 
         if (killWholeStack && getAmount() != 1) {
-            handleWholeStackDeath(killed, drops, custom, droppedExp);
+            handleWholeStackDeath(killed, drops, custom, droppedExp, event);
         } else if (getAmount() != 1) {
             List<String> reasons = Settings.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
@@ -184,11 +185,11 @@ public class EntityStack {
                 EntityDamageEvent.DamageCause cause = lastDamageCause.getCause();
                 for (String s : reasons) {
                     if (!cause.name().equalsIgnoreCase(s)) continue;
-                    handleWholeStackDeath(killed, drops, custom, Settings.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp);
+                    handleWholeStackDeath(killed, drops, custom, Settings.NO_EXP_INSTANT_KILL.getBoolean() ? 0 : droppedExp, event);
                     return;
                 }
             }
-            handleSingleStackDeath(killed, drops);
+            handleSingleStackDeath(killed, drops, event);
         }
     }
 

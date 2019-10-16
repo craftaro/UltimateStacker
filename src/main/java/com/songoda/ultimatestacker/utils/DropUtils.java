@@ -3,24 +3,15 @@ package com.songoda.ultimatestacker.utils;
 import com.songoda.lootables.loot.Drop;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DropUtils {
 
-    public static void processDrop(LivingEntity entity, Drop drop) {
-        if (drop == null) return;
-
-        if (drop.getItemStack() != null)
-            dropItems(entity, Collections.singletonList(drop.getItemStack()));
-        if (drop.getCommand() != null)
-            runCommands(entity, Collections.singletonList(drop.getCommand()));
-    }
-
-    public static void processStackedDrop(LivingEntity entity, List<Drop> drops) {
+    public static void processStackedDrop(LivingEntity entity, List<Drop> drops, EntityDeathEvent event) {
         List<ItemStack> items = new ArrayList<>();
         List<String> commands = new ArrayList<>();
         for (Drop drop : drops) {
@@ -44,14 +35,15 @@ public class DropUtils {
                 commands.add(drop.getCommand());
         }
         if (!items.isEmpty())
-            dropItems(entity, items);
+            dropItems(items, event);
         else if (!commands.isEmpty())
             runCommands(entity, commands);
     }
 
-    private static void dropItems(LivingEntity entity, List<ItemStack> items) {
+    private static void dropItems(List<ItemStack> items, EntityDeathEvent event) {
+        event.getDrops().clear();
         for (ItemStack item : items)
-            entity.getWorld().dropItemNaturally(entity.getLocation(), item);
+            event.getDrops().add(item);
     }
 
     private static void runCommands(LivingEntity entity, List<String> commands) {

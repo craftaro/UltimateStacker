@@ -19,13 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class DeathListeners implements Listener {
 
@@ -43,22 +42,21 @@ public class DeathListeners implements Listener {
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
         boolean custom = Settings.CUSTOM_DROPS.getBoolean();
-        List<Drop> drops = custom ? instance.getLootablesManager().getDrops(event.getEntity()) : new ArrayList<>();
+        List<Drop> drops = custom ? instance.getLootablesManager().getDrops(event.getEntity())
+                : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
 
-        if (!custom) {
-            for (ItemStack item : event.getDrops())
-                drops.add(new Drop(item));
-        }
-        for (ItemStack item : new ArrayList<>(event.getDrops())) {
-            if (!shouldDrop(event.getEntity(), item.getType()))
-                event.getDrops().remove(item);
+        if (custom) {
+            for (ItemStack item : new ArrayList<>(event.getDrops())) {
+                if (shouldDrop(event.getEntity(), item.getType()))
+                    drops.add(new Drop(item));
+            }
         }
 
         if (instance.getEntityStackManager().isStacked(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())
-                    .onDeath(event.getEntity(), drops, custom, event.getDroppedExp());
+                    .onDeath(event.getEntity(), drops, custom, event.getDroppedExp(), event);
         else
-            DropUtils.processStackedDrop(event.getEntity(), drops);
+            DropUtils.processStackedDrop(event.getEntity(), drops, event);
     }
 
     private boolean shouldDrop(LivingEntity entity, Material material) {
@@ -128,7 +126,7 @@ public class DeathListeners implements Listener {
                 if (checkUnbreakingChance(unbreakingLevel))
                     actualDamage++;
 
-            tool.setDurability((short)(tool.getDurability() + actualDamage));
+            tool.setDurability((short) (tool.getDurability() + actualDamage));
 
             if (!this.hasEnoughDurability(tool, 1))
                 player.getInventory().setItemInHand(null);

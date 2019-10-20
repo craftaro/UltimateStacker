@@ -82,7 +82,9 @@ public class SpawnerListeners implements Listener {
 
         EntityType entityType;
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
-            entityType = EntityType.valueOf(itemType.name().replace("_SPAWN_EGG", "").replace("MOOSHROOM", "MUSHROOM_COW"));
+            entityType = EntityType.valueOf(itemType.name().replace("_SPAWN_EGG", "")
+                    .replace("MOOSHROOM", "MUSHROOM_COW")
+                    .replace("ZOMBIE_PIGMAN", "PIG_ZOMBIE"));
         else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
             String str = Reflection.getNBTTagCompound(Reflection.getNMSItemStack(event.getItem())).toString();
             if (str.contains("minecraft:"))

@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.tasks;
 
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -180,7 +181,9 @@ public class StackingTask extends BukkitRunnable {
                             ? entity.getMaxHealth() : livingEntity.getHealth());
 
 
-                // Remove our entity and mark it as processed.
+                // Drop lead if applicable then remove our entity and mark it as processed.
+                if (livingEntity.isLeashed())
+                    livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), CompatibleMaterial.LEAD.getItem());
                 livingEntity.remove();
                 processed.add(livingEntity.getUniqueId());
 
@@ -257,7 +260,9 @@ public class StackingTask extends BukkitRunnable {
             fixHealth(livingEntity, entity);
             newStack.addHealth(entity.getHealth());
 
-            // Remove our entity and mark it as processed.
+            // Drop lead if applicable then remove our entity and mark it as processed.
+            if (entity.isLeashed())
+                entity.getWorld().dropItemNaturally(entity.getLocation(), CompatibleMaterial.LEAD.getItem());
             entity.remove();
             processed.add(entity.getUniqueId());
         });

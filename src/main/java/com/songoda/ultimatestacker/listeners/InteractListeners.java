@@ -78,6 +78,7 @@ public class InteractListeners implements Listener {
         Material type = is.getType();
         switch (entity.getType().name()) {
             case "COW":
+            case "MUSHROOM_COW":
             case "SHEEP":
                 return type == Material.WHEAT;
             case "PIG":

@@ -96,7 +96,8 @@ public class StackingTask extends BukkitRunnable {
             return false;
 
         // Allow spawn if stackreasons are set and match, or if from a spawner
-        final String spawnReason = entity.hasMetadata("US_REASON") ? entity.getMetadata("US_REASON").get(0).asString() : null;
+        final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()
+                ? entity.getMetadata("US_REASON").get(0).asString() : null;
         List<String> stackReasons;
         if (Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean()) {
             // If only stack from spawners is enabled, make sure the entity spawned from a spawner.

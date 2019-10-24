@@ -25,6 +25,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EntityListeners implements Listener {
 
@@ -50,11 +51,13 @@ public class EntityListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEgg(ItemSpawnEvent event) {
-        if (event.getEntity().getItemStack().getType() != Material.EGG) return;
+        Material material = event.getEntity().getItemStack().getType();
+        if (material != Material.EGG
+                && !material.name().equalsIgnoreCase("SCUTE")) return;
 
         Location location = event.getLocation();
 
-        List<Entity> entities = new ArrayList<>(location.getWorld().getNearbyEntities(location, .1, .5, .1));
+        List<Entity> entities = new ArrayList<>(location.getWorld().getNearbyEntities(location, .1, 1, .1));
 
         if (entities.isEmpty()) return;
 

@@ -19,6 +19,7 @@ public class DropUtils {
 
             ItemStack droppedItem = drop.getItemStack();
             if (droppedItem != null) {
+                droppedItem = droppedItem.clone();
                 boolean success = false;
                 for (ItemStack item : items) {
                     if (item.getType() != droppedItem.getType()

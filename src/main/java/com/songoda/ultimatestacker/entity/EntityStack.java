@@ -146,6 +146,9 @@ public class EntityStack {
             newEntity.getEquipment().setItemInHand(CompatibleMaterial.GOLDEN_SWORD.getItem());
 
         if (Settings.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
+            if (killed.hasMetadata("US_REASON"))
+                newEntity.setMetadata("US_REASON", killed.getMetadata("US_REASON").get(0));
+
             if (killed.hasMetadata("ES"))
                 newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
 

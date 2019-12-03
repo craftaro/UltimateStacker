@@ -200,7 +200,9 @@ public class EntityStack {
         if (entity == null) return;
         synchronized (healthLock) {
             entity.setHealth(Settings.STACK_ENTITY_HEALTH.getBoolean()
-                    && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
+                    && !health.isEmpty()
+                    ? (health.getFirst() > entity.getMaxHealth() ? entity.getMaxHealth() : health.removeFirst())
+                    : entity.getMaxHealth());
         }
     }
 

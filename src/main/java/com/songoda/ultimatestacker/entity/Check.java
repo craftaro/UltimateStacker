@@ -13,6 +13,7 @@ public enum Check {
     ANIMAL_OWNER(true),
     SKELETON_TYPE(true),
     ZOMBIE_BABY(true),
+    HAS_EQUIPMENT(true),
     SLIME_SIZE(true),
     PIG_SADDLE(true),
     SHEEP_SHEARED(true),

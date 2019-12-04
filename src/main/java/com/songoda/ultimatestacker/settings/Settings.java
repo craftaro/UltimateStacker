@@ -133,7 +133,7 @@ public class Settings {
             "This list is ignored if Only Stack From Spawners = true.",
             "The following reasons can be added to the list:",
             "\"NATURAL\", \"JOCKEY\", \"CHUNK_GEN\", \"SPAWNER\",",
-            "\"EGG\", \"SPAWNER_EGG\", \"LIGHTNING\", \"BUILD_SNOWMAN\",",
+            "\"EGG\", \"SPAWNER_EGG\", \"LIGHTNING\", \"BUILD_SNOWMAN\", \"HAS_EQUIPMENT\",",
             "\"BUILD_IRONGOLEM\", \"BUILD_WITHER\", \"VILLAGE_DEFENSE\", \"VILLAGE_INVASION\",",
             "\"BREEDING\", \"SLIME_SPLIT\", \"REINFORCEMENTS\", \"NETHER_PORTAL\",",
             "\"DISPENSE_EGG\", \"INFECTION\", \"CURED\", \"OCELOT_BABY\",",

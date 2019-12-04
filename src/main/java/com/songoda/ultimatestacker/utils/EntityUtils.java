@@ -5,9 +5,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.*;
 
 import java.util.*;
@@ -241,27 +239,27 @@ public class EntityUtils {
         return newEntity;
     }
 
-    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initalEntity, Location location) {
+    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
         // Create a list of all entities around the initial entity of the same type.
         List<LivingEntity> entityList = getNearbyEntities(location, searchRadius, stackWholeChunk)
-                .stream().filter(entity -> entity.getType() == initalEntity.getType() && entity != initalEntity)
+                .stream().filter(entity -> entity.getType() == initialEntity.getType() && entity != initialEntity)
                 .collect(Collectors.toCollection(LinkedList::new));
 
-        if (stackFlyingDown && Methods.canFly(initalEntity))
-            entityList.removeIf(entity -> entity.getLocation().getY() > initalEntity.getLocation().getY());
+        if (stackFlyingDown && Methods.canFly(initialEntity))
+            entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());
 
         for (String checkStr : checks) {
             Check check = Check.getCheck(checkStr);
             if (check == null) continue;
             switch (check) {
                 case SPAWN_REASON: {
-                    if (initalEntity.hasMetadata("US_REASON"))
+                    if (initialEntity.hasMetadata("US_REASON"))
                         entityList.removeIf(entity -> entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").get(0).asString().equals("US_REASON"));
                 }
                 case AGE: {
-                    if (!(initalEntity instanceof Ageable)) break;
+                    if (!(initialEntity instanceof Ageable)) break;
 
-                    if (((Ageable) initalEntity).isAdult()) {
+                    if (((Ageable) initialEntity).isAdult()) {
                         entityList.removeIf(entity -> !((Ageable) entity).isAdult());
                     } else {
                         entityList.removeIf(entity -> ((Ageable) entity).isAdult());
@@ -270,45 +268,45 @@ public class EntityUtils {
                 }
                 case NERFED: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)) break;
-                    entityList.removeIf(entity -> entity.hasAI() != initalEntity.hasAI());
+                    entityList.removeIf(entity -> entity.hasAI() != initialEntity.hasAI());
                 }
                 case IS_TAMED: {
-                    if (!(initalEntity instanceof Tameable)) break;
-                    if (((Tameable) initalEntity).isTamed()) {
+                    if (!(initialEntity instanceof Tameable)) break;
+                    if (((Tameable) initialEntity).isTamed()) {
                         entityList.removeIf(entity -> !((Tameable) entity).isTamed());
                     } else {
                         entityList.removeIf(entity -> ((Tameable) entity).isTamed());
                     }
                 }
                 case ANIMAL_OWNER: {
-                    if (!(initalEntity instanceof Tameable)) break;
+                    if (!(initialEntity instanceof Tameable)) break;
 
-                    Tameable tameable = ((Tameable) initalEntity);
+                    Tameable tameable = ((Tameable) initialEntity);
                     entityList.removeIf(entity -> ((Tameable) entity).getOwner() != tameable.getOwner());
                 }
                 case PIG_SADDLE: {
-                    if (!(initalEntity instanceof Pig)) break;
+                    if (!(initialEntity instanceof Pig)) break;
                     entityList.removeIf(entity -> ((Pig) entity).hasSaddle());
                     break;
                 }
                 case SKELETON_TYPE: {
-                    if (!(initalEntity instanceof Skeleton)) break;
+                    if (!(initialEntity instanceof Skeleton)) break;
 
-                    Skeleton skeleton = (Skeleton) initalEntity;
+                    Skeleton skeleton = (Skeleton) initialEntity;
                     entityList.removeIf(entity -> ((Skeleton) entity).getSkeletonType() != skeleton.getSkeletonType());
                     break;
                 }
                 case SHEEP_COLOR: {
-                    if (!(initalEntity instanceof Sheep)) break;
+                    if (!(initialEntity instanceof Sheep)) break;
 
-                    Sheep sheep = ((Sheep) initalEntity);
+                    Sheep sheep = ((Sheep) initialEntity);
                     entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
                     break;
                 }
                 case SHEEP_SHEARED: {
-                    if (!(initalEntity instanceof Sheep)) break;
+                    if (!(initialEntity instanceof Sheep)) break;
 
-                    Sheep sheep = ((Sheep) initalEntity);
+                    Sheep sheep = ((Sheep) initialEntity);
                     if (sheep.isSheared()) {
                         entityList.removeIf(entity -> !((Sheep) entity).isSheared());
                     } else {
@@ -318,9 +316,9 @@ public class EntityUtils {
                 }
                 case SNOWMAN_DERPED: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)
-                            || !(initalEntity instanceof Snowman)) break;
+                            || !(initialEntity instanceof Snowman)) break;
 
-                    Snowman snowman = ((Snowman) initalEntity);
+                    Snowman snowman = ((Snowman) initialEntity);
                     if (snowman.isDerp()) {
                         entityList.removeIf(entity -> !((Snowman) entity).isDerp());
                     } else {
@@ -330,160 +328,182 @@ public class EntityUtils {
                 }
                 case LLAMA_COLOR: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
-                            || !(initalEntity instanceof Llama)) break;
-                    Llama llama = ((Llama) initalEntity);
+                            || !(initialEntity instanceof Llama)) break;
+                    Llama llama = ((Llama) initialEntity);
                     entityList.removeIf(entity -> ((Llama) entity).getColor() != llama.getColor());
                     break;
                 }
                 case LLAMA_STRENGTH: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
-                            || !(initalEntity instanceof Llama)) break;
-                    Llama llama = ((Llama) initalEntity);
+                            || !(initialEntity instanceof Llama)) break;
+                    Llama llama = ((Llama) initialEntity);
                     entityList.removeIf(entity -> ((Llama) entity).getStrength() != llama.getStrength());
                     break;
                 }
                 case VILLAGER_PROFESSION: {
-                    if (!(initalEntity instanceof Villager)) break;
-                    Villager villager = ((Villager) initalEntity);
+                    if (!(initialEntity instanceof Villager)) break;
+                    Villager villager = ((Villager) initialEntity);
                     entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
                     break;
                 }
                 case SLIME_SIZE: {
-                    if (!(initalEntity instanceof Slime)) break;
-                    Slime slime = ((Slime) initalEntity);
+                    if (!(initialEntity instanceof Slime)) break;
+                    Slime slime = ((Slime) initialEntity);
                     entityList.removeIf(entity -> ((Slime) entity).getSize() != slime.getSize());
                     break;
                 }
                 case HORSE_CARRYING_CHEST: {
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
-                        if (!(initalEntity instanceof ChestedHorse)) break;
+                        if (!(initialEntity instanceof ChestedHorse)) break;
                         entityList.removeIf(entity -> ((ChestedHorse) entity).isCarryingChest());
                     } else {
-                        if (!(initalEntity instanceof Horse)) break;
+                        if (!(initialEntity instanceof Horse)) break;
                         entityList.removeIf(entity -> ((Horse) entity).isCarryingChest());
                     }
                     break;
                 }
                 case HORSE_HAS_ARMOR: {
-                    if (!(initalEntity instanceof Horse)) break;
+                    if (!(initialEntity instanceof Horse)) break;
                     entityList.removeIf(entity -> ((Horse) entity).getInventory().getArmor() != null);
                     break;
                 }
                 case HORSE_HAS_SADDLE: {
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            && initalEntity instanceof AbstractHorse) {
+                            && initialEntity instanceof AbstractHorse) {
                         entityList.removeIf(entity -> ((AbstractHorse) entity).getInventory().getSaddle() != null);
                         break;
                     }
-                    if (!(initalEntity instanceof Horse)) break;
+                    if (!(initialEntity instanceof Horse)) break;
                     entityList.removeIf(entity -> ((Horse) entity).getInventory().getSaddle() != null);
                     break;
                 }
                 case HORSE_JUMP: {
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
-                        if (!(initalEntity instanceof AbstractHorse)) break;
-                        AbstractHorse horse = ((AbstractHorse) initalEntity);
+                        if (!(initialEntity instanceof AbstractHorse)) break;
+                        AbstractHorse horse = ((AbstractHorse) initialEntity);
                         entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
                     } else {
-                        if (!(initalEntity instanceof Horse)) break;
-                        Horse horse = ((Horse) initalEntity);
+                        if (!(initialEntity instanceof Horse)) break;
+                        Horse horse = ((Horse) initialEntity);
                         entityList.removeIf(entity -> ((Horse) entity).getJumpStrength() != horse.getJumpStrength());
 
                     }
                     break;
                 }
                 case HORSE_COLOR: {
-                    if (!(initalEntity instanceof Horse)) break;
-                    Horse horse = ((Horse) initalEntity);
+                    if (!(initialEntity instanceof Horse)) break;
+                    Horse horse = ((Horse) initialEntity);
                     entityList.removeIf(entity -> ((Horse) entity).getColor() != horse.getColor());
                     break;
                 }
                 case HORSE_STYLE: {
-                    if (!(initalEntity instanceof Horse)) break;
-                    Horse horse = ((Horse) initalEntity);
+                    if (!(initialEntity instanceof Horse)) break;
+                    Horse horse = ((Horse) initialEntity);
                     entityList.removeIf(entity -> ((Horse) entity).getStyle() != horse.getStyle());
                     break;
                 }
                 case ZOMBIE_BABY: {
-                    if (!(initalEntity instanceof Zombie)) break;
-                    Zombie zombie = (Zombie) initalEntity;
+                    if (!(initialEntity instanceof Zombie)) break;
+                    Zombie zombie = (Zombie) initialEntity;
                     entityList.removeIf(entity -> ((Zombie) entity).isBaby() != zombie.isBaby());
                     break;
                 }
                 case WOLF_COLLAR_COLOR: {
-                    if (!(initalEntity instanceof Wolf)) break;
-                    Wolf wolf = (Wolf) initalEntity;
+                    if (!(initialEntity instanceof Wolf)) break;
+                    Wolf wolf = (Wolf) initialEntity;
                     entityList.removeIf(entity -> ((Wolf) entity).getCollarColor() != wolf.getCollarColor());
                     break;
                 }
                 case OCELOT_TYPE: {
-                    if (!(initalEntity instanceof Ocelot)) break;
-                    Ocelot ocelot = (Ocelot) initalEntity;
+                    if (!(initialEntity instanceof Ocelot)) break;
+                    Ocelot ocelot = (Ocelot) initialEntity;
                     entityList.removeIf(entity -> ((Ocelot) entity).getCatType() != ocelot.getCatType());
                 }
                 case CAT_TYPE: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)
-                            || !(initalEntity instanceof Cat)) break;
-                    Cat cat = (Cat) initalEntity;
+                            || !(initialEntity instanceof Cat)) break;
+                    Cat cat = (Cat) initialEntity;
                     entityList.removeIf(entity -> ((Cat) entity).getCatType() != cat.getCatType());
                     break;
                 }
+                case HAS_EQUIPMENT: {
+                    if (initialEntity.getEquipment() == null) break;
+                    boolean imEquipped = isEquipped(initialEntity);
+                    if (imEquipped)
+                        entityList = new ArrayList<>();
+                    else
+                        entityList.removeIf(this::isEquipped);
+                    break;
+                }
                 case RABBIT_TYPE: {
-                    if (!(initalEntity instanceof Rabbit)) break;
-                    Rabbit rabbit = (Rabbit) initalEntity;
+                    if (!(initialEntity instanceof Rabbit)) break;
+                    Rabbit rabbit = (Rabbit) initialEntity;
                     entityList.removeIf(entity -> ((Rabbit) entity).getRabbitType() != rabbit.getRabbitType());
                     break;
                 }
                 case PARROT_TYPE: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)
-                            || !(initalEntity instanceof Parrot)) break;
-                    Parrot parrot = (Parrot) initalEntity;
+                            || !(initialEntity instanceof Parrot)) break;
+                    Parrot parrot = (Parrot) initialEntity;
                     entityList.removeIf(entity -> ((Parrot) entity).getVariant() != parrot.getVariant());
                     break;
                 }
                 case PUFFERFISH_STATE: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            || !(initalEntity instanceof PufferFish)) break;
-                    PufferFish pufferFish = (PufferFish) initalEntity;
+                            || !(initialEntity instanceof PufferFish)) break;
+                    PufferFish pufferFish = (PufferFish) initialEntity;
                     entityList.removeIf(entity -> ((PufferFish) entity).getPuffState() != pufferFish.getPuffState());
                     break;
                 }
                 case TROPICALFISH_PATTERN: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            || !(initalEntity instanceof TropicalFish)) break;
-                    TropicalFish tropicalFish = (TropicalFish) initalEntity;
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getPattern() != tropicalFish.getPattern());
                     break;
                 }
                 case TROPICALFISH_PATTERN_COLOR: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            || !(initalEntity instanceof TropicalFish)) break;
-                    TropicalFish tropicalFish = (TropicalFish) initalEntity;
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getPatternColor() != tropicalFish.getPatternColor());
                     break;
                 }
                 case TROPICALFISH_BODY_COLOR: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            || !(initalEntity instanceof TropicalFish)) break;
-                    TropicalFish tropicalFish = (TropicalFish) initalEntity;
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
                     entityList.removeIf(entity -> ((TropicalFish) entity).getBodyColor() != tropicalFish.getBodyColor());
                     break;
                 }
                 case PHANTOM_SIZE: {
                     if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                            || !(initalEntity instanceof Phantom)) break;
-                    Phantom phantom = (Phantom) initalEntity;
+                            || !(initialEntity instanceof Phantom)) break;
+                    Phantom phantom = (Phantom) initialEntity;
                     entityList.removeIf(entity -> ((Phantom) entity).getSize() != phantom.getSize());
                     break;
                 }
             }
         }
 
-        if (initalEntity.hasMetadata("breedCooldown")) {
+        if (initialEntity.hasMetadata("breedCooldown")) {
             entityList.removeIf(entity -> !entity.hasMetadata("breedCooldown"));
         }
 
         return entityList;
+    }
+
+    public boolean isEquipped(LivingEntity initialEntity) {
+        return initialEntity.getEquipment() != null
+                && (initialEntity.getEquipment().getItemInHand().getType() != Material.AIR
+                || (initialEntity.getEquipment().getHelmet() != null
+                && initialEntity.getEquipment().getHelmet().getType() != Material.AIR)
+                || (initialEntity.getEquipment().getChestplate() != null
+                && initialEntity.getEquipment().getChestplate().getType() != Material.AIR)
+                || (initialEntity.getEquipment().getLeggings() != null
+                && initialEntity.getEquipment().getLeggings().getType() != Material.AIR)
+                || (initialEntity.getEquipment().getBoots() != null
+                && initialEntity.getEquipment().getBoots().getType() != Material.AIR));
     }
 
     public void splitFromStack(LivingEntity entity) {

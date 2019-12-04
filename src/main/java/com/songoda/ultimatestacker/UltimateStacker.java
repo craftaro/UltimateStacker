@@ -342,8 +342,6 @@ public class UltimateStacker extends SongodaPlugin {
     public void updateHologram(SpawnerStack stack) {
         // are holograms enabled?
         if(!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
-        // verify that this is a spawner stack
-        if (stack.getLocation().getBlock().getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // grab the spawner block
         CreatureSpawner creatureSpawner = (CreatureSpawner) stack.getLocation().getBlock().getState();
         String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), stack.getAmount());

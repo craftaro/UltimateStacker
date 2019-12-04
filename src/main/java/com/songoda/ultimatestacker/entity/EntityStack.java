@@ -146,6 +146,9 @@ public class EntityStack {
             newEntity.getEquipment().setItemInHand(CompatibleMaterial.GOLDEN_SWORD.getItem());
 
         if (Settings.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
+            if (killed.hasMetadata("US_REASON"))
+                newEntity.setMetadata("US_REASON", killed.getMetadata("US_REASON").get(0));
+
             if (killed.hasMetadata("ES"))
                 newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
 
@@ -197,7 +200,9 @@ public class EntityStack {
         if (entity == null) return;
         synchronized (healthLock) {
             entity.setHealth(Settings.STACK_ENTITY_HEALTH.getBoolean()
-                    && !this.health.isEmpty() ? this.health.removeFirst() : entity.getMaxHealth());
+                    && !health.isEmpty()
+                    ? (health.getFirst() > entity.getMaxHealth() ? entity.getMaxHealth() : health.removeFirst())
+                    : entity.getMaxHealth());
         }
     }
 

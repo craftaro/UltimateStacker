@@ -32,6 +32,9 @@ public class StackingTask extends BukkitRunnable {
     private final int minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt();
     private final int maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
     private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
+    private final boolean onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean();
+    private final List<String> stackReasons = Settings.STACK_REASONS.getStringList();
+    private final boolean onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
@@ -59,8 +62,10 @@ public class StackingTask extends BukkitRunnable {
             for (Entity entity : entities) {
                 // Get entity location to pass around as its faster this way.
                 Location location = entity.getLocation();
+
                 // Check to see if entity is stackable.
                 if (!isEntityStackable(entity, location)) continue;
+
                 // Make sure our entity has not already been processed.
                 // Skip it if it has been.
                 if (this.processed.contains(entity.getUniqueId())) continue;
@@ -99,11 +104,11 @@ public class StackingTask extends BukkitRunnable {
         final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()
                 ? entity.getMetadata("US_REASON").get(0).asString() : null;
         List<String> stackReasons;
-        if (Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean()) {
+        if (onlyStackFromSpawners) {
             // If only stack from spawners is enabled, make sure the entity spawned from a spawner.
             if (!"SPAWNER".equals(spawnReason))
                 return false;
-        } else if (!(stackReasons = Settings.STACK_REASONS.getStringList()).isEmpty() && !stackReasons.contains(spawnReason))
+        } else if (!(stackReasons = this.stackReasons).isEmpty() && !stackReasons.contains(spawnReason))
             // Only stack if on the list of events to stack
             return false;
 
@@ -111,7 +116,7 @@ public class StackingTask extends BukkitRunnable {
         LivingEntity livingEntity = (LivingEntity) entity;
 
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
-        return !Settings.ONLY_STACK_ON_SURFACE.getBoolean()
+        return !onlyStackOnSurface
                 || Methods.canFly(livingEntity)
                 || entity.getType().name().equals("SHULKER")
                 || (livingEntity.isOnGround() || location.getBlock().isLiquid());

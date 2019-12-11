@@ -108,15 +108,15 @@ public class DeathListeners implements Listener {
 
     @EventHandler
     public void onEntityHit(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
+        if (!(event.getDamager() instanceof Player) || ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_12)) return;
         if (!instance.getEntityStackManager().isStacked(event.getEntity())) return;
         EntityStack stack = instance.getEntityStackManager().getStack(event.getEntity());
 
         if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();
             ItemStack tool = player.getInventory().getItemInHand();
-            if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().spigot().isUnbreakable()
-                    || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().spigot().isUnbreakable()))))
+            if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()
+                    || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().isUnbreakable()))))
                 return;
 
             int unbreakingLevel = tool.getEnchantmentLevel(Enchantment.DURABILITY);

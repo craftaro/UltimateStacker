@@ -119,6 +119,7 @@ public class Methods {
             case BLAZE:
             case PHANTOM:
             case BAT:
+            case BEE:
                 return true;
             default:
                 return false;

@@ -5,7 +5,10 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.Check;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 
 import java.util.*;
@@ -34,8 +37,8 @@ public class EntityUtils {
         Set<CachedChunk> chunks = new HashSet<>();
         if (world == null) return chunks;
 
-        Chunk firstChunk = location.getChunk();
-        chunks.add(new CachedChunk(firstChunk));
+        CachedChunk firstChunk = new CachedChunk(location);
+        chunks.add(firstChunk);
 
         if (singleChunk) return chunks;
 
@@ -60,7 +63,7 @@ public class EntityUtils {
             if (cachedChunks.containsKey(chunk)) {
                 entityArray = cachedChunks.get(chunk);
             } else {
-                entityArray = chunk.getChunk().getEntities();
+                entityArray = chunk.getEntities();
                 cachedChunks.put(chunk, entityArray);
             }
             for (Entity e : entityArray) {
@@ -84,7 +87,13 @@ public class EntityUtils {
 
     public LivingEntity newEntity(LivingEntity toClone) {
         LivingEntity newEntity = (LivingEntity) toClone.getWorld().spawnEntity(toClone.getLocation(), toClone.getType());
-        newEntity.setVelocity(toClone.getVelocity());
+
+        Player player = toClone.getKiller();
+        if (player == null
+                || !Settings.DISABLE_KNOCKBACK.getBoolean()
+                || player.getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK) != 0) {
+            newEntity.setVelocity(toClone.getVelocity());
+        }
 
         for (String checkStr : checks) {
             Check check = Check.valueOf(checkStr);

@@ -163,6 +163,9 @@ public class Settings {
     public static final ConfigSetting REALISTIC_DAMAGE = new ConfigSetting(config, "Entities.Use Realistic Weapon Damage", true,
             "Should weapons take damage based on the amount of entites in the stack?");
 
+    public static final ConfigSetting DISABLE_KNOCKBACK = new ConfigSetting(config, "Entities.Disable Knockback", false,
+            "Should knockback be disabled on unstacked mobs?");
+
     public static final ConfigSetting STACK_ITEMS = new ConfigSetting(config, "Items.Enabled", true,
             "Should items be stacked?");
 

@@ -25,7 +25,7 @@ public class EntityStackManager {
 
     public EntityStack addStack(UUID uuid, int amount) {
         EntityStack stack = new EntityStack(uuid, amount);
-        stacks.put(uuid, new EntityStack(uuid, amount));
+        stacks.put(uuid, stack);
         return stack;
     }
 
@@ -36,7 +36,7 @@ public class EntityStackManager {
             if (!name.contains(":")) return null;
             String split = name.split(":")[0];
             int amount = Methods.isInt(split) ? Integer.parseInt(split) : 0;
-            addStack(entity, amount);
+            return addStack(entity, amount);
         }
         return null;
     }

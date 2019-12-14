@@ -2,7 +2,9 @@ package com.songoda.ultimatestacker.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 
 import java.util.Objects;
 
@@ -14,6 +16,10 @@ public class CachedChunk {
 
     public CachedChunk(Chunk chunk) {
         this(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
+    }
+
+    public CachedChunk(Location location) {
+        this(location.getWorld().getName(), (int)location.getX() >> 4, (int)location.getZ() >> 4);
     }
 
     public CachedChunk(String world, int x, int z) {
@@ -39,6 +45,13 @@ public class CachedChunk {
         if (world == null)
             return null;
         return world.getChunkAt(this.x, this.z);
+    }
+
+    public Entity[] getEntities() {
+        if (!Bukkit.getWorld(world).isChunkLoaded(x, z)) {
+            return new Entity[0];
+        }
+        return getChunk().getEntities();
     }
 
     @Override

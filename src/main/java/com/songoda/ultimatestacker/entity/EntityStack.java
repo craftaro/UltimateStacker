@@ -172,8 +172,7 @@ public class EntityStack {
 
     public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
         killed.setCustomName(null);
-        killed.setCustomNameVisible(true);
-        killed.setCustomName(Methods.formatText("&7"));
+        killed.setCustomNameVisible(false);
 
         boolean killWholeStack = Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
                 || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");

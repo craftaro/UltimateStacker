@@ -110,6 +110,8 @@ public class EntityStack {
     }
 
     private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
+        UltimateStacker.getInstance().getEntityStackManager().removeStack(event.getEntity());
+
         Location killedLocation = killed.getLocation();
         List<Drop> preStackedDrops = new ArrayList<>();
         for (int i = 1; i < amount; i++) {

@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.DropUtils;
+import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ChestedHorse;
@@ -51,6 +52,9 @@ public class DeathListeners implements Listener {
                     drops.add(new Drop(item));
             }
         }
+
+        if (!event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
+            drops.clear();
 
         if (instance.getEntityStackManager().isStacked(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())

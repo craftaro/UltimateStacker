@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EntityEquipment;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,10 +20,11 @@ public class EntityUtils {
     UltimateStacker plugin = UltimateStacker.getInstance();
 
     private final List<String> checks = Settings.STACK_CHECKS.getStringList();
-    private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean();
-    private final boolean keepFire = Settings.KEEP_FIRE.getBoolean();
-    private final boolean keepPotion = Settings.KEEP_POTION.getBoolean();
-    private final boolean stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean();
+    private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
+            keepFire = Settings.KEEP_FIRE.getBoolean(),
+            keepPotion = Settings.KEEP_POTION.getBoolean(),
+            stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean(),
+            weaponsArentEquipment = Settings.WEAPONS_ARENT_EQUIPMENT.getBoolean();
     private final int searchRadius = Settings.SEARCH_RADIUS.getInt();
 
     private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
@@ -503,16 +505,15 @@ public class EntityUtils {
     }
 
     public boolean isEquipped(LivingEntity initialEntity) {
-        return initialEntity.getEquipment() != null
-                && (initialEntity.getEquipment().getItemInHand().getType() != Material.AIR
-                || (initialEntity.getEquipment().getHelmet() != null
-                && initialEntity.getEquipment().getHelmet().getType() != Material.AIR)
-                || (initialEntity.getEquipment().getChestplate() != null
-                && initialEntity.getEquipment().getChestplate().getType() != Material.AIR)
-                || (initialEntity.getEquipment().getLeggings() != null
-                && initialEntity.getEquipment().getLeggings().getType() != Material.AIR)
-                || (initialEntity.getEquipment().getBoots() != null
-                && initialEntity.getEquipment().getBoots().getType() != Material.AIR));
+        if (initialEntity.getEquipment() == null) return false;
+        EntityEquipment equipment = initialEntity.getEquipment();
+
+        return (equipment.getItemInHand().getType() != Material.AIR
+                && !weaponsArentEquipment && !equipment.getItemInHand().getEnchantments().isEmpty()
+                || (equipment.getHelmet() != null && equipment.getHelmet().getType() != Material.AIR)
+                || (equipment.getChestplate() != null && equipment.getChestplate().getType() != Material.AIR)
+                || (equipment.getLeggings() != null && equipment.getLeggings().getType() != Material.AIR)
+                || (equipment.getBoots() != null && equipment.getBoots().getType() != Material.AIR));
     }
 
     public void splitFromStack(LivingEntity entity) {

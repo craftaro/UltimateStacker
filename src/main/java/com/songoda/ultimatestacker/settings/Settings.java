@@ -145,6 +145,11 @@ public class Settings {
             "With this enabled any metadata assigned from supported plugins such",
             "as EpicSpawners and mcMMO will be preserved when the entity is killed.");
 
+    public static final ConfigSetting WEAPONS_ARENT_EQUIPMENT = new ConfigSetting(config, "Entities.Weapons Arent Equipment", false,
+            "This allows entities holding weapons to stack. Enchanted weapons are excluded.",
+            "If you would like to disable the stacked entity check you can do that by removing",
+            "\"HAS_EQUIPMENT\", from the list above.");
+
     public static final ConfigSetting ONLY_STACK_ON_SURFACE = new ConfigSetting(config, "Entities.Only Stack On Surface", true,
             "Should entities only be stacked if they are touching the ground",
             "or swimming? This does not effect flying entities.");

@@ -35,6 +35,9 @@ public class DropUtils {
             if (drop.getCommand() != null)
                 commands.add(drop.getCommand());
         }
+
+        event.getDrops().clear();
+
         if (!items.isEmpty())
             dropItems(items, event);
         else if (!commands.isEmpty())
@@ -42,7 +45,6 @@ public class DropUtils {
     }
 
     private static void dropItems(List<ItemStack> items, EntityDeathEvent event) {
-        event.getDrops().clear();
         for (ItemStack item : items)
             event.getDrops().add(item);
     }

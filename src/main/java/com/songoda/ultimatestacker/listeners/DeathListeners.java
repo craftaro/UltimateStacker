@@ -53,7 +53,8 @@ public class DeathListeners implements Listener {
             }
         }
 
-        if (!event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                && !event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
             drops.clear();
 
         if (instance.getEntityStackManager().isStacked(event.getEntity()))

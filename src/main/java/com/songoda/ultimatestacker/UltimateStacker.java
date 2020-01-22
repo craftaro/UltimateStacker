@@ -44,6 +44,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -140,7 +142,7 @@ public class UltimateStacker extends SongodaPlugin {
         for (Material value : Material.values()) {
             itemFile.addDefault("Items." + value.name() + ".Has Hologram", true);
             itemFile.addDefault("Items." + value.name() + ".Max Stack Size", -1);
-            itemFile.addDefault("Items." + value.name() + ".Display Name", Methods.formatText(value.name().toLowerCase().replace("_", " "), true));
+            itemFile.addDefault("Items." + value.name() + ".Display Name", WordUtils.capitalizeFully(value.name().toLowerCase().replace("_", " ")));
         }
         itemFile.load();
         itemFile.saveChanges();

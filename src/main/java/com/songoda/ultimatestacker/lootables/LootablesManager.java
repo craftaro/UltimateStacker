@@ -7,7 +7,6 @@ import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -19,15 +18,15 @@ import java.util.List;
 
 public class LootablesManager {
 
-    private final Lootables instance;
+    private final Lootables lootables;
 
     private final LootManager lootManager;
 
     private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + File.separator + "lootables";
 
     public LootablesManager() {
-        this.instance = new Lootables(lootablesDir);
-        this.lootManager = new LootManager(instance);
+        this.lootables = new Lootables(lootablesDir);
+        this.lootManager = new LootManager(lootables);
     }
 
     public List<Drop> getDrops(LivingEntity entity) {
@@ -57,7 +56,7 @@ public class LootablesManager {
                 Material material = loot2.getMaterial();
                 if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
                     if (((Sheep) entity).isSheared()) return null;
-                    if (instance.isServerVersionAtLeast(com.songoda.lootables.utils.ServerVersion.V1_13))
+                    if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
                         loot2.setMaterial(Material.valueOf(((Sheep) entity).getColor() + "_WOOL"));
                     else
                         loot2.setData((short) ((Sheep) entity).getColor().getWoolData());

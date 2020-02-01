@@ -97,6 +97,8 @@ public class EntityUtils {
             newEntity.setVelocity(toClone.getVelocity());
         }
 
+        newEntity.setInvulnerable(false);
+
         for (String checkStr : checks) {
             Check check = Check.valueOf(checkStr);
             switch (check) {

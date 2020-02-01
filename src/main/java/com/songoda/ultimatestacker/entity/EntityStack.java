@@ -17,8 +17,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataStoreBase;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class EntityStack {
@@ -148,15 +153,8 @@ public class EntityStack {
             newEntity.getEquipment().setItemInHand(CompatibleMaterial.GOLDEN_SWORD.getItem());
 
         if (Settings.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
-            if (killed.hasMetadata("US_REASON"))
-                newEntity.setMetadata("US_REASON", killed.getMetadata("US_REASON").get(0));
-
-            if (killed.hasMetadata("ES"))
-                newEntity.setMetadata("ES", killed.getMetadata("ES").get(0));
-
-            String entityMetadataKey = "mcMMO: Spawned Entity";
-            if (killed.hasMetadata(entityMetadataKey))
-                newEntity.setMetadata(entityMetadataKey, new FixedMetadataValue(UltimateStacker.getInstance(), true));
+            for (Map.Entry<String, MetadataValue> entry : getMetadata(killed).entrySet())
+                newEntity.setMetadata(entry.getKey(), entry.getValue());
         }
 
         DropUtils.processStackedDrop(killed, drops, event);
@@ -170,6 +168,43 @@ public class EntityStack {
             newEntity.setCustomNameVisible(false);
             newEntity.setCustomName(null);
         }
+    }
+
+    public Map<String, MetadataValue> getMetadata(LivingEntity subject) {
+        Map<String, MetadataValue> v = new HashMap<>();
+
+        Map<String, Map<Plugin, MetadataValue>> metadataMap = null;
+        try {
+            Object entityMetadata = methodGetEntityMetadata.invoke(Bukkit.getServer());
+            metadataMap = (Map) fieldMetadataMap.get(entityMetadata);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+        if (metadataMap == null) return v;
+
+        for (Map.Entry<String, Map<Plugin, MetadataValue>> entry : metadataMap.entrySet()) {
+            if (!entry.getKey().startsWith(subject.getUniqueId().toString())) continue;
+            String key = entry.getKey().split(":")[1];
+            for (MetadataValue value : entry.getValue().values())
+                v.put(key, value);
+        }
+        return v;
+    }
+
+    private static Method methodGetEntityMetadata;
+    private static Field fieldMetadataMap;
+
+    static {
+        try {
+            String ver = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+            Class<?> clazzCraftServer = Class.forName("org.bukkit.craftbukkit." + ver + ".CraftServer");
+            methodGetEntityMetadata = clazzCraftServer.getDeclaredMethod("getEntityMetadata");
+            fieldMetadataMap = MetadataStoreBase.class.getDeclaredField("metadataMap");
+        } catch (NoSuchFieldException | ClassNotFoundException | NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        fieldMetadataMap.setAccessible(true);
     }
 
     public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {

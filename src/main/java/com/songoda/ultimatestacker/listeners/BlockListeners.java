@@ -110,6 +110,7 @@ public class BlockListeners implements Listener {
 
         if (!event.isCancelled()) {
             if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+                    || !(block.getState() instanceof CreatureSpawner) // Needed for a DataPack
                     || !plugin.spawnersEnabled())
                 return;
 

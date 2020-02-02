@@ -97,7 +97,8 @@ public class EntityUtils {
             newEntity.setVelocity(toClone.getVelocity());
         }
 
-        newEntity.setInvulnerable(false);
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
+            newEntity.setInvulnerable(false);
 
         for (String checkStr : checks) {
             Check check = Check.valueOf(checkStr);

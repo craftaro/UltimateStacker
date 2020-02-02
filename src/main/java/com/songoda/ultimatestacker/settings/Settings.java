@@ -171,6 +171,9 @@ public class Settings {
     public static final ConfigSetting DISABLE_KNOCKBACK = new ConfigSetting(config, "Entities.Disable Knockback", false,
             "Should knockback be disabled on unstacked mobs?");
 
+    public static final ConfigSetting SHEAR_IN_ONE_CLICK = new ConfigSetting(config, "Entities.Shear In One Click", false,
+            "Should entities be sheared in a single click?");
+
     public static final ConfigSetting STACK_ITEMS = new ConfigSetting(config, "Items.Enabled", true,
             "Should items be stacked?");
 

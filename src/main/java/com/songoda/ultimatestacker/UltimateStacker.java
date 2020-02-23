@@ -398,6 +398,9 @@ public class UltimateStacker extends SongodaPlugin {
             item.removeMetadata("US_AMT", INSTANCE);
             itemStack.setAmount(newAmount);
         }
+        // If amount is 0, Minecraft change the type to AIR
+        if (itemStack.getType() == Material.AIR)
+        	return;
         item.setItemStack(itemStack);
 
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
@@ -419,7 +422,7 @@ public class UltimateStacker extends SongodaPlugin {
     public static int getActualItemAmount(Item item) {
         ItemStack itemStack = item.getItemStack();
         int amount = itemStack.getAmount();
-        if (amount >= (itemStack.getMaxStackSize() / 2) && item.hasMetadata("US_AMT")) {
+        if (/*amount >= (itemStack.getMaxStackSize() / 2) && */item.hasMetadata("US_AMT")) {
             return item.getMetadata("US_AMT").get(0).asInt();
         } else {
             return amount;

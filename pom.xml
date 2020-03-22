@@ -2,7 +2,7 @@
     <groupId>com.songoda</groupId>
     <artifactId>UltimateStacker</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.11.6</version>
+    <version>1.11.7</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>UltimateStacker-${project.version}</finalName>
@@ -92,6 +92,10 @@
         <repository>
             <id>private</id>
             <url>http://repo.songoda.com/artifactory/private/</url>
+        </repository>
+        <repository>
+            <id>public</id>
+            <url>http://repo.songoda.com/artifactory/public/</url>
         </repository>
         <repository>
             <id>CodeMC</id>

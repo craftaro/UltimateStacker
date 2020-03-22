@@ -14,12 +14,7 @@ import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
-import com.songoda.ultimatestacker.commands.CommandConvert;
-import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
-import com.songoda.ultimatestacker.commands.CommandReload;
-import com.songoda.ultimatestacker.commands.CommandRemoveAll;
-import com.songoda.ultimatestacker.commands.CommandSettings;
-import com.songoda.ultimatestacker.commands.CommandUltimateStacker;
+import com.songoda.ultimatestacker.commands.*;
 import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -120,6 +115,7 @@ public class UltimateStacker extends SongodaPlugin {
                 .addSubCommand(new CommandRemoveAll())
                 .addSubCommand(new CommandReload())
                 .addSubCommand(new CommandGiveSpawner())
+                .addSubCommand(new CommandSpawn())
                 .addSubCommand(new CommandConvert(guiManager));
 
         this.entityUtils = new EntityUtils();
@@ -398,6 +394,9 @@ public class UltimateStacker extends SongodaPlugin {
             item.removeMetadata("US_AMT", INSTANCE);
             itemStack.setAmount(newAmount);
         }
+        // If amount is 0, Minecraft change the type to AIR
+        if (itemStack.getType() == Material.AIR)
+        	return;
         item.setItemStack(itemStack);
 
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
@@ -419,7 +418,7 @@ public class UltimateStacker extends SongodaPlugin {
     public static int getActualItemAmount(Item item) {
         ItemStack itemStack = item.getItemStack();
         int amount = itemStack.getAmount();
-        if (amount >= (itemStack.getMaxStackSize() / 2) && item.hasMetadata("US_AMT")) {
+        if (/*amount >= (itemStack.getMaxStackSize() / 2) && */item.hasMetadata("US_AMT")) {
             return item.getMetadata("US_AMT").get(0).asInt();
         } else {
             return amount;

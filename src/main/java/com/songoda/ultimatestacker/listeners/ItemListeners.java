@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class ItemListeners implements Listener {
 
     private final UltimateStacker instance;
@@ -29,6 +31,9 @@ public class ItemListeners implements Listener {
     public void onMerge(ItemMergeEvent event) {
         int maxItemStackSize = Settings.MAX_STACK_ITEMS.getInt();
         if (!Settings.STACK_ITEMS.getBoolean()) return;
+
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getEntity().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         Item item = event.getTarget();
         ItemStack itemStack = item.getItemStack();
@@ -68,6 +73,9 @@ public class ItemListeners implements Listener {
     public void onExist(ItemSpawnEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
 
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getEntity().getWorld().getName().equalsIgnoreCase(worldStr))) return;
+
         ItemStack itemStack = event.getEntity().getItemStack();
 
         if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() &&
@@ -81,12 +89,18 @@ public class ItemListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
-        if (event.getItem().getItemStack().getAmount() < (event.getItem().getItemStack().getMaxStackSize() / 2)) return;
+        // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve
+        // ie there is x64 diamonds blocks (so 32), the player pick 8 items so the amount is 8 and not 32
+        int amount = UltimateStacker.getActualItemAmount(event.getItem());
+        if (/*event.getItem().getItemStack().getAmount()*/amount < (event.getItem().getItemStack().getMaxStackSize() / 2)) {
+        	// Update
+        	UltimateStacker.updateItemAmount(event.getItem(), event.getRemaining());
+        	return;
+        }
         event.setCancelled(true);
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
 
         Methods.updateInventory(event.getItem(), event.getPlayer().getInventory());
     }
-
 }

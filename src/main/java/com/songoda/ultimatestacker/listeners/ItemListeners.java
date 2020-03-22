@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class ItemListeners implements Listener {
 
     private final UltimateStacker instance;
@@ -29,6 +31,9 @@ public class ItemListeners implements Listener {
     public void onMerge(ItemMergeEvent event) {
         int maxItemStackSize = Settings.MAX_STACK_ITEMS.getInt();
         if (!Settings.STACK_ITEMS.getBoolean()) return;
+
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getEntity().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         Item item = event.getTarget();
         ItemStack itemStack = item.getItemStack();
@@ -67,6 +72,9 @@ public class ItemListeners implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onExist(ItemSpawnEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
+
+        List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getEntity().getWorld().getName().equalsIgnoreCase(worldStr))) return;
 
         ItemStack itemStack = event.getEntity().getItemStack();
 

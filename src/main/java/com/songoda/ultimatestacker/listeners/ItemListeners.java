@@ -91,13 +91,16 @@ public class ItemListeners implements Listener {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve
         // ie there is x64 diamonds blocks (so 32), the player pick 8 items so the amount is 8 and not 32
-        int amount = UltimateStacker.getActualItemAmount(event.getItem());
-        if (/*event.getItem().getItemStack().getAmount()*/amount < (event.getItem().getItemStack().getMaxStackSize() / 2)) {
+
+        Item item = event.getItem();
+        ItemStack stack = item.getItemStack();
+        int amount = UltimateStacker.getActualItemAmount(item);
+        if (/*event.getItem().getItemStack().getAmount()*/amount < (stack.getMaxStackSize() / 2)) {
         	// Update
-        	UltimateStacker.updateItemAmount(event.getItem(), event.getRemaining());
+        	UltimateStacker.updateItemAmount(item, event.getRemaining());
         	return;
         }
-        event.setCancelled(true);
+        event.getItem().setItemStack(stack);
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
 

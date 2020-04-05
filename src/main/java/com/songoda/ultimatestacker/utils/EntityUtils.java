@@ -19,7 +19,7 @@ public class EntityUtils {
 
     UltimateStacker plugin = UltimateStacker.getInstance();
 
-    private final List<String> checks = Settings.STACK_CHECKS.getStringList();
+    private final List<Check> checks = Check.getChecks(Settings.STACK_CHECKS.getStringList());
     private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
             keepFire = Settings.KEEP_FIRE.getBoolean(),
             keepPotion = Settings.KEEP_POTION.getBoolean(),
@@ -100,8 +100,7 @@ public class EntityUtils {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
             newEntity.setInvulnerable(false);
 
-        for (String checkStr : checks) {
-            Check check = Check.valueOf(checkStr);
+        for (Check check : checks) {
             switch (check) {
                 case AGE: {
                     if (!(toClone instanceof Ageable) || ((Ageable) toClone).isAdult()) break;
@@ -262,8 +261,7 @@ public class EntityUtils {
         if (stackFlyingDown && Methods.canFly(initialEntity))
             entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());
 
-        for (String checkStr : checks) {
-            Check check = Check.getCheck(checkStr);
+        for (Check check : checks) {
             if (check == null) continue;
             switch (check) {
                 case SPAWN_REASON: {

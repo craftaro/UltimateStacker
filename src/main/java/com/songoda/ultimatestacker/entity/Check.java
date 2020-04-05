@@ -1,6 +1,8 @@
 package com.songoda.ultimatestacker.entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum Check {
@@ -50,6 +52,13 @@ public enum Check {
 
     Check(boolean isEnabledByDefault) {
         this.isEnabledByDefault = isEnabledByDefault;
+    }
+
+    public static List<Check> getChecks(List<String> strChecks) {
+        List<Check> checks = new ArrayList<>();
+        for (String checkStr : strChecks)
+            checks.add(getCheck(checkStr));
+        return checks;
     }
 
     public boolean isEnabledByDefault() {

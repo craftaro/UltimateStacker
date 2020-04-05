@@ -146,9 +146,11 @@ public class StackingTask extends BukkitRunnable {
         int maxEntityStackSize = getEntityStackSize(livingEntity);
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
-        List<LivingEntity> stackableFriends = plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity, location)
-                .stream().filter(entity -> isEntityStackable(entity, location))
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<LivingEntity> stackableFriends = new LinkedList<>();
+        for (LivingEntity entity : plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity, location)) {
+            if (!isEntityStackable(entity, location)) continue;
+            stackableFriends.add(entity);
+        }
 
         // Loop through our similar stackable entities.
         for (LivingEntity entity : stackableFriends) {

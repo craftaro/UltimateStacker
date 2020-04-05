@@ -19,7 +19,7 @@ public class EntityUtils {
 
     UltimateStacker plugin = UltimateStacker.getInstance();
 
-    private final List<String> checks = Settings.STACK_CHECKS.getStringList();
+    private final List<Check> checks = Check.getChecks(Settings.STACK_CHECKS.getStringList());
     private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
             keepFire = Settings.KEEP_FIRE.getBoolean(),
             keepPotion = Settings.KEEP_POTION.getBoolean(),
@@ -100,8 +100,7 @@ public class EntityUtils {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
             newEntity.setInvulnerable(false);
 
-        for (String checkStr : checks) {
-            Check check = Check.valueOf(checkStr);
+        for (Check check : checks) {
             switch (check) {
                 case AGE: {
                     if (!(toClone instanceof Ageable) || ((Ageable) toClone).isAdult()) break;
@@ -255,15 +254,17 @@ public class EntityUtils {
 
     public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
         // Create a list of all entities around the initial entity of the same type.
-        List<LivingEntity> entityList = getNearbyEntities(location, searchRadius, stackWholeChunk)
-                .stream().filter(entity -> entity.getType() == initialEntity.getType() && entity != initialEntity)
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<LivingEntity> entityList = new LinkedList<>();
+        for (LivingEntity entity : getNearbyEntities(location, searchRadius, stackWholeChunk)) {
+            if (entity.getType() != initialEntity.getType() || entity == initialEntity)
+                continue;
+            entityList.add(entity);
+        }
 
         if (stackFlyingDown && Methods.canFly(initialEntity))
             entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());
 
-        for (String checkStr : checks) {
-            Check check = Check.getCheck(checkStr);
+        for (Check check : checks) {
             if (check == null) continue;
             switch (check) {
                 case SPAWN_REASON: {

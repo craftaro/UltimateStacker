@@ -254,9 +254,12 @@ public class EntityUtils {
 
     public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
         // Create a list of all entities around the initial entity of the same type.
-        List<LivingEntity> entityList = getNearbyEntities(location, searchRadius, stackWholeChunk)
-                .stream().filter(entity -> entity.getType() == initialEntity.getType() && entity != initialEntity)
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<LivingEntity> entityList = new LinkedList<>();
+        for (LivingEntity entity : getNearbyEntities(location, searchRadius, stackWholeChunk)) {
+            if (entity.getType() != initialEntity.getType() || entity == initialEntity)
+                continue;
+            entityList.add(entity);
+        }
 
         if (stackFlyingDown && Methods.canFly(initialEntity))
             entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());

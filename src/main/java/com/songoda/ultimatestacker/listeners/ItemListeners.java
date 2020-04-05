@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -88,18 +89,15 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
-        if (!Settings.STACK_ITEMS.getBoolean()) return;
+        if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve
         // ie there is x64 diamonds blocks (so 32), the player pick 8 items so the amount is 8 and not 32
 
         Item item = event.getItem();
         ItemStack stack = item.getItemStack();
         int amount = UltimateStacker.getActualItemAmount(item);
-        if (/*event.getItem().getItemStack().getAmount()*/amount < (stack.getMaxStackSize() / 2)) {
-        	// Update
-        	UltimateStacker.updateItemAmount(item, event.getRemaining());
-        	return;
-        }
+        if (amount < (stack.getMaxStackSize() / 2)) return;
+
         event.getItem().setItemStack(stack);
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));

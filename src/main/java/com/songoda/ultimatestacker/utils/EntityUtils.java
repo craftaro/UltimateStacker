@@ -13,7 +13,6 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class EntityUtils {
 

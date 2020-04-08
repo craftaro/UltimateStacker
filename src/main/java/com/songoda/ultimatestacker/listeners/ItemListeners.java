@@ -95,11 +95,9 @@ public class ItemListeners implements Listener {
 
         Item item = event.getItem();
         ItemStack stack = item.getItemStack();
-        if (stack.getMaxStackSize() == 1) return;
         int amount = UltimateStacker.getActualItemAmount(item);
         if (amount < (stack.getMaxStackSize() / 2)) return;
-
-        event.getItem().setItemStack(stack);
+        event.setCancelled(true);
 
         event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
 

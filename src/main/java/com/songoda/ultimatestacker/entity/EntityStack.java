@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.entity;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.utils.EntityUtils;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -156,6 +157,9 @@ public class EntityStack {
             for (Map.Entry<String, MetadataValue> entry : getMetadata(killed).entrySet())
                 newEntity.setMetadata(entry.getKey(), entry.getValue());
         }
+
+        if (!EntityUtils.isAware(killed))
+            EntityUtils.setUnaware(newEntity);
 
         DropUtils.processStackedDrop(killed, drops, event);
 

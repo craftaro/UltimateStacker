@@ -1,6 +1,8 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.gmail.filoghost.holographicdisplays.nms.interfaces.NMSManager;
 import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -68,7 +70,8 @@ public class SpawnerListeners implements Listener {
         event.setCancelled(true);
 
         if (!Settings.EGGS_CONVERT_SPAWNERS.getBoolean()
-                || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName())) {
+                || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName()
+                && !NmsManager.getNbt().of(event.getItem()).has("UC"))) {
             return;
         }
 

@@ -13,6 +13,8 @@ import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
+import com.songoda.core.nms.NmsManager;
+import com.songoda.core.nms.nbt.NBTItem;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.*;
 import com.songoda.ultimatestacker.database.DataManager;
@@ -32,14 +34,6 @@ import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.EntityUtils;
 import com.songoda.ultimatestacker.utils.Methods;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -50,14 +44,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
+
+import java.io.File;
+import java.util.*;
 
 public class UltimateStacker extends SongodaPlugin {
 
     private static UltimateStacker INSTANCE;
     private final static Set<String> whitelist = new HashSet();
-    private final static Set<String> blacklist = new HashSet();;
+    private final static Set<String> blacklist = new HashSet();
 
     private final Config mobFile = new Config(this, "mobs.yml");
     private final Config itemFile = new Config(this, "items.yml");
@@ -88,7 +86,7 @@ public class UltimateStacker extends SongodaPlugin {
         // Register WorldGuard
         WorldGuardHook.addHook("mob-stacking", true);
     }
-    
+
     @Override
     public void onPluginDisable() {
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
@@ -102,12 +100,12 @@ public class UltimateStacker extends SongodaPlugin {
 
         // Setup Config
         Settings.setupConfig();
-		this.setLocale(Settings.LANGUGE_MODE.getString(), false);
+        this.setLocale(Settings.LANGUGE_MODE.getString(), false);
         blacklist.clear();
         whitelist.clear();
         whitelist.addAll(Settings.ITEM_WHITELIST.getStringList());
         blacklist.addAll(Settings.ITEM_BLACKLIST.getStringList());
-        
+
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addCommand(new CommandUltimateStacker())
@@ -252,15 +250,15 @@ public class UltimateStacker extends SongodaPlugin {
     public List<Config> getExtraConfig() {
         return Arrays.asList(mobFile, itemFile, spawnerFile);
     }
-    
+
     @Override
     public void onConfigReload() {
         blacklist.clear();
         whitelist.clear();
         whitelist.addAll(Settings.ITEM_WHITELIST.getStringList());
         blacklist.addAll(Settings.ITEM_BLACKLIST.getStringList());
-        
-		this.setLocale(getConfig().getString("System.Language Mode"), true);
+
+        this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
         this.entityUtils = new EntityUtils();
@@ -339,7 +337,7 @@ public class UltimateStacker extends SongodaPlugin {
 
     public void updateHologram(SpawnerStack stack) {
         // are holograms enabled?
-        if(!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        if (!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         Block block = stack.getLocation().getBlock();
         if (block.getType() != CompatibleMaterial.SPAWNER.getBlockMaterial()) return;
         // grab the spawner block
@@ -357,17 +355,18 @@ public class UltimateStacker extends SongodaPlugin {
         // verify that this is a spawner
         if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
         // are holograms enabled?
-        if(!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
+        if (!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
         // update this hologram in a tick
         SpawnerStack spawner = getSpawnerStackManager().getSpawner(block);
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> updateHologram(spawner), 10L);
     }
 
     //////// Convenient API //////////
+
     /**
      * Change the stacked amount for this item
-     * 
-     * @param item item entity to update
+     *
+     * @param item      item entity to update
      * @param newAmount number of items this item represents
      */
     public static void updateItemAmount(Item item, int newAmount) {
@@ -448,10 +447,10 @@ public class UltimateStacker extends SongodaPlugin {
      */
     public static boolean isMaterialBlacklisted(ItemStack item) {
         CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
-        if(mat == null) {
+        if (mat == null) {
             // this shouldn't happen, but just in case?
             return item == null ? false : (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                ? isMaterialBlacklisted(item.getType()) : isMaterialBlacklisted(item.getType(), item.getData().getData()));
+                    ? isMaterialBlacklisted(item.getType()) : isMaterialBlacklisted(item.getType(), item.getData().getData()));
         } else if (mat.usesData()) {
             return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial(), mat.getData());
         } else {

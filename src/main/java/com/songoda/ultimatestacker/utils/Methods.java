@@ -1,33 +1,26 @@
 package com.songoda.ultimatestacker.utils;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.nms.NmsManager;
+import com.songoda.core.nms.nbt.NBTItem;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Methods {
 
@@ -172,18 +165,10 @@ public class Methods {
         cs.setSpawnedType(entityType);
         ((BlockStateMeta) meta).setBlockState(cs);
         item.setItemMeta(meta);
-        return item;
-    }
 
-    public static String formatTitle(String text) {
-        if (text == null || text.equals(""))
-            return "";
-        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)) {
-            if (text.length() > 31)
-                text = text.substring(0, 29) + "...";
-        }
-        text = formatText(text);
-        return text;
+        NBTItem nbtItem = NmsManager.getNbt().of(item);
+        nbtItem.set("spawner_stack_size", amount);
+        return nbtItem.finish();
     }
 
     public static boolean isInt(String number) {

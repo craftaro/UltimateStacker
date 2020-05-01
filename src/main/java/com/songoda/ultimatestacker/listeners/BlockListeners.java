@@ -1,6 +1,8 @@
 package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.nms.NmsManager;
+import com.songoda.core.nms.nbt.NBTItem;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
@@ -192,6 +194,9 @@ public class BlockListeners implements Listener {
     }
 
     private int getSpawnerAmount(ItemStack item) {
+        NBTItem nbtItem = NmsManager.getNbt().of(item);
+        if (nbtItem.has("spawner_stack_size"))
+            return nbtItem.getNBTObject("spawner_stack_size").asInt();
         if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return 1;
         if (item.getItemMeta().getDisplayName().contains(":")) {
             int amt = NumberUtils.toInt(item.getItemMeta().getDisplayName().replace("\u00A7", "").replace(";", "").split(":")[0], 1);

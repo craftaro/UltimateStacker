@@ -144,6 +144,7 @@ public class EntityStack {
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, EntityDeathEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
+
         LivingEntity newEntity = plugin.getEntityUtils().newEntity(killed);
 
         updateHealth(newEntity);

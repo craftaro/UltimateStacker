@@ -175,10 +175,13 @@ public class EntityStack {
         }
     }
 
+    static final int metaCarryOverMin = Settings.META_CARRY_OVER_MIN.getInt() * 20;
+
     public Map<String, MetadataValue> getMetadata(LivingEntity subject) {
         Map<String, MetadataValue> v = new HashMap<>();
+        if (subject.getTicksLived() >= metaCarryOverMin) return v;
 
-        Map<String, Map<Plugin, MetadataValue>> metadataMap = null;
+                Map<String, Map<Plugin, MetadataValue>> metadataMap = null;
         try {
             Object entityMetadata = methodGetEntityMetadata.invoke(Bukkit.getServer());
             metadataMap = (Map) fieldMetadataMap.get(entityMetadata);

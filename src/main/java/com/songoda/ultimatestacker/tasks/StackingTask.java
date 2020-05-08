@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.tasks;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
@@ -15,7 +16,6 @@ import org.bukkit.entity.*;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -119,7 +119,10 @@ public class StackingTask extends BukkitRunnable {
         return !onlyStackOnSurface
                 || Methods.canFly(livingEntity)
                 || entity.getType().name().equals("SHULKER")
-                || (livingEntity.isOnGround() || location.getBlock().isLiquid());
+
+                || (livingEntity.isOnGround()
+                || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                && livingEntity.isSwimming()));
 
     }
 
@@ -315,9 +318,9 @@ public class StackingTask extends BukkitRunnable {
 
     private int getEntityStackSize(LivingEntity initialEntity) {
         Integer max = entityStackSizes.get(initialEntity.getType());
-        if(max == null) {
+        if (max == null) {
             max = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
-            if(max == -1) {
+            if (max == -1) {
                 max = maxEntityStackSize;
             }
             entityStackSizes.put(initialEntity.getType(), max);

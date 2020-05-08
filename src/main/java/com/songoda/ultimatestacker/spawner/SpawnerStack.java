@@ -38,7 +38,7 @@ public class SpawnerStack {
                     && !plugin.getStackingTask().isWorldDisabled(location.getWorld()) ? 1 : calculateSpawnCount();
             int maxNearby = amount > 6 ? amount + 3 : 6;
             CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
-            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
                 creatureSpawner.setMaxNearbyEntities(maxNearby);
                 creatureSpawner.setSpawnCount(count);
             } else {

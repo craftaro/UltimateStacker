@@ -145,6 +145,13 @@ public class Settings {
             "With this enabled any metadata assigned from supported plugins such",
             "as EpicSpawners and mcMMO will be preserved when the entity is killed.");
 
+    public static final ConfigSetting META_CARRY_OVER_MIN = new ConfigSetting(config, "Entities.Meta Carry Over Min", 10,
+            "The amount of time in seconds an entity needs to have lived",
+            "for in order for their metadata to be carried over to their next",
+            "stack on death. Setting this value to zero may improve compatibility",
+            "with other plugins but this will be at the cost of performance if you",
+            "have a lot of grinders on your server.");
+
     public static final ConfigSetting WEAPONS_ARENT_EQUIPMENT = new ConfigSetting(config, "Entities.Weapons Arent Equipment", false,
             "This allows entities holding weapons to stack. Enchanted weapons are excluded.",
             "If you would like to disable the stacked entity check you can do that by removing",

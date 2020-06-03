@@ -1,24 +1,34 @@
 package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
+import com.songoda.lootables.gui.GuiEditor;
+import com.songoda.lootables.gui.GuiLootableEditor;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class  CommandReload extends AbstractCommand {
+public class CommandLootables extends AbstractCommand {
 
     UltimateStacker instance;
 
-    public CommandReload() {
-        super(false, "reload");
+    public CommandLootables() {
+        super(true, "lootables");
         instance = UltimateStacker.getInstance();
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        instance.reloadConfig();
-        instance.getLocale().getMessage("&7Configuration and Language files reloaded.").sendPrefixedMessage(sender);
+        Player p = (Player) sender;
+        instance.getGuiManager().showGUI(p, new GuiEditor(instance.getLootablesManager().getLootManager()));
         return ReturnType.SUCCESS;
     }
 
@@ -34,12 +44,11 @@ public class  CommandReload extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us reload";
+        return "/us lootables";
     }
 
     @Override
     public String getDescription() {
-        return "Reload the Configuration and Language files.";
+        return "Modify the drop tables.";
     }
-
 }

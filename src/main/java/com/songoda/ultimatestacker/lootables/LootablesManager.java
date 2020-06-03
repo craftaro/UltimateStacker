@@ -7,7 +7,6 @@ import com.songoda.lootables.Modify;
 import com.songoda.lootables.loot.*;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -53,13 +52,11 @@ public class LootablesManager {
         Modify modify = null;
         if (entity.getType() == EntityType.SHEEP) {
             modify = (Loot loot2) -> {
-                Material material = loot2.getMaterial();
+                CompatibleMaterial material = loot2.getMaterial();
                 if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
                     if (((Sheep) entity).isSheared()) return null;
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
-                        loot2.setMaterial(Material.valueOf(((Sheep) entity).getColor() + "_WOOL"));
-                    else
-                        loot2.setData((short) ((Sheep) entity).getColor().getWoolData());
+                        loot2.setMaterial(CompatibleMaterial.valueOf(((Sheep) entity).getColor() + "_WOOL"));
 
                 }
                 return loot2;
@@ -91,42 +88,41 @@ public class LootablesManager {
             // Add Trader Llama.
             lootManager.addLootable(new Lootable("TRADER_LLAMA",
                     new LootBuilder()
-                            .setMaterial(Material.LEATHER)
+                            .setMaterial(CompatibleMaterial.LEATHER)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Pillager.
             lootManager.addLootable(new Lootable("PILLAGER",
                     new LootBuilder()
-                            .setMaterial(Material.ARROW)
+                            .setMaterial(CompatibleMaterial.ARROW)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Ravager.
             lootManager.addLootable(new Lootable("RAVAGER",
                     new LootBuilder()
-                            .setMaterial(Material.SADDLE).build()));
+                            .setMaterial(CompatibleMaterial.SADDLE).build()));
 
             // Add Cat.
             lootManager.addLootable(new Lootable("CAT",
                     new LootBuilder()
-                            .setMaterial(Material.STRING).build()));
+                            .setMaterial(CompatibleMaterial.STRING).build()));
 
             // Add Panda.
             lootManager.addLootable(new Lootable("PANDA",
                     new LootBuilder()
-                            .setMaterial(Material.BAMBOO)
+                            .setMaterial(CompatibleMaterial.BAMBOO)
                             .setMin(0)
                             .setMax(2).build()));
         }
 
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
 
-
             // Add Phantom.
             lootManager.addLootable(new Lootable("PHANTOM",
                     new LootBuilder()
-                            .setMaterial(Material.PHANTOM_MEMBRANE)
+                            .setMaterial(CompatibleMaterial.PHANTOM_MEMBRANE)
                             .setMin(0)
                             .setMax(1)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
@@ -134,29 +130,29 @@ public class LootablesManager {
             // Add Pufferfish.
             lootManager.addLootable(new Lootable("PUFFERFISH",
                     new LootBuilder()
-                            .setMaterial(Material.PUFFERFISH).build(),
+                            .setMaterial(CompatibleMaterial.PUFFERFISH).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE_MEAL)
+                            .setMaterial(CompatibleMaterial.BONE_MEAL)
                             .setChance(5).build()));
 
             // Add Salmon.
             lootManager.addLootable(new Lootable("SALMON",
                     new LootBuilder()
-                            .setMaterial(Material.SALMON)
-                            .setBurnedMaterial(Material.COOKED_SALMON).build(),
+                            .setMaterial(CompatibleMaterial.SALMON)
+                            .setBurnedMaterial(CompatibleMaterial.COOKED_SALMON).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE_MEAL)
+                            .setMaterial(CompatibleMaterial.BONE_MEAL)
                             .setChance(5).build()));
 
             // Add Tropical Fish.
             lootManager.addLootable(new Lootable("TROPICAL_FISH",
                     new LootBuilder()
-                            .setMaterial(Material.TROPICAL_FISH).build(),
+                            .setMaterial(CompatibleMaterial.TROPICAL_FISH).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE_MEAL)
+                            .setMaterial(CompatibleMaterial.BONE_MEAL)
                             .setChance(5).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE)
+                            .setMaterial(CompatibleMaterial.BONE)
                             .setMin(1)
                             .setMax(2)
                             .setChance(25)
@@ -165,35 +161,35 @@ public class LootablesManager {
             // Add Dolphin.
             lootManager.addLootable(new Lootable("DOLPHIN",
                     new LootBuilder()
-                            .setMaterial(Material.COD)
-                            .setBurnedMaterial(Material.COOKED_COD)
+                            .setMaterial(CompatibleMaterial.COD)
+                            .setBurnedMaterial(CompatibleMaterial.COOKED_COD)
                             .setMin(0)
                             .setMax(1).build()));
 
             // Add Cod.
             lootManager.addLootable(new Lootable("COD",
                     new LootBuilder()
-                            .setMaterial(Material.COD)
-                            .setBurnedMaterial(Material.COOKED_COD).build(),
+                            .setMaterial(CompatibleMaterial.COD)
+                            .setBurnedMaterial(CompatibleMaterial.COOKED_COD).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE_MEAL)
+                            .setMaterial(CompatibleMaterial.BONE_MEAL)
                             .setChance(5).build()));
 
             // Add Turtle.
             lootManager.addLootable(new Lootable("TURTLE",
                     new LootBuilder()
-                            .setMaterial(Material.SEAGRASS)
+                            .setMaterial(CompatibleMaterial.SEAGRASS)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Drowned.
             lootManager.addLootable(new Lootable("DROWNED",
                     new LootBuilder()
-                            .setMaterial(Material.ROTTEN_FLESH)
+                            .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(Material.GOLD_INGOT)
+                            .setMaterial(CompatibleMaterial.GOLD_INGOT)
                             .setChance(5)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
@@ -202,7 +198,7 @@ public class LootablesManager {
             // Add Parrot.
             lootManager.addLootable(new Lootable("PARROT",
                     new LootBuilder()
-                            .setMaterial(Material.FEATHER)
+                            .setMaterial(CompatibleMaterial.FEATHER)
                             .setMin(1)
                             .setMax(2).build()));
         }
@@ -210,34 +206,30 @@ public class LootablesManager {
 
         Loot fish1 = new LootBuilder()
                 .addChildLoot(new LootBuilder()
-                                .setMaterial(CompatibleMaterial.COD.getMaterial())
-                                .setBurnedMaterial(CompatibleMaterial.COOKED_COD.getMaterial())
+                                .setMaterial(CompatibleMaterial.COD)
+                                .setBurnedMaterial(CompatibleMaterial.COOKED_COD)
                                 .setChance(50).build(),
                         new LootBuilder()
-                                .setMaterial(Material.PRISMARINE_CRYSTALS)
+                                .setMaterial(CompatibleMaterial.PRISMARINE_CRYSTALS)
                                 .setChance(33).build())
                 .build();
 
         Loot fish2 = new LootBuilder()
                 .setChance(2.5)
                 .addChildLoot(new LootBuilder()
-                                .setMaterial(CompatibleMaterial.COD.getMaterial())
-                                .setData(CompatibleMaterial.COD.getData())
+                                .setMaterial(CompatibleMaterial.COD)
                                 .setChance(60)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(CompatibleMaterial.SALMON.getMaterial())
-                                .setData(CompatibleMaterial.SALMON.getData())
+                                .setMaterial(CompatibleMaterial.SALMON)
                                 .setChance(25)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(CompatibleMaterial.PUFFERFISH.getMaterial())
-                                .setData(CompatibleMaterial.PUFFERFISH.getData())
+                                .setMaterial(CompatibleMaterial.PUFFERFISH)
                                 .setChance(13)
                                 .setAllowLootingEnchant(false).build(),
                         new LootBuilder()
-                                .setMaterial(CompatibleMaterial.TROPICAL_FISH.getMaterial())
-                                .setData(CompatibleMaterial.TROPICAL_FISH.getData())
+                                .setMaterial(CompatibleMaterial.TROPICAL_FISH)
                                 .setChance(2)
                                 .setAllowLootingEnchant(false).build())
                 .addOnlyDropFors(EntityType.PLAYER).build();
@@ -246,43 +238,43 @@ public class LootablesManager {
             // Add Zombie Villager.
             lootManager.addLootable(new Lootable("ZOMBIE_VILLAGER",
                     new LootBuilder()
-                            .setMaterial(Material.ROTTEN_FLESH)
+                            .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
                             .setChance(2.5)
                             .setChildDropCount(1)
                             .addOnlyDropFors(EntityType.PLAYER)
-                            .addChildLoot(new LootBuilder().setMaterial(Material.IRON_INGOT)
+                            .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.IRON_INGOT)
                                             .setAllowLootingEnchant(false).build(),
-                                    new LootBuilder().setMaterial(Material.CARROT)
+                                    new LootBuilder().setMaterial(CompatibleMaterial.CARROT)
                                             .setAllowLootingEnchant(false).build(),
-                                    new LootBuilder().setMaterial(Material.POTATO)
+                                    new LootBuilder().setMaterial(CompatibleMaterial.POTATO)
                                             .setAllowLootingEnchant(false).build())
                             .build()));
 
             // Add Llama.
             lootManager.addLootable(new Lootable("LLAMA",
                     new LootBuilder()
-                            .setMaterial(Material.LEATHER)
+                            .setMaterial(CompatibleMaterial.LEATHER)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Zombie Horse.
             lootManager.addLootable(new Lootable("ZOMBIE_HORSE",
                     new LootBuilder()
-                            .setMaterial(Material.ROTTEN_FLESH)
+                            .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                             .setMin(0)
                             .setMax(2).build()));
             // Add Elder Guardian.
             lootManager.addLootable(new Lootable("ELDER_GUARDIAN",
                     new LootBuilder()
-                            .setMaterial(Material.PRISMARINE_SHARD)
+                            .setMaterial(CompatibleMaterial.PRISMARINE_SHARD)
                             .setMin(0)
                             .setMax(2).build(),
                     fish1,
                     new LootBuilder()
-                            .setMaterial(Material.SPONGE)
+                            .setMaterial(CompatibleMaterial.SPONGE)
                             .addOnlyDropFors(EntityType.PLAYER)
                             .setAllowLootingEnchant(false).build(),
                     fish2));
@@ -290,24 +282,23 @@ public class LootablesManager {
             // Add Mule.
             lootManager.addLootable(new Lootable("MULE",
                     new LootBuilder()
-                            .setMaterial(Material.LEATHER)
+                            .setMaterial(CompatibleMaterial.LEATHER)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Stray.
             lootManager.addLootable(new Lootable("STRAY",
                     new LootBuilder()
-                            .setMaterial(Material.ARROW)
+                            .setMaterial(CompatibleMaterial.ARROW)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE)
+                            .setMaterial(CompatibleMaterial.BONE)
                             .setMin(0)
                             .setMax(2).build()));
 
             Loot witherSkull = new LootBuilder()
-                    .setMaterial(CompatibleMaterial.WITHER_SKELETON_SKULL.getMaterial())
-                    .setData(CompatibleMaterial.WITHER_SKELETON_SKULL.getData())
+                    .setMaterial(CompatibleMaterial.WITHER_SKELETON_SKULL)
                     .setChance(2.5)
                     .setAllowLootingEnchant(false)
                     .addOnlyDropFors(EntityType.PLAYER).build();
@@ -315,30 +306,30 @@ public class LootablesManager {
             // Add Wither Skeleton.
             lootManager.addLootable(new Lootable("WITHER_SKELETON",
                     new LootBuilder()
-                            .setMaterial(Material.COAL)
+                            .setMaterial(CompatibleMaterial.COAL)
                             .setChance(33).build(),
                     new LootBuilder()
-                            .setMaterial(Material.BONE)
+                            .setMaterial(CompatibleMaterial.BONE)
                             .setMin(0)
                             .setMax(2).build(),
                     witherSkull));        // Add Skeleton Horse.
             lootManager.addLootable(new Lootable("SKELETON_HORSE",
                     new LootBuilder()
-                            .setMaterial(Material.BONE)
+                            .setMaterial(CompatibleMaterial.BONE)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Donkey.
             lootManager.addLootable(new Lootable("DONKEY",
                     new LootBuilder()
-                            .setMaterial(Material.LEATHER)
+                            .setMaterial(CompatibleMaterial.LEATHER)
                             .setMin(0)
                             .setMax(2).build()));
 
             // Add Vindicator.
             lootManager.addLootable(new Lootable("VINDICATOR",
                     new LootBuilder()
-                            .setMaterial(Material.EMERALD)
+                            .setMaterial(CompatibleMaterial.EMERALD)
                             .setMin(0)
                             .setMax(1)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
@@ -346,10 +337,10 @@ public class LootablesManager {
             // Add Evoker.
             lootManager.addLootable(new Lootable("EVOKER",
                     new LootBuilder()
-                            .setMaterial(CompatibleMaterial.TOTEM_OF_UNDYING.getMaterial())
+                            .setMaterial(CompatibleMaterial.TOTEM_OF_UNDYING)
                             .setAllowLootingEnchant(false).build(),
                     new LootBuilder()
-                            .setMaterial(Material.EMERALD)
+                            .setMaterial(CompatibleMaterial.EMERALD)
                             .setChance(50)
                             .addOnlyDropFors(EntityType.PLAYER).build()));
         }
@@ -360,7 +351,7 @@ public class LootablesManager {
             // Shulker.
             lootManager.addLootable(new Lootable("SHULKER",
                     new LootBuilder()
-                            .setMaterial(Material.SHULKER_SHELL)
+                            .setMaterial(CompatibleMaterial.SHULKER_SHELL)
                             .setChance(50)
                             .setLootingIncrease(6.25).build()));
         }
@@ -369,12 +360,12 @@ public class LootablesManager {
             // Add Polar Bear.
             lootManager.addLootable(new Lootable("POLAR_BEAR",
                     new LootBuilder()
-                            .setMaterial(Material.COD)
+                            .setMaterial(CompatibleMaterial.COD)
                             .setChance(75)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(Material.SALMON)
+                            .setMaterial(CompatibleMaterial.SALMON)
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));
@@ -382,13 +373,12 @@ public class LootablesManager {
             // Add Polar Bear.
             lootManager.addLootable(new Lootable("POLAR_BEAR",
                     new LootBuilder()
-                            .setMaterial(CompatibleMaterial.COD.getMaterial())
+                            .setMaterial(CompatibleMaterial.COD)
                             .setChance(75)
                             .setMin(0)
                             .setMax(2).build(),
                     new LootBuilder()
-                            .setMaterial(CompatibleMaterial.SALMON.getMaterial())
-                            .setData(CompatibleMaterial.SALMON.getData())
+                            .setMaterial(CompatibleMaterial.SALMON)
                             .setChance(25)
                             .setMin(0)
                             .setMax(2).build()));
@@ -397,8 +387,8 @@ public class LootablesManager {
         // Add Pig.
         lootManager.addLootable(new Lootable("PIG",
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.PORKCHOP.getMaterial())
-                        .setBurnedMaterial(CompatibleMaterial.COOKED_PORKCHOP.getMaterial())
+                        .setMaterial(CompatibleMaterial.PORKCHOP)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_PORKCHOP)
                         .setMin(1)
                         .setMax(3).build()));
 
@@ -406,40 +396,40 @@ public class LootablesManager {
         // Add Cow.
         lootManager.addLootable(new Lootable("COW",
                 new LootBuilder()
-                        .setMaterial(Material.LEATHER)
+                        .setMaterial(CompatibleMaterial.LEATHER)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.BEEF.getMaterial())
-                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF.getMaterial())
+                        .setMaterial(CompatibleMaterial.BEEF)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF)
                         .setMin(1)
                         .setMax(3).build()));
 
         // Add Mushroom Cow.
         lootManager.addLootable(new Lootable("MUSHROOM_COW",
                 new LootBuilder()
-                        .setMaterial(Material.LEATHER)
+                        .setMaterial(CompatibleMaterial.LEATHER)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.BEEF.getMaterial())
-                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF.getMaterial())
+                        .setMaterial(CompatibleMaterial.BEEF)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_BEEF)
                         .setMin(1)
                         .setMax(3).build()));
 
         // Add Chicken.
         lootManager.addLootable(new Lootable("CHICKEN",
                 new LootBuilder()
-                        .setMaterial(Material.FEATHER)
+                        .setMaterial(CompatibleMaterial.FEATHER)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.CHICKEN.getMaterial())
-                        .setBurnedMaterial(CompatibleMaterial.COOKED_CHICKEN.getMaterial()).build()));
+                        .setMaterial(CompatibleMaterial.CHICKEN)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_CHICKEN).build()));
         // Add Zombie.
         lootManager.addLootable(new Lootable("ZOMBIE",
                 new LootBuilder()
-                        .setMaterial(Material.ROTTEN_FLESH)
+                        .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
@@ -447,18 +437,18 @@ public class LootablesManager {
                         .setChildDropCount(1)
                         .setAllowLootingEnchant(false)
                         .addOnlyDropFors(EntityType.PLAYER)
-                        .addChildLoot(new LootBuilder().setMaterial(Material.IRON_INGOT)
+                        .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.IRON_INGOT)
                                         .setAllowLootingEnchant(false).build(),
-                                new LootBuilder().setMaterial(Material.CARROT)
+                                new LootBuilder().setMaterial(CompatibleMaterial.CARROT)
                                         .setAllowLootingEnchant(false).build(),
-                                new LootBuilder().setMaterial(Material.POTATO)
+                                new LootBuilder().setMaterial(CompatibleMaterial.POTATO)
                                         .setAllowLootingEnchant(false).build())
                         .build()));
 
         // Add Husk.
         lootManager.addLootable(new Lootable("ZOMBIE",
                 new LootBuilder()
-                        .setMaterial(Material.ROTTEN_FLESH)
+                        .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
@@ -466,11 +456,11 @@ public class LootablesManager {
                         .setChildDropCount(1)
                         .setAllowLootingEnchant(false)
                         .addOnlyDropFors(EntityType.PLAYER)
-                        .addChildLoot(new LootBuilder().setMaterial(Material.IRON_INGOT)
+                        .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.IRON_INGOT)
                                         .setAllowLootingEnchant(false).build(),
-                                new LootBuilder().setMaterial(Material.CARROT)
+                                new LootBuilder().setMaterial(CompatibleMaterial.CARROT)
                                         .setAllowLootingEnchant(false).build(),
-                                new LootBuilder().setMaterial(Material.POTATO)
+                                new LootBuilder().setMaterial(CompatibleMaterial.POTATO)
                                         .setAllowLootingEnchant(false).build())
                         .build()));
 
@@ -480,60 +470,60 @@ public class LootablesManager {
                     .setChildDropCount(1)
                     .addOnlyDropFors(EntityType.SKELETON,
                             EntityType.STRAY)
-                    .addChildLoot(new LootBuilder().setMaterial(Material.MUSIC_DISC_11).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_13).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_BLOCKS).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_CAT).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_CHIRP).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_FAR).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_MALL).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_MELLOHI).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_STAL).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_STRAD).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_WAIT).build(),
-                            new LootBuilder().setMaterial(Material.MUSIC_DISC_WARD).build())
+                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_11).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_13).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_BLOCKS).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CAT).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CHIRP).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_FAR).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MALL).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MELLOHI).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STAL).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STRAD).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WAIT).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WARD).build())
                     .build();
         } else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
             discs = new LootBuilder()
                     .setChildDropCount(1)
                     .addOnlyDropFors(EntityType.SKELETON,
                             EntityType.STRAY)
-                    .addChildLoot(new LootBuilder().setMaterial(Material.valueOf("GOLD_RECORD")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("GREEN_RECORD")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_3")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_4")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_5")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_6")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_7")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_8")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_9")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_10")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_11")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_12")).build())
+                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GOLD_RECORD")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GREEN_RECORD")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_3")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_4")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_5")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_6")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_7")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_8")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_9")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_10")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_11")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_12")).build())
                     .build();
         } else {
             discs = new LootBuilder()
                     .setChildDropCount(1)
                     .addOnlyDropFors(EntityType.SKELETON)
-                    .addChildLoot(new LootBuilder().setMaterial(Material.valueOf("GOLD_RECORD")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("GREEN_RECORD")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_3")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_4")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_5")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_6")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_7")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_8")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_9")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_10")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_11")).build(),
-                            new LootBuilder().setMaterial(Material.valueOf("RECORD_12")).build())
+                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GOLD_RECORD")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GREEN_RECORD")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_3")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_4")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_5")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_6")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_7")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_8")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_9")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_10")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_11")).build(),
+                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_12")).build())
                     .build();
         }
 
         // Add Creeper.
         lootManager.addLootable(new Lootable("CREEPER",
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
+                        .setMaterial(CompatibleMaterial.GUNPOWDER)
                         .setMin(0)
                         .setMax(2).build(),
                 discs));
@@ -541,7 +531,7 @@ public class LootablesManager {
         // Add Guardian.
         lootManager.addLootable(new Lootable("GUARDIAN",
                 new LootBuilder()
-                        .setMaterial(Material.PRISMARINE_SHARD)
+                        .setMaterial(CompatibleMaterial.PRISMARINE_SHARD)
                         .setMin(0)
                         .setMax(2).build(),
                 fish1,
@@ -553,37 +543,37 @@ public class LootablesManager {
                         .setChildDropCounMin(1)
                         .setChildDropCountMax(3)
                         .addChildLoot(new LootBuilder()
-                                        .setMaterial(Material.GLOWSTONE_DUST)
+                                        .setMaterial(CompatibleMaterial.GLOWSTONE_DUST)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(Material.SUGAR)
+                                        .setMaterial(CompatibleMaterial.SUGAR)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(Material.REDSTONE)
+                                        .setMaterial(CompatibleMaterial.REDSTONE)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(Material.SPIDER_EYE)
+                                        .setMaterial(CompatibleMaterial.SPIDER_EYE)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(Material.GLASS_BOTTLE)
+                                        .setMaterial(CompatibleMaterial.GLASS_BOTTLE)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
+                                        .setMaterial(CompatibleMaterial.GUNPOWDER)
                                         .setChance(12.5)
                                         .setMin(0)
                                         .setMax(2).build(),
                                 new LootBuilder()
-                                        .setMaterial(Material.STICK)
+                                        .setMaterial(CompatibleMaterial.STICK)
                                         .setChance(25)
                                         .setMin(0)
                                         .setMax(2).build()
@@ -592,55 +582,55 @@ public class LootablesManager {
         // Add Sheep.
         lootManager.addLootable(new Lootable("SHEEP",
                 new LootBuilder()
-                        .setMaterial(Material.MUTTON)
-                        .setBurnedMaterial(Material.COOKED_MUTTON)
+                        .setMaterial(CompatibleMaterial.MUTTON)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_MUTTON)
                         .setMin(1)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.WHITE_WOOL.getMaterial())
+                        .setMaterial(CompatibleMaterial.WHITE_WOOL)
                         .setMin(2)
                         .setMax(2).build()));
 
         // Add Squid.
         lootManager.addLootable(new Lootable("SQUID",
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.INK_SAC.getMaterial())
+                        .setMaterial(CompatibleMaterial.INK_SAC)
                         .setMin(1)
                         .setMax(3).build()));
 
         // Add Spider.
         lootManager.addLootable(new Lootable("SPIDER",
                 new LootBuilder()
-                        .setMaterial(Material.STRING)
+                        .setMaterial(CompatibleMaterial.STRING)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(Material.SPIDER_EYE)
+                        .setMaterial(CompatibleMaterial.SPIDER_EYE)
                         .setChance(33)
                         .addOnlyDropFors(EntityType.PLAYER).build()));
 
         // Add Cave Spider.
         lootManager.addLootable(new Lootable("CAVE_SPIDER",
                 new LootBuilder()
-                        .setMaterial(Material.STRING)
+                        .setMaterial(CompatibleMaterial.STRING)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(Material.SPIDER_EYE)
+                        .setMaterial(CompatibleMaterial.SPIDER_EYE)
                         .setChance(33)
                         .addOnlyDropFors(EntityType.PLAYER).build()));
 
         // Add Enderman.
         lootManager.addLootable(new Lootable("ENDERMAN",
                 new LootBuilder()
-                        .setMaterial(Material.ENDER_PEARL)
+                        .setMaterial(CompatibleMaterial.ENDER_PEARL)
                         .setMin(0)
                         .setMax(1).build()));
 
         // Add Blaze.
         lootManager.addLootable(new Lootable("BLAZE",
                 new LootBuilder()
-                        .setMaterial(Material.BLAZE_ROD)
+                        .setMaterial(CompatibleMaterial.BLAZE_ROD)
                         .setMin(0)
                         .setMax(1)
                         .addOnlyDropFors(EntityType.PLAYER).build()));
@@ -648,93 +638,93 @@ public class LootablesManager {
         // Add Horse.
         lootManager.addLootable(new Lootable("HORSE",
                 new LootBuilder()
-                        .setMaterial(Material.LEATHER)
+                        .setMaterial(CompatibleMaterial.LEATHER)
                         .setMin(0)
                         .setMax(2).build()));
 
         // Magma Cube.
         lootManager.addLootable(new Lootable("MAGMA_CUBE",
                 new LootBuilder()
-                        .setMaterial(Material.MAGMA_CREAM)
+                        .setMaterial(CompatibleMaterial.MAGMA_CREAM)
                         .setChance(25).build()));
         // Add Skeleton.
         lootManager.addLootable(new Lootable("SKELETON",
                 new LootBuilder()
-                        .setMaterial(Material.ARROW)
+                        .setMaterial(CompatibleMaterial.ARROW)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(Material.BONE)
+                        .setMaterial(CompatibleMaterial.BONE)
                         .setMin(0)
                         .setMax(2).build()));
 
         // Add Snowman.
         lootManager.addLootable(new Lootable("SNOWMAN",
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.SNOWBALL.getMaterial())
+                        .setMaterial(CompatibleMaterial.SNOWBALL)
                         .setMin(0)
                         .setMax(15).build()));
 
         // Add Rabbit.
         lootManager.addLootable(new Lootable("RABBIT",
                 new LootBuilder()
-                        .setMaterial(Material.RABBIT_HIDE)
+                        .setMaterial(CompatibleMaterial.RABBIT_HIDE)
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(Material.RABBIT)
-                        .setBurnedMaterial(Material.COOKED_RABBIT)
+                        .setMaterial(CompatibleMaterial.RABBIT)
+                        .setBurnedMaterial(CompatibleMaterial.COOKED_RABBIT)
                         .setMin(0)
                         .setMax(1).build()));
 
         // Add Iron Golem.
         lootManager.addLootable(new Lootable("IRON_GOLEM",
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.POPPY.getMaterial())
+                        .setMaterial(CompatibleMaterial.POPPY)
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
-                        .setMaterial(Material.IRON_INGOT)
+                        .setMaterial(CompatibleMaterial.IRON_INGOT)
                         .setMin(3)
                         .setMax(5).build()));
 
         // Add Slime.
         lootManager.addLootable(new Lootable("SLIME",
                 new LootBuilder()
-                        .setMaterial(Material.SLIME_BALL)
+                        .setMaterial(CompatibleMaterial.SLIME_BALL)
                         .setMin(0)
                         .setMax(2).build()));
 
         // Add Ghast.
         lootManager.addLootable(new Lootable("GHAST",
                 new LootBuilder()
-                        .setMaterial(Material.GHAST_TEAR)
+                        .setMaterial(CompatibleMaterial.GHAST_TEAR)
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(CompatibleMaterial.GUNPOWDER.getMaterial())
+                        .setMaterial(CompatibleMaterial.GUNPOWDER)
                         .setMin(0)
                         .setMax(2).build()));
 
         // Add Zombie Pigman
         lootManager.addLootable(new Lootable("PIG_ZOMBIE",
                 new LootBuilder()
-                        .setMaterial(Material.ROTTEN_FLESH)
+                        .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(Material.GOLD_NUGGET)
+                        .setMaterial(CompatibleMaterial.GOLD_NUGGET)
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
-                        .setMaterial(Material.GOLD_INGOT)
+                        .setMaterial(CompatibleMaterial.GOLD_INGOT)
                         .setChance(2.5)
                         .addOnlyDropFors(EntityType.PLAYER).build()));
 
         // Add Wither.
         lootManager.addLootable(new Lootable("WITHER",
                 new LootBuilder()
-                        .setMaterial(Material.NETHER_STAR)
+                        .setMaterial(CompatibleMaterial.NETHER_STAR)
                         .setAllowLootingEnchant(false).build()));
 
         // Add Villager.
@@ -745,7 +735,7 @@ public class LootablesManager {
         lootManager.addLootable(new Lootable("SILVERFISH",
                 new LootBuilder().build()));
 
-        lootManager.saveLootables();
+        lootManager.saveLootables(true);
     }
 
     public LootManager getLootManager() {

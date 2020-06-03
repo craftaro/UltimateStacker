@@ -114,6 +114,7 @@ public class UltimateStacker extends SongodaPlugin {
                 .addSubCommand(new CommandReload())
                 .addSubCommand(new CommandGiveSpawner())
                 .addSubCommand(new CommandSpawn())
+                .addSubCommand(new CommandLootables())
                 .addSubCommand(new CommandConvert(guiManager));
 
         this.entityUtils = new EntityUtils();
@@ -318,6 +319,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     public DataManager getDataManager() {
         return dataManager;
+    }
+
+    public GuiManager getGuiManager() {
+        return guiManager;
     }
 
     void loadHolograms() {

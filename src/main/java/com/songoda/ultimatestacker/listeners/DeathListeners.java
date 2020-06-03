@@ -3,10 +3,10 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.ServerProject;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
+import com.songoda.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.utils.DropUtils;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -113,7 +113,8 @@ public class DeathListeners implements Listener {
 
     @EventHandler
     public void onEntityHit(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player) || ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_12)) return;
+        if (!(event.getDamager() instanceof Player) || ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_12))
+            return;
         if (!instance.getEntityStackManager().isStacked(event.getEntity())) return;
         EntityStack stack = instance.getEntityStackManager().getStack(event.getEntity());
 

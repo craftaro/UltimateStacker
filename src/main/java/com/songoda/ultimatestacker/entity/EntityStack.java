@@ -4,9 +4,9 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.utils.EntityUtils;
 import com.songoda.lootables.loot.Drop;
+import com.songoda.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.utils.DropUtils;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -181,7 +181,7 @@ public class EntityStack {
         Map<String, MetadataValue> v = new HashMap<>();
         if (subject.getTicksLived() >= metaCarryOverMin) return v;
 
-                Map<String, Map<Plugin, MetadataValue>> metadataMap = null;
+        Map<String, Map<Plugin, MetadataValue>> metadataMap = null;
         try {
             Object entityMetadata = methodGetEntityMetadata.invoke(Bukkit.getServer());
             metadataMap = (Map) fieldMetadataMap.get(entityMetadata);

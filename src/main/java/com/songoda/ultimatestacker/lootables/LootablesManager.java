@@ -635,6 +635,11 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(1).build(),
                 new LootBuilder()
+                        .setMaterial(CompatibleMaterial.RABBIT_FOOT)
+                        .setMin(0)
+                        .setMax(1)
+                        .setChance(10).build(),
+                new LootBuilder()
                         .setMaterial(CompatibleMaterial.RABBIT)
                         .setBurnedMaterial(CompatibleMaterial.COOKED_RABBIT)
                         .setMin(0)

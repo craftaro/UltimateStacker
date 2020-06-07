@@ -62,7 +62,6 @@ public class LootablesManager {
                 return loot2;
             };
         }
-
         EntityType killer = null;
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
             Entity killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
@@ -76,6 +75,7 @@ public class LootablesManager {
         }
         return lootManager.runLoot(modify,
                 entity.getFireTicks() > 0,
+                entity instanceof Creeper && ((Creeper) entity).isPowered(),
                 entity.getKiller() != null ? entity.getKiller().getItemInHand() : null,
                 killer,
                 loot,
@@ -433,6 +433,9 @@ public class LootablesManager {
                         .setMin(0)
                         .setMax(2).build(),
                 new LootBuilder()
+                        .setMaterial(CompatibleMaterial.ZOMBIE_HEAD)
+                        .setRequireCharged(true).build(),
+                new LootBuilder()
                         .setChance(2.5)
                         .setChildDropCount(1)
                         .setAllowLootingEnchant(false)
@@ -619,7 +622,10 @@ public class LootablesManager {
                 new LootBuilder()
                         .setMaterial(CompatibleMaterial.BONE)
                         .setMin(0)
-                        .setMax(2).build()));
+                        .setMax(2).build(),
+                new LootBuilder()
+                        .setMaterial(CompatibleMaterial.SKELETON_SKULL)
+                        .setRequireCharged(true).build()));
 
         // Add Snowman.
         lootManager.addLootable(new Lootable("SNOWMAN",

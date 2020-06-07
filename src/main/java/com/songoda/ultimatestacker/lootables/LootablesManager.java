@@ -464,69 +464,32 @@ public class LootablesManager {
                                         .setAllowLootingEnchant(false).build())
                         .build()));
 
-        Loot discs;
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)) {
-            discs = new LootBuilder()
-                    .setChildDropCount(1)
-                    .addOnlyDropFors(EntityType.SKELETON,
-                            EntityType.STRAY)
-                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_11).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_13).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_BLOCKS).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CAT).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CHIRP).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_FAR).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MALL).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MELLOHI).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STAL).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STRAD).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WAIT).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WARD).build())
-                    .build();
-        } else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
-            discs = new LootBuilder()
-                    .setChildDropCount(1)
-                    .addOnlyDropFors(EntityType.SKELETON,
-                            EntityType.STRAY)
-                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GOLD_RECORD")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GREEN_RECORD")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_3")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_4")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_5")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_6")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_7")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_8")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_9")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_10")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_11")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_12")).build())
-                    .build();
-        } else {
-            discs = new LootBuilder()
-                    .setChildDropCount(1)
-                    .addOnlyDropFors(EntityType.SKELETON)
-                    .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GOLD_RECORD")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("GREEN_RECORD")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_3")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_4")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_5")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_6")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_7")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_8")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_9")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_10")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_11")).build(),
-                            new LootBuilder().setMaterial(CompatibleMaterial.valueOf("RECORD_12")).build())
-                    .build();
-        }
-
         // Add Creeper.
         lootManager.addLootable(new Lootable("CREEPER",
                 new LootBuilder()
                         .setMaterial(CompatibleMaterial.GUNPOWDER)
                         .setMin(0)
                         .setMax(2).build(),
-                discs));
+                new LootBuilder()
+                        .setMaterial(CompatibleMaterial.CREEPER_HEAD)
+                        .setRequireCharged(true).build(),
+                new LootBuilder()
+                        .setChildDropCount(1)
+                        .addOnlyDropFors(EntityType.SKELETON,
+                                EntityType.STRAY)
+                        .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_11).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_13).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_BLOCKS).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CAT).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_CHIRP).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_FAR).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MALL).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_MELLOHI).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STAL).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_STRAD).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WAIT).build(),
+                                new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_WARD).build())
+                        .build()));
 
         // Add Guardian.
         lootManager.addLootable(new Lootable("GUARDIAN",

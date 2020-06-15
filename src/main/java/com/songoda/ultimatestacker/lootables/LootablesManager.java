@@ -479,7 +479,7 @@ public class LootablesManager {
                 new LootBuilder()
                         .setChildDropCount(1)
                         .addOnlyDropFors(EntityType.SKELETON,
-                                EntityType.STRAY)
+                                ServerVersion.isServerVersionAtLeast(ServerVersion.V1_10) ? EntityType.STRAY : null)
                         .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_11).build(),
                                 new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_13).build(),
                                 new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_BLOCKS).build(),

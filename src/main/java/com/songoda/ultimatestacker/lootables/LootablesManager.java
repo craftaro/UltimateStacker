@@ -50,7 +50,7 @@ public class LootablesManager {
 
     private List<Drop> runLoot(LivingEntity entity, Loot loot, int rerollChance, int looting) {
         Modify modify = null;
-        if (entity.getType() == EntityType.SHEEP) {
+        if (entity instanceof Sheep) {
             modify = (Loot loot2) -> {
                 CompatibleMaterial material = loot2.getMaterial();
                 if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
@@ -479,7 +479,7 @@ public class LootablesManager {
                 new LootBuilder()
                         .setChildDropCount(1)
                         .addOnlyDropFors(EntityType.SKELETON,
-                                EntityType.STRAY)
+                                ServerVersion.isServerVersionAtLeast(ServerVersion.V1_10) ? EntityType.STRAY : null)
                         .addChildLoot(new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_11).build(),
                                 new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_13).build(),
                                 new LootBuilder().setMaterial(CompatibleMaterial.MUSIC_DISC_BLOCKS).build(),

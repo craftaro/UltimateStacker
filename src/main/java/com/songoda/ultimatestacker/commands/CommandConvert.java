@@ -46,7 +46,7 @@ public class CommandConvert extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us convert";
+        return "convert";
     }
 
     @Override

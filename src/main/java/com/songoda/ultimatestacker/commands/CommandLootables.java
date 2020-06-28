@@ -44,7 +44,7 @@ public class CommandLootables extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us lootables";
+        return "lootables";
     }
 
     @Override

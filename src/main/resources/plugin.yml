@@ -7,10 +7,10 @@ main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
 api-version: 1.13
 commands:
-  UltimateStacker:
+  us:
     description: Reloads the configuration file
     default: true
-    aliases: [us]
+    aliases: [UltimateStacker]
     usage: /ultimatestacker reload
 permissions:
   ultimatestacker.*:

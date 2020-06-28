@@ -151,8 +151,10 @@ public class EntityStack {
 
         newEntity.getEquipment().clear();
 
-        if (killed.getType() == EntityType.PIG_ZOMBIE)
+        if (killed.getType().name().equals("PIG_ZOMBIE"))
             newEntity.getEquipment().setItemInHand(CompatibleMaterial.GOLDEN_SWORD.getItem());
+
+
 
         if (Settings.CARRY_OVER_METADATA_ON_DEATH.getBoolean()) {
             for (Map.Entry<String, MetadataValue> entry : getMetadata(killed).entrySet())

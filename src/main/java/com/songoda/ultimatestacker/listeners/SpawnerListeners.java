@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.gmail.filoghost.holographicdisplays.nms.interfaces.NMSManager;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;

@@ -95,7 +95,7 @@ public class CommandGiveSpawner extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us givespawner <player/all> <type> [size]";
+        return "givespawner <player/all> <type> [size]";
     }
 
     @Override

@@ -85,7 +85,7 @@ public class CommandRemoveAll extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us removeall <entities/items> [all]";
+        return "removeall <entities/items> [all]";
     }
 
     @Override

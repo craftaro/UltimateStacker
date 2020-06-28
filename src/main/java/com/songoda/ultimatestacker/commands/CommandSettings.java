@@ -7,6 +7,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CommandSettings extends AbstractCommand {
@@ -15,7 +16,7 @@ public class CommandSettings extends AbstractCommand {
     GuiManager guiManager;
 
     public CommandSettings(GuiManager guiManager) {
-        super(true, "Settings");
+        super(CommandType.PLAYER_ONLY, "Settings");
         this.guiManager = guiManager;
         instance = UltimateStacker.getInstance();
     }
@@ -28,7 +29,7 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     protected List<String> onTab(CommandSender sender, String... args) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class CommandSettings extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us settings";
+        return "settings";
     }
 
     @Override

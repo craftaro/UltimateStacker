@@ -2,7 +2,7 @@
     <groupId>com.songoda</groupId>
     <artifactId>UltimateStacker</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <version>1.11.16</version>
+    <version>1.11.17</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>UltimateStacker-${project.version}</finalName>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.15</version>
+            <version>1.16.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

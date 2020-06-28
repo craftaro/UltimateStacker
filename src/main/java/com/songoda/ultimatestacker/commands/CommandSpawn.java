@@ -79,7 +79,7 @@ public class CommandSpawn extends AbstractCommand {
 
     @Override
     public String getSyntax() {
-        return "/us spawn <entity> <amount>";
+        return "spawn <entity> <amount>";
     }
 
     @Override

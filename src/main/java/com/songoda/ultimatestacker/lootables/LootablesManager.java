@@ -681,19 +681,40 @@ public class LootablesManager {
                         .setMax(2).build()));
 
         // Add Zombie Pigman
-        lootManager.addLootable(new Lootable("PIG_ZOMBIE",
-                new LootBuilder()
-                        .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
-                        .setMin(0)
-                        .setMax(1).build(),
-                new LootBuilder()
-                        .setMaterial(CompatibleMaterial.GOLD_NUGGET)
-                        .setMin(0)
-                        .setMax(1).build(),
-                new LootBuilder()
-                        .setMaterial(CompatibleMaterial.GOLD_INGOT)
-                        .setChance(2.5)
-                        .addOnlyDropFors(EntityType.PLAYER).build()));
+        if (ServerVersion.isServerVersionBelow(ServerVersion.V1_16))
+            lootManager.addLootable(new Lootable("PIG_ZOMBIE",
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
+                            .setMin(0)
+                            .setMax(1).build(),
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.GOLD_NUGGET)
+                            .setMin(0)
+                            .setMax(1).build(),
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.GOLD_INGOT)
+                            .setChance(2.5)
+                            .addOnlyDropFors(EntityType.PLAYER).build()));
+        else {
+            // Add Strider
+            lootManager.addLootable(new Lootable("STRIDER",
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.PORKCHOP)
+                            .setBurnedMaterial(CompatibleMaterial.COOKED_PORKCHOP)
+                            .setMin(2)
+                            .setMax(4).build(),
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.LEATHER)
+                            .setMin(0)
+                            .setMax(2).build()));
+
+            // Add Hoglin
+            lootManager.addLootable(new Lootable("HOGLIN",
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.STRING)
+                            .setMin(0)
+                            .setMax(5).build()));
+        }
 
         // Add Wither.
         lootManager.addLootable(new Lootable("WITHER",

@@ -13,8 +13,6 @@ import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
-import com.songoda.core.nms.NmsManager;
-import com.songoda.core.nms.nbt.NBTItem;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.*;
 import com.songoda.ultimatestacker.database.DataManager;
@@ -44,7 +42,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 
@@ -108,14 +105,15 @@ public class UltimateStacker extends SongodaPlugin {
 
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
-        this.commandManager.addCommand(new CommandUltimateStacker())
-                .addSubCommand(new CommandSettings(guiManager))
-                .addSubCommand(new CommandRemoveAll())
-                .addSubCommand(new CommandReload())
-                .addSubCommand(new CommandGiveSpawner())
-                .addSubCommand(new CommandSpawn())
-                .addSubCommand(new CommandLootables())
-                .addSubCommand(new CommandConvert(guiManager));
+        this.commandManager.addMainCommand("us")
+                .addSubCommands(new CommandSettings(guiManager),
+                        new CommandRemoveAll(),
+                        new CommandReload(),
+                        new CommandGiveSpawner(),
+                        new CommandSpawn(),
+                        new CommandLootables(),
+                        new CommandConvert(guiManager)
+                );
 
         this.entityUtils = new EntityUtils();
 
@@ -381,7 +379,7 @@ public class UltimateStacker extends SongodaPlugin {
     /**
      * Change the stacked amount for this item
      *
-     * @param item item entity to update
+     * @param item      item entity to update
      * @param itemStack ItemStack that will represent this item
      * @param newAmount number of items this item represents
      */
@@ -400,7 +398,7 @@ public class UltimateStacker extends SongodaPlugin {
         }
         // If amount is 0, Minecraft change the type to AIR
         if (itemStack.getType() == Material.AIR)
-        	return;
+            return;
         item.setItemStack(itemStack);
 
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())

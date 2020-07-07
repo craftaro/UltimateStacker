@@ -71,6 +71,12 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                     </excludes>
                                 </filter>
+                                <filter>
+                                    <artifact>com.songoda:Lootables</artifact>
+                                    <excludes>
+                                        <exclude>com/songoda/core/**</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>

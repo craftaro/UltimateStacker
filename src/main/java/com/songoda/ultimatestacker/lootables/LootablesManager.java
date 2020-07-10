@@ -699,6 +699,13 @@ public class LootablesManager {
             // Add Strider
             lootManager.addLootable(new Lootable("STRIDER",
                     new LootBuilder()
+                            .setMaterial(CompatibleMaterial.STRING)
+                            .setMin(0)
+                            .setMax(5).build()));
+
+            // Add Hoglin
+            lootManager.addLootable(new Lootable("HOGLIN",
+                    new LootBuilder()
                             .setMaterial(CompatibleMaterial.PORKCHOP)
                             .setBurnedMaterial(CompatibleMaterial.COOKED_PORKCHOP)
                             .setMin(2)
@@ -708,12 +715,19 @@ public class LootablesManager {
                             .setMin(0)
                             .setMax(2).build()));
 
-            // Add Hoglin
-            lootManager.addLootable(new Lootable("HOGLIN",
+            // Add Zombified Piglin
+            lootManager.addLootable(new Lootable("ZOMBIFIED_PIGLIN",
                     new LootBuilder()
-                            .setMaterial(CompatibleMaterial.STRING)
+                            .setMaterial(CompatibleMaterial.ROTTEN_FLESH)
                             .setMin(0)
-                            .setMax(5).build()));
+                            .setMax(1).build(),
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.GOLD_NUGGET)
+                            .setMin(0)
+                            .setMax(1).build()));
+
+            // Add Piglin
+            lootManager.addLootable(new Lootable("PIGLIN"));
         }
 
         // Add Wither.

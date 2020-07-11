@@ -22,6 +22,9 @@ import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
+import com.songoda.ultimatestacker.listeners.item.ItemCurrentListener;
+import com.songoda.ultimatestacker.listeners.item.ItemLegacyListener;
+import com.songoda.ultimatestacker.listeners.item.ItemListeners;
 import com.songoda.ultimatestacker.lootables.LootablesManager;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.spawner.SpawnerStack;
@@ -163,6 +166,12 @@ public class UltimateStacker extends SongodaPlugin {
         pluginManager.registerEvents(new InteractListeners(this), this);
         pluginManager.registerEvents(new EntityListeners(this), this);
         pluginManager.registerEvents(new ItemListeners(this), this);
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
+            pluginManager.registerEvents(new ItemCurrentListener(), this);
+        else
+            pluginManager.registerEvents(new ItemLegacyListener(), this);
+
         pluginManager.registerEvents(new TameListeners(this), this);
         pluginManager.registerEvents(new SpawnerListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
@@ -384,6 +393,21 @@ public class UltimateStacker extends SongodaPlugin {
      * @param newAmount number of items this item represents
      */
     public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
+        boolean blacklisted = isMaterialBlacklisted(itemStack);
+
+        if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted)
+            itemStack.setAmount(Math.max(1, itemStack.getMaxStackSize() / 2));
+        else
+            itemStack.setAmount(newAmount);
+
+        // If amount is 0, Minecraft change the type to AIR
+        if (itemStack.getType() == Material.AIR)
+            return;
+
+        updateItemMeta(item, itemStack, newAmount);
+    }
+
+    public static void updateItemMeta(Item item, ItemStack itemStack, int newAmount) {
         Material material = itemStack.getType();
         String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
 
@@ -391,14 +415,9 @@ public class UltimateStacker extends SongodaPlugin {
 
         if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted) {
             item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
-            itemStack.setAmount(Math.max(1, itemStack.getMaxStackSize() / 2));
         } else {
             item.removeMetadata("US_AMT", INSTANCE);
-            itemStack.setAmount(newAmount);
         }
-        // If amount is 0, Minecraft change the type to AIR
-        if (itemStack.getType() == Material.AIR)
-            return;
         item.setItemStack(itemStack);
 
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())

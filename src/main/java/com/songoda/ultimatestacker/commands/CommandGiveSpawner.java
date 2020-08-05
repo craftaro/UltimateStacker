@@ -33,8 +33,8 @@ public class CommandGiveSpawner extends AbstractCommand {
         }
 
         EntityType type = null;
+        String input = args[1].toUpperCase().replace("_", "").replace(" ", "");
         for (EntityType types : EntityType.values()) {
-            String input = args[1].toUpperCase().replace("_", "").replace(" ", "");
             String compare = types.name().toUpperCase().replace("_", "").replace(" ", "");
             if (input.equals(compare))
                 type = types;

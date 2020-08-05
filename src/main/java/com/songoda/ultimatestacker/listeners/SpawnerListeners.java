@@ -42,6 +42,8 @@ public class SpawnerListeners implements Listener {
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(event.getSpawner().getLocation());
 
+        spawnerStack.initialize();
+
         EntityStack stack = plugin.getEntityStackManager().addStack(event.getEntity().getUniqueId(), spawnerStack.calculateSpawnCount());
 
         plugin.getStackingTask().attemptSplit(stack, (LivingEntity) event.getEntity());

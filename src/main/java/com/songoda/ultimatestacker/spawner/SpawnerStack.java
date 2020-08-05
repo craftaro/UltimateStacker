@@ -14,13 +14,14 @@ import java.util.Random;
 public class SpawnerStack {
 
     private int id;
+    private boolean initialized = false;
 
     private final Location location;
-    private int amount = 1;
+    private int amount;
 
     public SpawnerStack(Location location, int amount) {
         this.location = location;
-        setAmount(amount);
+        this.amount = amount;
     }
 
     public int getAmount() {
@@ -31,7 +32,10 @@ public class SpawnerStack {
         UltimateStacker plugin = UltimateStacker.getInstance();
         this.amount = amount;
         plugin.getDataManager().updateSpawner(this);
+    }
 
+    public void updateAmount() {
+        UltimateStacker plugin = UltimateStacker.getInstance();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
             int count = Settings.STACK_ENTITIES.getBoolean()
@@ -83,6 +87,13 @@ public class SpawnerStack {
 
     public World getWorld() {
         return location.getWorld();
+    }
+
+    public void initialize() {
+        if (!initialized) {
+            updateAmount();
+            this.initialized = true;
+        }
     }
 
     @Override

@@ -63,9 +63,9 @@ public class LootablesManager {
             };
         }
         EntityType killer = null;
+        Entity killerEntity = null;
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-            Entity killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
-            killer = killerEntity.getType();
+            killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
             if (killerEntity instanceof Projectile) {
                 Projectile projectile = (Projectile) killerEntity;
                 if (projectile.getShooter() instanceof Entity) {
@@ -75,7 +75,7 @@ public class LootablesManager {
         }
         return lootManager.runLoot(modify,
                 entity.getFireTicks() > 0,
-                entity instanceof Creeper && ((Creeper) entity).isPowered(),
+                killerEntity instanceof Creeper && ((Creeper) killerEntity).isPowered(),
                 entity.getKiller() != null ? entity.getKiller().getItemInHand() : null,
                 killer,
                 loot,

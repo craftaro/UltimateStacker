@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -26,19 +25,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class EntityStack {
 
     private UUID entity;
     private int amount;
 
-    private final Deque<Double> health = new ArrayDeque<>();
+    private final Deque<Double> health = new ConcurrentLinkedDeque<>();
     final Object healthLock = new Object();
     UltimateStacker plugin = UltimateStacker.getInstance();
 
     public EntityStack(LivingEntity entity, int amount) {
         this(entity.getUniqueId(), amount);
-        health.add(entity.getHealth());
+        this.addHealth(entity.getHealth());
     }
 
     public EntityStack(UUID uuid, int amount) {

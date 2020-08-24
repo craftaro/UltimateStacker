@@ -3,21 +3,27 @@ package com.songoda.ultimatestacker.convert;
 import com.bgsoftware.wildstacker.WildStackerPlugin;
 import com.bgsoftware.wildstacker.api.WildStackerAPI;
 import com.bgsoftware.wildstacker.api.objects.StackedSpawner;
+import com.songoda.core.database.DatabaseConnector;
+import com.songoda.core.database.SQLiteConnector;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.UUID;
 
 public class WildStackerConvert implements Convert {
 
+    private WildStackerPlugin wildStacker;
     private final UltimateStacker plugin;
 
     public WildStackerConvert() {
         this.plugin = UltimateStacker.getInstance();
+        this.wildStacker = (WildStackerPlugin) Bukkit.getPluginManager().getPlugin("WildStacker");
+
     }
 
     @Override
@@ -38,18 +44,21 @@ public class WildStackerConvert implements Convert {
     @Override
     public void convertEntities() {
         EntityStackManager entityStackManager = plugin.getEntityStackManager();
-        for (World world : Bukkit.getWorlds()) {
-            for (Entity entity : world.getEntities()) {
-                if (!(entity instanceof LivingEntity)) continue;
-                if (!entityStackManager.isStacked(entity)) {
-                    entityStackManager
-                            .addStack(entity, WildStackerAPI.getEntityAmount((LivingEntity)entity));
-                    continue;
+
+        DatabaseConnector connector = new SQLiteConnector(this.wildStacker);
+        connector.connect(connection -> {
+
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery("SELECT uuid, stackAmount FROM entities");
+                while (result.next()) {
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    int amount = result.getInt("stackAmount");
+                    if (!entityStackManager.isEntityInColdStorage(uuid))
+                        entityStackManager.addLegacyColdStack(uuid, amount);
                 }
-                entityStackManager
-                        .getStack(entity).setAmount(WildStackerAPI.getEntityAmount((LivingEntity)entity));
             }
-        }
+        });
+
 
     }
 

@@ -3,10 +3,10 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
-import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
 import org.bukkit.GameMode;
@@ -44,7 +44,9 @@ public class SpawnerListeners implements Listener {
 
         spawnerStack.initialize();
 
-        EntityStack stack = plugin.getEntityStackManager().addStack(event.getEntity().getUniqueId(), spawnerStack.calculateSpawnCount());
+        EntityStack stack = plugin.getEntityStackManager().addStack((LivingEntity)event.getEntity());
+        stack.createDuplicates(spawnerStack.calculateSpawnCount());
+        stack.updateStack();
 
         plugin.getStackingTask().attemptSplit(stack, (LivingEntity) event.getEntity());
     }

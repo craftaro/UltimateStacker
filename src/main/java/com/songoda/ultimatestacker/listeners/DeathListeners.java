@@ -5,7 +5,7 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -57,7 +57,7 @@ public class DeathListeners implements Listener {
                 && !event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
             drops.clear();
 
-        if (instance.getEntityStackManager().isStacked(event.getEntity()))
+        if (instance.getEntityStackManager().isStackedAndLoaded(event.getEntity()))
             instance.getEntityStackManager().getStack(event.getEntity())
                     .onDeath(event.getEntity(), drops, custom, event.getDroppedExp(), event);
         else
@@ -115,8 +115,11 @@ public class DeathListeners implements Listener {
     public void onEntityHit(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player) || ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_12))
             return;
-        if (!instance.getEntityStackManager().isStacked(event.getEntity())) return;
-        EntityStack stack = instance.getEntityStackManager().getStack(event.getEntity());
+
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+        LivingEntity entity = (LivingEntity) event.getEntity();
+        if (!instance.getEntityStackManager().isStackedAndLoaded(entity)) return;
+        EntityStack stack = instance.getEntityStackManager().getStack(entity);
 
         if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();

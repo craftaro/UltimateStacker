@@ -2,16 +2,17 @@ package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +31,7 @@ public class CommandSpawn extends AbstractCommand {
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        Player p = (Player) sender;
+        Player player = (Player) sender;
 
         if (args.length < 2) return ReturnType.SYNTAX_ERROR;
 
@@ -52,9 +53,11 @@ public class CommandSpawn extends AbstractCommand {
             }
             sender.sendMessage(Methods.formatText("&6" + list));
         } else {
-            Entity entity = p.getWorld().spawnEntity(p.getLocation(), type);
-            EntityStack stack = instance.getEntityStackManager().addStack(entity.getUniqueId(), (Methods.isInt(args[1])) ? Integer.parseInt(args[1]) : 1);
-            instance.getStackingTask().attemptSplit(stack, (LivingEntity) entity);
+            LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getTargetBlock((Set<Material>)null, 200).getLocation(), type);
+            EntityStack stack = instance.getEntityStackManager().addStack(entity);
+            stack.createDuplicates(((Methods.isInt(args[1])) ? Integer.parseInt(args[1]) : 1) - 1);
+            stack.updateStack();
+            instance.getStackingTask().attemptSplit(stack, entity);
         }
 
         return ReturnType.SUCCESS;

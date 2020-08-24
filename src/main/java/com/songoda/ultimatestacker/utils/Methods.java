@@ -106,23 +106,6 @@ public class Methods {
         return info + Methods.formatText(nameFormat).trim();
     }
 
-    public static boolean canFly(LivingEntity entity) {
-        switch (entity.getType()) {
-            case GHAST:
-            case BLAZE:
-            case PHANTOM:
-            case BAT:
-            case BEE:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    static Vector getRandomVector() {
-        return new Vector(ThreadLocalRandom.current().nextDouble(-1, 1.01), 0, ThreadLocalRandom.current().nextDouble(-1, 1.01)).normalize().multiply(0.5);
-    }
-
     public static String compileSpawnerName(EntityType entityType, int amount) {
         String nameFormat = UltimateStacker.getInstance().getConfig().getString("Spawners.Name Format");
         String displayName = Methods.formatText(UltimateStacker.getInstance().getSpawnerFile().getString("Spawners." + entityType.name() + ".Display Name"));
@@ -130,8 +113,7 @@ public class Methods {
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = TextUtils.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
-        return info + Methods.formatText(nameFormat).trim();
+        return Methods.formatText(nameFormat).trim();
     }
 
     public static String compileEntityName(Entity entity, int amount) {
@@ -141,9 +123,7 @@ public class Methods {
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        String info = TextUtils.convertToInvisibleString(insertSemicolon(String.valueOf(amount)) + ":");
-
-        return info + Methods.formatText(nameFormat).trim();
+        return Methods.formatText(nameFormat).trim();
     }
 
     public static void takeItem(Player player, int amount) {
@@ -180,37 +160,6 @@ public class Methods {
             return false;
         }
         return true;
-    }
-
-
-    /**
-     * Serializes the location of the block specified.
-     *
-     * @param b The block whose location is to be saved.
-     * @return The serialized data.
-     */
-    public static String serializeLocation(Block b) {
-        if (b == null)
-            return "";
-        return serializeLocation(b.getLocation());
-    }
-
-    /**
-     * Serializes the location specified.
-     *
-     * @param location The location that is to be saved.
-     * @return The serialized data.
-     */
-    public static String serializeLocation(Location location) {
-        if (location == null || location.getWorld() == null)
-            return "";
-        String w = location.getWorld().getName();
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-        String str = w + ":" + x + ":" + y + ":" + z;
-        str = str.replace(".0", "").replace(".", "/");
-        return str;
     }
 
     private static Map<String, Location> serializeCache = new HashMap<>();

@@ -2,19 +2,11 @@ package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.lootables.gui.GuiEditor;
-import com.songoda.lootables.gui.GuiLootableEditor;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommandLootables extends AbstractCommand {
 

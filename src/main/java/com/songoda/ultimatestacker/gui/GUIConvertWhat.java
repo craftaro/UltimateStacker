@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.gui;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.gui.Gui;
 import com.songoda.core.gui.GuiUtils;
+import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.convert.Convert;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.ChatColor;
@@ -53,6 +54,7 @@ public class GUIConvertWhat extends Gui {
     void run(Player player) {
         if (entities) {
             convertFrom.convertEntities();
+            UltimateStacker.getInstance().getEntityStackManager().tryAndLoadColdEntities();
         }
         if (spawners) {
             convertFrom.convertSpawners();

@@ -3,8 +3,9 @@ package com.songoda.ultimatestacker.settings;
 import com.songoda.core.configuration.Config;
 import com.songoda.core.configuration.ConfigSetting;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.Check;
-import com.songoda.ultimatestacker.entity.Split;
+import com.songoda.ultimatestacker.stackable.entity.Check;
+import com.songoda.ultimatestacker.stackable.entity.Split;
+import jdk.nashorn.internal.ir.LiteralNode;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +49,7 @@ public class Settings {
             "Should all qualifying entities in each chunk be stacked?",
             "This will override the stacking radius.");
 
-    public static final ConfigSetting ENTITY_HOLOGRAMS = new ConfigSetting(config, "Entities.Holograms Enabled", true,
+    public static final ConfigSetting ENTITY_NAMETAGS = new ConfigSetting(config, "Entities.Holograms Enabled", true,
             "Should holograms be displayed above stacked entities?");
 
     public static final ConfigSetting HOLOGRAMS_ON_LOOK_ENTITY = new ConfigSetting(config, "Entities.Only Show Holograms On Look", false,
@@ -110,18 +111,6 @@ public class Settings {
             "\"NAME_TAG\", \"MUSHROOM_SHEAR\", \"SHEEP_SHEAR\", \"SNOWMAN_DERP\",",
             "\"SHEEP_DYE\", \"ENTITY_BREED\".");
 
-
-    public static final ConfigSetting KEEP_FIRE = new ConfigSetting(config, "Entities.Keep Fire", true,
-            "Should fire ticks persist to the next entity when an entity dies?");
-
-    public static final ConfigSetting KEEP_POTION = new ConfigSetting(config, "Entities.Keep Potion Effects", true,
-            "Should potion effects persist to the next entity when an entity dies?");
-
-    public static final ConfigSetting CARRY_OVER_LOWEST_HEALTH = new ConfigSetting(config, "Entities.Carry Over Lowest Health", false,
-            "Should the lowest health be carried over when stacked?",
-            "This should not be used in collaboration with 'Stack Entity Health'.",
-            "If it is used this setting will be overrode.");
-
     public static final ConfigSetting ONLY_STACK_FROM_SPAWNERS = new ConfigSetting(config, "Entities.Only Stack From Spawners", false,
             "Should entities only be stacked if they originate from a spawner?",
             "It should be noted that the identifier that tells the plugin",
@@ -141,17 +130,6 @@ public class Settings {
             "\"SHOULDER_ENTITY\", \"DROWNED\", \"SHEARED\", \"EXPLOSION\",",
             "\"CUSTOM\", \"DEFAULT\".");
 
-    public static final ConfigSetting CARRY_OVER_METADATA_ON_DEATH = new ConfigSetting(config, "Entities.Carry Over Metadata On Death", true,
-            "With this enabled any metadata assigned from supported plugins such",
-            "as EpicSpawners and mcMMO will be preserved when the entity is killed.");
-
-    public static final ConfigSetting META_CARRY_OVER_MIN = new ConfigSetting(config, "Entities.Meta Carry Over Min", 10,
-            "The amount of time in seconds an entity needs to have lived",
-            "for in order for their metadata to be carried over to their next",
-            "stack on death. Setting this value to zero may improve compatibility",
-            "with other plugins but this will be at the cost of performance if you",
-            "have a lot of grinders on your server.");
-
     public static final ConfigSetting WEAPONS_ARENT_EQUIPMENT = new ConfigSetting(config, "Entities.Weapons Arent Equipment", false,
             "This allows entities holding weapons to stack. Enchanted weapons are excluded.",
             "If you would like to disable the stacked entity check you can do that by removing",
@@ -160,12 +138,6 @@ public class Settings {
     public static final ConfigSetting ONLY_STACK_ON_SURFACE = new ConfigSetting(config, "Entities.Only Stack On Surface", true,
             "Should entities only be stacked if they are touching the ground",
             "or swimming? This does not effect flying entities.");
-
-    public static final ConfigSetting STACK_ENTITY_HEALTH = new ConfigSetting(config, "Entities.Stack Entity Health", true,
-            "Should entity health be stacked? When enabled Entity stacks will",
-            "remember the health of all entities inside of the stack. This",
-            "works the best with 'Only Stack On Surface enabled' as entities",
-            "falling out of grinders may stack before hitting the ground.");
 
     public static final ConfigSetting ONLY_STACK_FLYING_DOWN = new ConfigSetting(config, "Entities.Only Stack Flying Down", true,
             "Should entities that fly only stack with entities that are lower on the",
@@ -254,6 +226,31 @@ public class Settings {
     public static final ConfigSetting NAME_FORMAT_SPAWNER = new ConfigSetting(config, "Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
             "The text displayed above a stacked spawner where {TYPE} refers to",
             "The entities type and {AMT} is the amount currently stacked.");
+
+    public static final ConfigSetting STACK_BLOCKS = new ConfigSetting(config, "Blocks.Enabled", true,
+            "Should blocks be stacked?");
+
+    public static final ConfigSetting BLOCK_HOLOGRAMS = new ConfigSetting(config, "Blocks.Holograms Enabled", true,
+            "Should holograms be displayed above stacked blocks?");
+
+    public static final ConfigSetting STACKABLE_BLOCKS = new ConfigSetting(config, "Blocks.Stackable Blocks", Collections.singletonList("DIAMOND_BLOCK"),
+            "What blocks should be stackable?");
+
+    public static final ConfigSetting ALWAYS_ADD_ALL = new ConfigSetting(config, "Blocks.Always Add All", false,
+            "Should the whole stack the player is holding always",
+            "be added to the stack regardless of if they are sneaking or not?");
+
+    public static final ConfigSetting MAX_REMOVEABLE = new ConfigSetting(config, "Blocks.Max Removeable", 64,
+            "What should be the max amount that can be removed with",
+            "a single click? Keep in mind high numbers could cause lag.");
+
+    public static final ConfigSetting ADD_TO_INVENTORY = new ConfigSetting(config, "Blocks.Add To Inventory", false,
+            "Should blocks be added directly to the inventory when removed?");
+
+    public static final ConfigSetting NAME_FORMAT_BLOCK = new ConfigSetting(config, "Blocks.Name Format", "&6{AMT}x &f{TYPE}",
+            "The text displayed above a stacked block where {TYPE} refers to",
+            "The entities type and {AMT} is the amount currently stacked.");
+
 
     public static final ConfigSetting LANGUGE_MODE = new ConfigSetting(config, "System.Language Mode", "en_US",
             "The enabled language file.",

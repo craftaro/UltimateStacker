@@ -3,13 +3,14 @@ package com.songoda.ultimatestacker.commands;
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -42,9 +43,9 @@ public class CommandRemoveAll extends AbstractCommand {
         EntityStackManager stackManager = instance.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
             for (Entity entityO : world.getEntities()) {
-                if (entityO instanceof Player) continue;
+                if (entityO instanceof Player || !(entityO instanceof LivingEntity)) continue;
 
-                if (entityO.getType() != EntityType.DROPPED_ITEM && (stackManager.isStacked(entityO) || all) && type.equalsIgnoreCase("entities")) {
+                if (entityO.getType() != EntityType.DROPPED_ITEM && (stackManager.isStackedAndLoaded((LivingEntity)entityO) || all) && type.equalsIgnoreCase("entities")) {
                     entityO.remove();
                     amountRemoved++;
                 } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {

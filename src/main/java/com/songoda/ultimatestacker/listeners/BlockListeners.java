@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.nms.nbt.NBTItem;
@@ -7,11 +8,13 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.stackable.block.BlockStack;
+import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import java.util.ArrayList;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
@@ -28,8 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
+import java.util.Map;
 
 public class BlockListeners implements Listener {
 
@@ -40,18 +42,79 @@ public class BlockListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onSpawnerInteract(PlayerInteractEvent event) {
+    public void onBlockInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
         ItemStack item = event.getPlayer().getInventory().getItemInHand();
 
-        if (block == null
-                || block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+        if (block == null) return;
+
+        if (Settings.STACK_BLOCKS.getBoolean()) {
+            CompatibleHand hand = CompatibleHand.getHand(event);
+            ItemStack inHand = hand.getItem(player);
+            BlockStackManager blockStackManager = plugin.getBlockStackManager();
+
+            boolean isStacked = blockStackManager.isBlock(block.getLocation());
+
+            CompatibleMaterial blockType = CompatibleMaterial.getMaterial(block);
+
+            if (isStacked || Settings.STACKABLE_BLOCKS.getStringList().contains(blockType.name())) {
+                BlockStack stack = blockStackManager.getBlock(block, blockType);
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    if (!isStacked) plugin.getDataManager().createBlock(stack);
+                    if (stack.getMaterial() == CompatibleMaterial.getMaterial(inHand)) {
+                        int amountToAdd = player.isSneaking() || Settings.ALWAYS_ADD_ALL.getBoolean() ? inHand.getAmount() : 1;
+                        if (!isStacked) amountToAdd ++;
+                        stack.add(amountToAdd);
+                        event.setCancelled(true);
+                        if (player.getGameMode() != GameMode.CREATIVE)
+                            hand.takeItem(player, amountToAdd);
+                        plugin.updateHologram(stack);
+                    }
+                    plugin.getDataManager().updateBlock(stack);
+                } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && stack.getAmount() != 0) {
+                    event.setCancelled(true);
+                    int amountToRemove = player.isSneaking()
+                            ? Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount()) - 1 : 1;
+
+                    ItemStack removed = stack.getMaterial().getItem();
+                    removed.setAmount(amountToRemove);
+                    stack.take(amountToRemove);
+                    int maxStack = removed.getMaxStackSize();
+
+                    while (amountToRemove > 0) {
+                        int subtract = Math.min(amountToRemove, maxStack);
+                        amountToRemove -= subtract;
+                        ItemStack newItem = removed.clone();
+                        newItem.setAmount(subtract);
+                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
+                            Map<Integer, ItemStack> result = player.getInventory().addItem(newItem);
+                            if (result.get(0) != null) {
+                                amountToRemove += result.get(0).getAmount();
+                                break;
+                            }
+                        } else {
+                            block.getWorld().dropItemNaturally(block.getLocation().clone().add(.5, 1, .5), newItem);
+                        }
+                    }
+                    stack.add(amountToRemove);
+                    if (stack.getAmount() < 2)
+                        stack.destroy();
+                    else {
+                        plugin.updateHologram(stack);
+                        plugin.getDataManager().updateBlock(stack);
+                    }
+                }
+            }
+        }
+
+        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || item.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
-        if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr))) return;
+        if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr)))
+            return;
 
         if (!plugin.spawnersEnabled()) return;
 
@@ -101,42 +164,36 @@ public class BlockListeners implements Listener {
                 Methods.takeItem(player, itemAmount);
             }
         }
-
-        plugin.updateHologram(block);
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onSpawnerPlace(BlockPlaceEvent event) {
+    public void onBlockPlace(BlockPlaceEvent event) {
         Block block = event.getBlock();
         Player player = event.getPlayer();
 
-        if (!event.isCancelled()) {
-            if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
-                    || !(block.getState() instanceof CreatureSpawner) // Needed for a DataPack
-                    || !plugin.spawnersEnabled())
-                return;
+        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+                || !(block.getState() instanceof CreatureSpawner) // Needed for a DataPack
+                || !plugin.spawnersEnabled())
+            return;
 
-            CreatureSpawner cs = (CreatureSpawner) block.getState();
-            CreatureSpawner cs2 = (CreatureSpawner) ((BlockStateMeta) event.getItemInHand().getItemMeta()).getBlockState();
-            int amount = getSpawnerAmount(event.getItemInHand());
+        CreatureSpawner cs = (CreatureSpawner) block.getState();
+        CreatureSpawner cs2 = (CreatureSpawner) ((BlockStateMeta) event.getItemInHand().getItemMeta()).getBlockState();
+        int amount = getSpawnerAmount(event.getItemInHand());
 
-            SpawnerPlaceEvent placeEvent = new SpawnerPlaceEvent(player, block, cs2.getSpawnedType(), amount);
-            Bukkit.getPluginManager().callEvent(placeEvent);
-            if (placeEvent.isCancelled()) {
-                event.setCancelled(true);
-                return;
-            }
-
-            SpawnerStack stack = plugin.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), amount));
-            plugin.getDataManager().createSpawner(stack);
-
-            cs.setSpawnedType(cs2.getSpawnedType());
-            cs.update();
-
-            plugin.updateHologram(stack);
+        SpawnerPlaceEvent placeEvent = new SpawnerPlaceEvent(player, block, cs2.getSpawnedType(), amount);
+        Bukkit.getPluginManager().callEvent(placeEvent);
+        if (placeEvent.isCancelled()) {
+            event.setCancelled(true);
+            return;
         }
 
-        plugin.updateHologram(block);
+        SpawnerStack stack = plugin.getSpawnerStackManager().addSpawner(new SpawnerStack(block.getLocation(), amount));
+        plugin.getDataManager().createSpawner(stack);
+
+        cs.setSpawnedType(cs2.getSpawnedType());
+        cs.update();
+
+        plugin.updateHologram(stack);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -175,7 +232,7 @@ public class BlockListeners implements Listener {
 
         if (remove) {
             event.setCancelled(false);
-            plugin.clearHologram(stack);
+            plugin.removeHologram(stack);
             SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(block.getLocation());
             plugin.getDataManager().deleteSpawner(spawnerStack);
         } else {

@@ -3,8 +3,8 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.Split;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.Split;
 import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -38,7 +38,7 @@ public class InteractListeners implements Listener {
 
         ItemStack item = player.getInventory().getItemInHand();
 
-        if (!plugin.getEntityStackManager().isStacked(entity)) return;
+        if (!plugin.getEntityStackManager().isStackedAndLoaded(entity)) return;
 
         if (item.getType() != Material.NAME_TAG && !correctFood(item, entity)) return;
 
@@ -56,7 +56,7 @@ public class InteractListeners implements Listener {
         else if (entity instanceof Ageable && !((Ageable) entity).isAdult())
             return;
 
-        plugin.getEntityUtils().splitFromStack(entity);
+        stack.releaseHost();
 
         if (item.getType() == Material.NAME_TAG) {
             entity.setCustomName(item.getItemMeta().getDisplayName());

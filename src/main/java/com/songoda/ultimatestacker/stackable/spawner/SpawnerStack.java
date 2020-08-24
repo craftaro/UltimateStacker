@@ -1,8 +1,11 @@
-package com.songoda.ultimatestacker.spawner;
+package com.songoda.ultimatestacker.stackable.spawner;
 
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.Hologramable;
+import com.songoda.ultimatestacker.stackable.Stackable;
+import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,7 +14,7 @@ import org.bukkit.block.CreatureSpawner;
 
 import java.util.Random;
 
-public class SpawnerStack {
+public class SpawnerStack implements Stackable, Hologramable {
 
     private int id;
     private boolean initialized = false;
@@ -19,23 +22,24 @@ public class SpawnerStack {
     private final Location location;
     private int amount;
 
+    private static final UltimateStacker plugin = UltimateStacker.getInstance();
+
     public SpawnerStack(Location location, int amount) {
         this.location = location;
         this.amount = amount;
     }
 
+    @Override
     public int getAmount() {
         return amount;
     }
 
     public void setAmount(int amount) {
-        UltimateStacker plugin = UltimateStacker.getInstance();
         this.amount = amount;
         plugin.getDataManager().updateSpawner(this);
     }
 
     public void updateAmount() {
-        UltimateStacker plugin = UltimateStacker.getInstance();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
             int count = Settings.STACK_ENTITIES.getBoolean()
@@ -71,6 +75,17 @@ public class SpawnerStack {
 
     public Location getLocation() {
         return location.clone();
+    }
+
+    @Override
+    public String getHologramName() {
+        CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
+        return Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
+    }
+
+    @Override
+    public boolean areHologramsEnabled() {
+        return Settings.SPAWNER_HOLOGRAMS.getBoolean();
     }
 
     public int getX() {

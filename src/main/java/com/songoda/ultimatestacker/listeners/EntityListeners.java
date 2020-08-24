@@ -2,10 +2,10 @@ package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,12 +17,11 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -38,15 +37,15 @@ public class EntityListeners implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onSpawn(CreatureSpawnEvent event) {
-        LivingEntity entity = event.getEntity();
-        entity.setMetadata("US_REASON", new FixedMetadataValue(plugin, event.getSpawnReason().name()));
-
-        if (event.getSpawnReason().name().equals("DROWNED")
-                || event.getSpawnReason() == CreatureSpawnEvent.SpawnReason.LIGHTNING) {
-            String name = event.getEntity().getCustomName();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                    () -> plugin.getEntityStackManager().addSerializedStack(entity, name), 1L);
+    public void onSpawn(EntityTransformEvent event) {
+        EntityStackManager stackManager = plugin.getEntityStackManager();
+        if (stackManager.isStackedAndLoaded(event.getEntity().getUniqueId())
+                && event.getEntity() instanceof LivingEntity
+                && event.getTransformedEntity() instanceof LivingEntity) {
+            EntityStack stack = stackManager.updateStack((LivingEntity) event.getEntity(),
+                    (LivingEntity) event.getTransformedEntity());
+            stack.releaseHost();
+            stack.updateStack();
         }
 
     }
@@ -63,11 +62,15 @@ public class EntityListeners implements Listener {
 
         if (entities.isEmpty()) return;
 
-        Entity entity = entities.get(0);
+        Entity nonLivingEntity = entities.get(0);
+
+        if (!(nonLivingEntity instanceof LivingEntity)) return;
+
+        LivingEntity entity = (LivingEntity) nonLivingEntity;
 
         EntityStackManager stackManager = plugin.getEntityStackManager();
 
-        if (!stackManager.isStacked(entity)) return;
+        if (!stackManager.isStackedAndLoaded(entity)) return;
 
         EntityStack stack = stackManager.getStack(entity);
 
@@ -83,7 +86,9 @@ public class EntityListeners implements Listener {
     public void onHurt(EntityDamageByEntityEvent event) {
         if (!Settings.STACK_ENTITIES.getBoolean() || !(event.getDamager() instanceof Player)) return;
 
-        if (plugin.getEntityStackManager().isStacked(event.getEntity())
+        Entity entity = event.getEntity();
+
+        if (entity instanceof LivingEntity && plugin.getEntityStackManager().isStackedAndLoaded((LivingEntity) entity)
                 && Settings.DISABLE_KNOCKBACK.getBoolean()
                 && ((Player) event.getDamager()).getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK) == 0) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -127,7 +132,7 @@ public class EntityListeners implements Listener {
 
                     SpawnerStack spawnerStack = plugin.getSpawnerStackManager().removeSpawner(spawnLocation);
                     plugin.getDataManager().deleteSpawner(spawnerStack);
-                    plugin.removeHologram(block);
+                    plugin.removeHologram(spawnerStack);
                 }
             }
 

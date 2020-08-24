@@ -1,4 +1,4 @@
-package com.songoda.ultimatestacker.entity;
+package com.songoda.ultimatestacker.stackable.entity;
 
 public enum Split {
 

@@ -1,4 +1,4 @@
-package com.songoda.ultimatestacker.entity;
+package com.songoda.ultimatestacker.stackable.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,31 +15,31 @@ public enum Check {
     ANIMAL_OWNER(true),
     SKELETON_TYPE(true),
     ZOMBIE_BABY(true),
-    HAS_EQUIPMENT(true),
+    HAS_EQUIPMENT(false),
     SLIME_SIZE(true),
     PIG_SADDLE(true),
     SHEEP_SHEARED(true),
-    SHEEP_COLOR(true),
+    SHEEP_COLOR(false),
     SNOWMAN_DERPED(true),
     WOLF_COLLAR_COLOR(true),
-    OCELOT_TYPE(true),
-    HORSE_COLOR(true),
+    OCELOT_TYPE(false),
+    HORSE_COLOR(false),
     HORSE_STYLE(true),
     HORSE_CARRYING_CHEST(true),
     HORSE_HAS_ARMOR(true),
     HORSE_HAS_SADDLE(true),
     HORSE_JUMP(true),
-    RABBIT_TYPE(true),
+    RABBIT_TYPE(false),
     VILLAGER_PROFESSION(true),
-    LLAMA_COLOR(true),
+    LLAMA_COLOR(false),
     LLAMA_STRENGTH(true),
-    PARROT_TYPE(true),
+    PARROT_TYPE(false),
     PUFFERFISH_STATE(true),
     TROPICALFISH_PATTERN(true),
     TROPICALFISH_BODY_COLOR(true),
     TROPICALFISH_PATTERN_COLOR(true),
     PHANTOM_SIZE(true),
-    CAT_TYPE(true);
+    CAT_TYPE(false);
 
     private final boolean isEnabledByDefault;
     private final static Map<String, Check> checks = new HashMap();

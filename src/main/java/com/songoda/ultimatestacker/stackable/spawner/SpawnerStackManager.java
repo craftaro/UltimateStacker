@@ -1,4 +1,4 @@
-package com.songoda.ultimatestacker.spawner;
+package com.songoda.ultimatestacker.stackable.spawner;
 
 import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.Location;

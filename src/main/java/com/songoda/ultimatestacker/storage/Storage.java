@@ -2,8 +2,7 @@ package com.songoda.ultimatestacker.storage;
 
 import com.songoda.core.configuration.Config;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
-import com.songoda.ultimatestacker.utils.Methods;
+
 import java.util.List;
 
 public abstract class Storage {
@@ -25,11 +24,6 @@ public abstract class Storage {
     public abstract void prepareSaveItem(String group, StorageItem... items);
 
     public void updateData(UltimateStacker instance) {
-
-        for (SpawnerStack stack : instance.getSpawnerStackManager().getStacks()) {
-            prepareSaveItem("spawners", new StorageItem("location", Methods.serializeLocation(stack.getLocation())),
-                    new StorageItem("amount", stack.getAmount()));
-        }
     }
 
     public abstract void doSave();

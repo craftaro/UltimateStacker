@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.convert;
 
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import org.bukkit.Bukkit;
 import uk.antiperson.stackmob.StackMob;
 
@@ -38,11 +38,10 @@ public class StackMobConvert implements Convert {
     public void convertEntities() {
         EntityStackManager entityStackManager = plugin.getEntityStackManager();
         for (Map.Entry<UUID, Integer> entry : stackMob.getStorageManager().getAmountCache().entrySet()) {
-            if (!entityStackManager.isStacked(entry.getKey())) {
-                entityStackManager.addStack(entry.getKey(), entry.getValue());
+            if (!entityStackManager.isStackedAndLoaded(entry.getKey())) {
+                entityStackManager.addLegacyColdStack(entry.getKey(), entry.getValue());
                 continue;
             }
-            entityStackManager.getStack(entry.getKey()).setAmount(entry.getValue());
         }
 
     }

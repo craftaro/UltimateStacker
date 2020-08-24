@@ -4,7 +4,7 @@ import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.actions.EntityActionInfo;
 import com.gamingmesh.jobs.container.ActionType;
 import com.gamingmesh.jobs.container.JobsPlayer;
-import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
@@ -22,7 +22,7 @@ public class JobsHook implements StackerHook {
             return;
 
         for (int i = 1; i < entityStack.getAmount(); i++) {
-            Entity entity = entityStack.getEntity();
+            Entity entity = entityStack.getHostEntity();
             EntityActionInfo eInfo = new EntityActionInfo(entity, ActionType.KILL);
             Jobs.action(jPlayer, eInfo, entity);
         }

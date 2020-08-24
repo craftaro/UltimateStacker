@@ -2,13 +2,10 @@ package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

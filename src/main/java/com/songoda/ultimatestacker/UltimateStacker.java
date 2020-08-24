@@ -17,8 +17,8 @@ import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.*;
 import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
+import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
+import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
@@ -27,20 +27,22 @@ import com.songoda.ultimatestacker.listeners.item.ItemLegacyListener;
 import com.songoda.ultimatestacker.listeners.item.ItemListeners;
 import com.songoda.ultimatestacker.lootables.LootablesManager;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
-import com.songoda.ultimatestacker.spawner.SpawnerStackManager;
+import com.songoda.ultimatestacker.stackable.Hologramable;
+import com.songoda.ultimatestacker.stackable.block.BlockStack;
+import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.storage.Storage;
 import com.songoda.ultimatestacker.storage.StorageRow;
 import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
-import com.songoda.ultimatestacker.utils.EntityUtils;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -65,6 +67,7 @@ public class UltimateStacker extends SongodaPlugin {
     private final List<StackerHook> stackerHooks = new ArrayList<>();
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
+    private BlockStackManager blockStackManager;
     private LootablesManager lootablesManager;
     private CommandManager commandManager;
     private StackingTask stackingTask;
@@ -72,8 +75,6 @@ public class UltimateStacker extends SongodaPlugin {
     private DatabaseConnector databaseConnector;
     private DataMigrationManager dataMigrationManager;
     private DataManager dataManager;
-
-    private EntityUtils entityUtils;
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
@@ -118,8 +119,6 @@ public class UltimateStacker extends SongodaPlugin {
                         new CommandConvert(guiManager)
                 );
 
-        this.entityUtils = new EntityUtils();
-
         this.lootablesManager = new LootablesManager();
         this.lootablesManager.createDefaultLootables();
         this.getLootablesManager().getLootManager().loadLootables();
@@ -153,8 +152,8 @@ public class UltimateStacker extends SongodaPlugin {
         spawnerFile.saveChanges();
 
         this.spawnerStackManager = new SpawnerStackManager();
-        this.entityStackManager = new EntityStackManager();
-        this.stackingTask = new StackingTask(this);
+        this.entityStackManager = new EntityStackManager(this);
+        this.blockStackManager = new BlockStackManager();
 
         guiManager.init();
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -185,33 +184,6 @@ public class UltimateStacker extends SongodaPlugin {
         }
         HologramManager.load(this);
 
-        // Legacy Data
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            File folder = getDataFolder();
-            File dataFile = new File(folder, "data.yml");
-
-            if (dataFile.exists()) {
-                Storage storage = new StorageYaml(this);
-                if (storage.containsGroup("spawners")) {
-                    for (StorageRow row : storage.getRowsByGroup("spawners")) {
-                        try {
-                            Location location = Methods.unserializeLocation(row.getKey());
-
-                            SpawnerStack stack = new SpawnerStack(
-                                    location,
-                                    row.get("amount").asInt());
-
-                            getDataManager().createSpawner(stack);
-                        } catch (Exception e) {
-                            console.sendMessage("Failed to load spawner.");
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                dataFile.delete();
-            }
-        }, 10);
-
         // Database stuff, go!
         try {
             if (Settings.MYSQL_ENABLED.getBoolean()) {
@@ -235,17 +207,72 @@ public class UltimateStacker extends SongodaPlugin {
 
         this.dataManager = new DataManager(this.databaseConnector, this);
         this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
-                new _1_InitialMigration());
+                new _1_InitialMigration(),
+                new _2_EntityStacks(),
+                new _3_BlockStacks());
         this.dataMigrationManager.runMigrations();
+    }
 
-        Bukkit.getScheduler().runTaskLater(this, () -> {
-            final boolean useHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
-            this.dataManager.getSpawners((spawners) -> {
-                this.spawnerStackManager.addSpawners(spawners);
-                if (useHolo)
-                    loadHolograms();
-            });
-        }, 20L);
+    @Override
+    public void onDataLoad() {
+        // Legacy Data
+        File folder = getDataFolder();
+        File dataFile = new File(folder, "data.yml");
+
+        if (dataFile.exists()) {
+            Storage storage = new StorageYaml(this);
+            if (storage.containsGroup("spawners")) {
+                for (StorageRow row : storage.getRowsByGroup("spawners")) {
+                    try {
+                        Location location = Methods.unserializeLocation(row.getKey());
+
+                        SpawnerStack stack = new SpawnerStack(
+                                location,
+                                row.get("amount").asInt());
+
+                        getDataManager().createSpawner(stack);
+                    } catch (Exception e) {
+                        console.sendMessage("Failed to load spawner.");
+                        e.printStackTrace();
+                    }
+                }
+            }
+            dataFile.delete();
+        }
+
+        // Load current data.
+        final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
+        this.dataManager.getSpawners((spawners) -> {
+            this.spawnerStackManager.addSpawners(spawners);
+            if (useSpawnerHolo) {
+                if (spawners.isEmpty()) return;
+
+                for (SpawnerStack spawner : spawners.values()) {
+                    if (spawner.getLocation().getWorld() != null) {
+                        updateHologram(spawner);
+                    }
+                }
+            }
+        });
+        this.dataManager.getEntities((entities) -> {
+            entityStackManager.addStacks(entities.values());
+            entityStackManager.tryAndLoadColdEntities();
+            this.stackingTask = new StackingTask(this);
+            getServer().getPluginManager().registerEvents(new ChunkListeners(this), this);
+        });
+        final boolean useBlockHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
+        this.dataManager.getBlocks((blocks) -> {
+            this.blockStackManager.addBlocks(blocks);
+            if (useBlockHolo) {
+                if (blocks.isEmpty()) return;
+
+                for (BlockStack stack : blocks.values()) {
+                    if (stack.getLocation().getWorld() != null) {
+                        updateHologram(stack);
+                    }
+                }
+            }
+        });
     }
 
     public void addExp(Player player, EntityStack stack) {
@@ -269,8 +296,6 @@ public class UltimateStacker extends SongodaPlugin {
         this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
-        this.entityUtils = new EntityUtils();
-
         this.stackingTask.cancel();
         this.stackingTask = new StackingTask(this);
 
@@ -281,7 +306,8 @@ public class UltimateStacker extends SongodaPlugin {
     }
 
     public boolean spawnersEnabled() {
-        return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners") && Settings.SPAWNERS_ENABLED.getBoolean();
+        return !this.getServer().getPluginManager().isPluginEnabled("EpicSpawners")
+                && Settings.SPAWNERS_ENABLED.getBoolean();
     }
 
     public CommandManager getCommandManager() {
@@ -316,10 +342,6 @@ public class UltimateStacker extends SongodaPlugin {
         return spawnerFile;
     }
 
-    public EntityUtils getEntityUtils() {
-        return entityUtils;
-    }
-
     public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
@@ -332,45 +354,20 @@ public class UltimateStacker extends SongodaPlugin {
         return guiManager;
     }
 
-    void loadHolograms() {
-        Collection<SpawnerStack> spawners = getSpawnerStackManager().getStacks();
-        if (spawners.isEmpty()) return;
-
-        for (SpawnerStack spawner : spawners) {
-            if (spawner.getLocation().getWorld() != null) {
-                updateHologram(spawner);
-            }
-        }
+    public BlockStackManager getBlockStackManager() {
+        return blockStackManager;
     }
 
-    public void clearHologram(SpawnerStack stack) {
-        HologramManager.removeHologram(stack.getLocation());
-    }
 
-    public void updateHologram(SpawnerStack stack) {
+    public void updateHologram(Hologramable stack) {
         // are holograms enabled?
-        if (!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
-        Block block = stack.getLocation().getBlock();
-        if (block.getType() != CompatibleMaterial.SPAWNER.getBlockMaterial()) return;
-        // grab the spawner block
-        CreatureSpawner creatureSpawner = (CreatureSpawner) block.getState();
-        String name = Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), stack.getAmount());
+        if (!stack.areHologramsEnabled() && !HologramManager.getManager().isEnabled()) return;
         // create the hologram
-        HologramManager.updateHologram(stack.getLocation(), name);
+        HologramManager.updateHologram(stack.getLocation(), stack.getHologramName());
     }
 
-    public void removeHologram(Block block) {
-        HologramManager.removeHologram(block.getLocation());
-    }
-
-    public void updateHologram(Block block) {
-        // verify that this is a spawner
-        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
-        // are holograms enabled?
-        if (!Settings.SPAWNER_HOLOGRAMS.getBoolean() || !HologramManager.getManager().isEnabled()) return;
-        // update this hologram in a tick
-        SpawnerStack spawner = getSpawnerStackManager().getSpawner(block);
-        Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(this, () -> updateHologram(spawner), 10L);
+    public void removeHologram(Hologramable stack) {
+        HologramManager.removeHologram(stack.getLocation());
     }
 
     //////// Convenient API //////////

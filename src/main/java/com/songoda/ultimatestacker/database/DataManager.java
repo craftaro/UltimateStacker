@@ -1,19 +1,23 @@
 package com.songoda.ultimatestacker.database;
 
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.database.DataManagerAbstract;
 import com.songoda.core.database.DatabaseConnector;
-import com.songoda.ultimatestacker.spawner.SpawnerStack;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
+import com.songoda.ultimatestacker.stackable.block.BlockStack;
+import com.songoda.ultimatestacker.stackable.entity.ColdEntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
+import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class DataManager extends DataManagerAbstract {
 
@@ -49,7 +53,7 @@ public class DataManager extends DataManagerAbstract {
 
 
     public void createSpawner(SpawnerStack spawnerStack) {
-        this.async(() -> this.databaseConnector.connect(connection -> {
+        this.queueAsync(() -> this.databaseConnector.connect(connection -> {
 
             String createSpawner = "INSERT INTO " + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSpawner)) {
@@ -61,8 +65,137 @@ public class DataManager extends DataManagerAbstract {
                 statement.setInt(5, spawnerStack.getZ());
                 statement.executeUpdate();
             }
-            int spawnerId = this.lastInsertedId(connection);
+            int spawnerId = this.lastInsertedId(connection, "spawners");
             this.sync(() -> spawnerStack.setId(spawnerId));
+        }), "create");
+    }
+
+    public void updateBlock(BlockStack blockStack) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            if (blockStack.getAmount() == 0) return;
+            String updateBlock = "UPDATE " + this.getTablePrefix() + "blocks SET amount = ? WHERE id = ?";
+            try (PreparedStatement statement = connection.prepareStatement(updateBlock)) {
+                statement.setInt(1, blockStack.getAmount());
+                statement.setInt(2, blockStack.getId());
+                statement.executeUpdate();
+            }
+        }));
+    }
+
+
+    public void createBlock(BlockStack blockStack) {
+        this.queueAsync(() -> this.databaseConnector.connect(connection -> {
+
+            String createSpawner = "INSERT INTO " + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(createSpawner)) {
+                statement.setInt(1, blockStack.getAmount());
+                statement.setString(2, blockStack.getMaterial().name());
+
+                statement.setString(3, blockStack.getWorld().getName());
+                statement.setInt(4, blockStack.getX());
+                statement.setInt(5, blockStack.getY());
+                statement.setInt(6, blockStack.getZ());
+                statement.executeUpdate();
+            }
+            int blockId = this.lastInsertedId(connection, "blocks");
+            this.sync(() -> blockStack.setId(blockId));
+        }), "create");
+    }
+
+
+    public void createHostEntity(ColdEntityStack stack) {
+        this.queueAsync(() -> this.databaseConnector.connect(connection -> {
+            if (stack.getHostUniqueId() == null) return;
+            String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                statement.setString(1, stack.getHostUniqueId().toString());
+                statement.setInt(2, stack.getCreateDuplicates());
+                statement.executeUpdate();
+            }
+            int stackId = this.lastInsertedId(connection, "host_entities");
+            this.sync(() -> stack.setId(stackId));
+        }), "create");
+    }
+
+    public void createStackedEntity(EntityStack hostStack, StackedEntity stackedEntity) {
+        this.queueAsync(() -> this.databaseConnector.connect(connection -> {
+            if (hostStack.getHostUniqueId() == null) return;
+            String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                statement.setString(1, stackedEntity.getUniqueId().toString());
+                statement.setInt(2, hostStack.getId());
+                statement.setBytes(3, stackedEntity.getSerializedEntity());
+                statement.executeUpdate();
+            }
+        }), "create");
+    }
+
+    public void createStackedEntities(ColdEntityStack hostStack, List<StackedEntity> stackedEntities) {
+        this.queueAsync(() -> this.databaseConnector.connect(connection -> {
+            if (hostStack.getHostUniqueId() == null) return;
+            String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                for (StackedEntity entity : stackedEntities) {
+                    statement.setString(1, entity.getUniqueId().toString());
+                    statement.setInt(2, hostStack.getId());
+                    statement.setBytes(3, entity.getSerializedEntity());
+                    statement.addBatch();
+                }
+                statement.executeBatch();
+            }
+        }), "create");
+    }
+
+    public void updateHost(ColdEntityStack hostStack) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            if (hostStack.getHostUniqueId() == null) return;
+            String updateHost = "UPDATE " + this.getTablePrefix() + "host_entities SET uuid = ?, create_duplicates = ? WHERE id = ?";
+            try (PreparedStatement statement = connection.prepareStatement(updateHost)) {
+                statement.setString(1, hostStack.getHostUniqueId().toString());
+                statement.setInt(2, hostStack.getCreateDuplicates());
+                statement.setInt(3, hostStack.getId());
+                statement.executeUpdate();
+            }
+        }));
+    }
+
+    public void deleteHost(ColdEntityStack stack) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String deleteHost = "DELETE FROM " + this.getTablePrefix() + "host_entities WHERE id = ?";
+            try (PreparedStatement statement = connection.prepareStatement(deleteHost)) {
+                statement.setInt(1, stack.getId());
+                statement.executeUpdate();
+            }
+
+            String deleteStackedEntities = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE host = ?";
+            try (PreparedStatement statement = connection.prepareStatement(deleteStackedEntities)) {
+                statement.setInt(1, stack.getId());
+                statement.executeUpdate();
+            }
+        }));
+    }
+
+    public void deleteStackedEntity(UUID uuid) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String deleteStackedEntity = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE uuid = ?";
+            try (PreparedStatement statement = connection.prepareStatement(deleteStackedEntity)) {
+                statement.setString(1, uuid.toString());
+                statement.executeUpdate();
+            }
+        }));
+    }
+
+    public void deleteStackedEntities(List<StackedEntity> entities) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String deleteStackedEntities = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE uuid = ?";
+            try (PreparedStatement statement = connection.prepareStatement(deleteStackedEntities)) {
+                for (StackedEntity entity : entities) {
+                    if (entity == null) continue;
+                    statement.setString(1, entity.getUniqueId().toString());
+                    statement.addBatch();
+                }
+                statement.executeBatch();
+            }
         }));
     }
 
@@ -73,6 +206,59 @@ public class DataManager extends DataManagerAbstract {
                 statement.setInt(1, spawnerStack.getId());
                 statement.executeUpdate();
             }
+        }));
+    }
+
+    public void deleteBlock(BlockStack blockStack) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String deleteBlock = "DELETE FROM " + this.getTablePrefix() + "blocks WHERE id = ?";
+            try (PreparedStatement statement = connection.prepareStatement(deleteBlock)) {
+                statement.setInt(1, blockStack.getId());
+                statement.executeUpdate();
+            }
+        }));
+    }
+
+    public void getEntities(Consumer<Map<Integer, ColdEntityStack>> callback) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            
+            Map<Integer, ColdEntityStack> entities = new HashMap<>();
+
+            String selectEntities = "SELECT * FROM " + this.getTablePrefix() + "host_entities";
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(selectEntities);
+                while (result.next()) {
+                    int hostId = result.getInt("id");
+
+                    UUID host = UUID.fromString(result.getString("uuid"));
+
+                    int createDuplicates = result.getInt("create_duplicates");
+
+                    ColdEntityStack stack = new ColdEntityStack(host, hostId);
+                    stack.createDuplicates(createDuplicates);
+                    entities.put(hostId, stack);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            String selectStackedEntities = "SELECT * FROM " + this.getTablePrefix() + "stacked_entities";
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(selectStackedEntities);
+                while (result.next()) {
+                    UUID uuid = UUID.fromString(result.getString("uuid"));
+                    int hostId = result.getInt("host");
+                    byte[] serializedEntity = result.getBytes("serialized_entity");
+
+                    ColdEntityStack stack = entities.get(hostId);
+                    if (stack == null) continue;
+                    stack.addEntityToStackSilently(new StackedEntity(uuid, serializedEntity));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            this.sync(() -> callback.accept(entities));
         }));
     }
 
@@ -87,7 +273,7 @@ public class DataManager extends DataManagerAbstract {
                 while (result.next()) {
                     World world = Bukkit.getWorld(result.getString("world"));
 
-                    if(world == null)
+                    if (world == null)
                         continue;
 
                     int spawnerId = result.getInt("id");
@@ -108,6 +294,43 @@ public class DataManager extends DataManagerAbstract {
             }
 
             this.sync(() -> callback.accept(spawners));
+        }));
+    }
+
+    public void getBlocks(Consumer<Map<Location, BlockStack>> callback) {
+        this.async(() -> this.databaseConnector.connect(connection -> {
+            String selectBlocks = "SELECT * FROM " + this.getTablePrefix() + "blocks";
+
+            Map<Location, BlockStack> blocks = new HashMap<>();
+
+            try (Statement statement = connection.createStatement()) {
+                ResultSet result = statement.executeQuery(selectBlocks);
+                while (result.next()) {
+                    World world = Bukkit.getWorld(result.getString("world"));
+
+                    if (world == null)
+                        continue;
+
+                    int blockId = result.getInt("id");
+
+                    CompatibleMaterial material = CompatibleMaterial.getMaterial(result.getString("material"));
+
+                    int amount = result.getInt("amount");
+
+                    int x = result.getInt("x");
+                    int y = result.getInt("y");
+                    int z = result.getInt("z");
+                    Location location = new Location(world, x, y, z);
+
+                    BlockStack blockStack = new BlockStack(material, location, amount);
+                    blockStack.setId(blockId);
+                    blocks.put(location, blockStack);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            this.sync(() -> callback.accept(blocks));
         }));
     }
 }

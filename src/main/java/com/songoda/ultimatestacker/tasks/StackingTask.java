@@ -4,15 +4,19 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.entity.EntityStack;
-import com.songoda.ultimatestacker.entity.EntityStackManager;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.stackable.entity.Check;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
+import com.songoda.ultimatestacker.utils.CachedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -23,25 +27,31 @@ public class StackingTask extends BukkitRunnable {
 
     private final EntityStackManager stackManager;
 
-    ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
-
+    private final ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
     private final List<UUID> processed = new ArrayList<>();
 
+    private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
+
     private final HashMap<EntityType, Integer> entityStackSizes = new HashMap();
-    private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt();
-    private final int minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt();
-    private final int maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
-    private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
-    private final boolean onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean();
-    private final List<String> stackReasons = Settings.STACK_REASONS.getStringList();
-    private final boolean onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
+    private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt(),
+            minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt(),
+            searchRadius = Settings.SEARCH_RADIUS.getInt(),
+            maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
+    private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList(),
+            stackReasons = Settings.STACK_REASONS.getStringList();
+    private final List<Check> checks = Check.getChecks(Settings.STACK_CHECKS.getStringList());
+    private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
+            stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean(),
+            weaponsArentEquipment = Settings.WEAPONS_ARENT_EQUIPMENT.getBoolean(),
+            onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean(),
+            onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
         this.stackManager = plugin.getEntityStackManager();
 
-        // Start stacking task.
-        runTaskTimer(plugin, 0, Settings.STACK_SEARCH_TICK_SPEED.getInt());
+        // Start the stacking task.
+        runTaskTimerAsynchronously(plugin, 0, Settings.STACK_SEARCH_TICK_SPEED.getInt());
     }
 
     @Override
@@ -63,8 +73,9 @@ public class StackingTask extends BukkitRunnable {
                 // Get entity location to pass around as its faster this way.
                 Location location = entity.getLocation();
 
-                // Check to see if entity is stackable.
-                if (!isEntityStackable(entity, location)) continue;
+                // Check to see if entity is not stackable.
+                if (!isEntityStackable(entity))
+                    continue;
 
                 // Make sure our entity has not already been processed.
                 // Skip it if it has been.
@@ -80,14 +91,14 @@ public class StackingTask extends BukkitRunnable {
         }
         // Clear caches in preparation for the next run.
         this.processed.clear();
-        plugin.getEntityUtils().clearChunkCache();
+        this.cachedChunks.clear();
     }
 
     public boolean isWorldDisabled(World world) {
         return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
-    private boolean isEntityStackable(Entity entity, Location location) {
+    private boolean isEntityStackable(Entity entity) {
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
                 || !(entity instanceof LivingEntity)
@@ -117,7 +128,7 @@ public class StackingTask extends BukkitRunnable {
 
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
         return !onlyStackOnSurface
-                || Methods.canFly(livingEntity)
+                || canFly(livingEntity)
                 || entity.getType().name().equals("SHULKER")
 
                 || (livingEntity.isOnGround()
@@ -150,8 +161,11 @@ public class StackingTask extends BukkitRunnable {
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
         List<LivingEntity> stackableFriends = new LinkedList<>();
-        for (LivingEntity entity : plugin.getEntityUtils().getSimilarEntitiesAroundEntity(livingEntity, location)) {
-            if (!isEntityStackable(entity, location)) continue;
+        for (LivingEntity entity : getSimilarEntitiesAroundEntity(livingEntity, location)) {
+            // Check to see if entity is not stackable.
+            if (!isEntityStackable(entity))
+                continue;
+            // Add this entity to our stackable friends.
             stackableFriends.add(entity);
         }
 
@@ -173,28 +187,29 @@ public class StackingTask extends BukkitRunnable {
             // for this entity.
             if (friendStack != null && (friendStack.getAmount() + amountToStack) <= maxEntityStackSize) {
 
-                // Add one to the found friendStack.
-                friendStack.addAmount(amountToStack);
-
-                // Add our entities health to the friendStacks health.
-                friendStack.addHealth(entity.getHealth());
-
-                // Fix the friendStacks health.
-                if (!isStack)
-                    friendStack.addHealth(entity.getHealth());
-                else
-                    friendStack.mergeHealth(stack);
-
-
-                fixHealth(entity, livingEntity);
-                if (Settings.STACK_ENTITY_HEALTH.getBoolean())
-                    entity.setHealth(entity.getMaxHealth() < livingEntity.getHealth()
-                            ? entity.getMaxHealth() : livingEntity.getHealth());
-
+                // If we are a stack lets merge our stack with the just found friend stack.
+                if (isStack) {
+                    // Get all the stacked entities in our stack and add them to a list.
+                    List<StackedEntity> entities = stack.takeAllEntities();
+                    // Add the host to this list.
+                    entities.add(stack.getHostAsStackedEntity());
+                    // Add the collected entities to the new stack.
+                    friendStack.addEntitiesToStackSilently(entities);
+                    // Update friend stack to display changes.
+                    friendStack.updateStack();
+                    // Destroy our stack.
+                    stack.destroy();
+                    // Push changes to the database.
+                    plugin.getDataManager().createStackedEntities(friendStack, entities);
+                } else {
+                    // If we are not stacked add ourselves to the found friendStack.
+                    plugin.getDataManager().createStackedEntity(friendStack, friendStack.addEntityToStack(livingEntity));
+                }
 
                 // Drop lead if applicable then remove our entity and mark it as processed.
                 if (livingEntity.isLeashed())
-                    livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), CompatibleMaterial.LEAD.getItem());
+                    Bukkit.getScheduler().runTask(plugin, () -> livingEntity.getWorld()
+                            .dropItemNaturally(livingEntity.getLocation(), CompatibleMaterial.LEAD.getItem()));
                 livingEntity.remove();
                 processed.add(livingEntity.getUniqueId());
 
@@ -202,27 +217,19 @@ public class StackingTask extends BukkitRunnable {
             } else if (friendStack == null
                     && isStack
                     && (stack.getAmount() + 1) <= maxEntityStackSize
-                    && Methods.canFly(entity)
+                    && canFly(entity)
                     && Settings.ONLY_STACK_FLYING_DOWN.getBoolean()
                     && location.getY() > entity.getLocation().getY()) {
 
-                // Create a new stack with the current stacks amount and add one to it.
-                EntityStack newStack = stackManager.addStack(entity, stack.getAmount() + 1);
+                // Make the friend the new stack host.
+                EntityStack newStack = stackManager.updateStack(livingEntity, entity);
 
-                // Fix the entities health.
-                newStack.mergeHealth(stack);
-                newStack.addHealth(livingEntity.getHealth());
-                fixHealth(livingEntity, entity);
-                if (Settings.STACK_ENTITY_HEALTH.getBoolean())
-                    entity.setHealth(entity.getHealth());
-
-                // Remove our entities stack from the stack manager.
-                stackManager.removeStack(livingEntity);
+                // Add our entity to that stack
+                plugin.getDataManager().createStackedEntity(newStack, newStack.addEntityToStack(livingEntity));
 
                 // Remove our entity and mark it as processed.
                 livingEntity.remove();
                 processed.add(livingEntity.getUniqueId());
-
                 return;
             }
         }
@@ -236,11 +243,11 @@ public class StackingTask extends BukkitRunnable {
             return;
 
         // Remove all stacked entities from our stackable friends.
-        stackableFriends.removeIf(stackManager::isStacked);
+        stackableFriends.removeIf(stackManager::isStackedAndLoaded);
 
         // If the stack cap is met then delete this entity.
         if (maxPerTypeStacksPerChunk != -1
-                && (plugin.getEntityUtils().getSimilarStacksInChunk(livingEntity) + 1) > maxPerTypeStacksPerChunk) {
+                && (getSimilarStacksInChunk(livingEntity) + 1) > maxPerTypeStacksPerChunk) {
             livingEntity.remove();
             this.processed.add(livingEntity.getUniqueId());
             return;
@@ -253,43 +260,38 @@ public class StackingTask extends BukkitRunnable {
                 || minEntityStackSize > maxEntityStackSize) return;
 
         // If a stack was never found create a new one.
-        EntityStack newStack = stackManager.addStack(new EntityStack(livingEntity,
-                Math.min((stackableFriends.size() + 1), maxEntityStackSize)));
+        EntityStack newStack = stackManager.addStack(livingEntity);
+
+        List<LivingEntity> livingEntities = new LinkedList<>();
 
         // Loop through the unstacked and unprocessed stackable friends while not creating
         // a stack larger than the maximum.
-        stackableFriends.stream().filter(entity -> !stackManager.isStacked(entity)
+        stackableFriends.stream().filter(entity -> !stackManager.isStackedAndLoaded(entity)
                 && !this.processed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
 
             // Make sure we're not naming some poor kids pet.
             if (entity.getCustomName() != null) {
                 processed.add(livingEntity.getUniqueId());
-                newStack.addAmount(-1);
+                newStack.destroy();
                 return;
             }
-            // Fix the entities health.
-            fixHealth(livingEntity, entity);
-            newStack.addHealth(entity.getHealth());
 
             // Drop lead if applicable then remove our entity and mark it as processed.
             if (entity.isLeashed())
                 entity.getWorld().dropItemNaturally(entity.getLocation(), CompatibleMaterial.LEAD.getItem());
+            livingEntities.add(entity);
             entity.remove();
             processed.add(entity.getUniqueId());
+
         });
 
-        // Update our stacks health.
-        updateHealth(newStack);
+        // Add our new approved entities to the new stack and commit them to the database.
+        plugin.getDataManager().createStackedEntities(newStack,
+                newStack.addRawEntitiesToStackSilently(livingEntities));
 
         // Update our stack.
         newStack.updateStack();
     }
-
-    private void updateHealth(EntityStack stack) {
-        if (Settings.STACK_ENTITY_HEALTH.getBoolean())
-            stack.updateHealth(stack.getEntity());
-    }
-
 
     public boolean attemptSplit(EntityStack stack, LivingEntity livingEntity) {
         int stackSize = stack.getAmount();
@@ -297,12 +299,17 @@ public class StackingTask extends BukkitRunnable {
 
         if (stackSize <= maxEntityStackAmount) return false;
 
-        for (int i = stackSize; i > 0; i -= maxEntityStackAmount)
-            this.processed.add(plugin.getEntityStackManager()
-                    .addStack(plugin.getEntityUtils().newEntity(livingEntity), Math.min(i, maxEntityStackAmount)).getEntityUniqueId());
+        // Destroy the stack.
+        stack.destroy();
 
-        // Remove our entities stack from the stack manager.
-        stackManager.removeStack(livingEntity);
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            for (int i = stackSize; i > 0; i -= maxEntityStackAmount) {
+                LivingEntity entity = stack.takeOneAndSpawnEntity(livingEntity.getLocation());
+                EntityStack newStack = plugin.getEntityStackManager().addStack(entity);
+                newStack.moveEntitiesFromStack(stack, Math.min(i, maxEntityStackAmount) - 1);
+                newStack.updateStack();
+            }
+        });
 
         // Remove our entity and mark it as processed.
         livingEntity.remove();
@@ -310,10 +317,329 @@ public class StackingTask extends BukkitRunnable {
         return true;
     }
 
+    private Set<CachedChunk> getNearbyChunks(Location location, double radius, boolean singleChunk) {
+        World world = location.getWorld();
+        Set<CachedChunk> chunks = new HashSet<>();
+        if (world == null) return chunks;
 
-    private void fixHealth(LivingEntity entity, LivingEntity initialEntity) {
-        if (!Settings.STACK_ENTITY_HEALTH.getBoolean() && Settings.CARRY_OVER_LOWEST_HEALTH.getBoolean() && initialEntity.getHealth() < entity.getHealth())
-            entity.setHealth(initialEntity.getHealth());
+        CachedChunk firstChunk = new CachedChunk(location);
+        chunks.add(firstChunk);
+
+        if (singleChunk) return chunks;
+
+        int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
+        int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
+        int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
+        int maxZ = (int) Math.floor(((location.getZ() + radius) + 2.0D) / 16.0D);
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
+                chunks.add(new CachedChunk(world.getName(), x, z));
+            }
+        }
+        return chunks;
+    }
+
+    private List<LivingEntity> getNearbyEntities(Location location, double radius, boolean singleChunk) {
+        List<LivingEntity> entities = new ArrayList<>();
+        for (CachedChunk chunk : getNearbyChunks(location, radius, singleChunk)) {
+            if (chunk == null) continue;
+            Entity[] entityArray;
+            if (cachedChunks.containsKey(chunk)) {
+                entityArray = cachedChunks.get(chunk);
+            } else {
+                entityArray = chunk.getEntities();
+                cachedChunks.put(chunk, entityArray);
+            }
+            if (entityArray == null) continue;
+            for (Entity e : entityArray) {
+                if (e == null) continue;
+                if (e.getWorld() != location.getWorld()
+                        || !(e instanceof LivingEntity)
+                        || (!singleChunk && location.distanceSquared(e.getLocation()) >= radius * radius)) continue;
+                entities.add((LivingEntity) e);
+            }
+        }
+        return entities;
+    }
+
+    public int getSimilarStacksInChunk(LivingEntity entity) {
+        int count = 0;
+        for (LivingEntity e : getNearbyEntities(entity.getLocation(), -1, true)) {
+            if (entity.getType() == e.getType() && plugin.getEntityStackManager().isStackedAndLoaded(e))
+                count++;
+        }
+        return count;
+    }
+
+    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
+        // Create a list of all entities around the initial entity of the same type.
+        List<LivingEntity> entityList = new LinkedList<>();
+
+        for (LivingEntity entity : getNearbyEntities(location, searchRadius, stackWholeChunk)) {
+            if (entity.getType() != initialEntity.getType() || entity == initialEntity)
+                continue;
+            entityList.add(entity);
+        }
+
+        if (stackFlyingDown && canFly(initialEntity))
+            entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());
+
+        for (Check check : checks) {
+            if (check == null) continue;
+            switch (check) {
+                case SPAWN_REASON: {
+                    if (initialEntity.hasMetadata("US_REASON"))
+                        entityList.removeIf(entity -> entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").get(0).asString().equals("US_REASON"));
+                }
+                case AGE: {
+                    if (!(initialEntity instanceof Ageable)) break;
+
+                    if (((Ageable) initialEntity).isAdult()) {
+                        entityList.removeIf(entity -> !((Ageable) entity).isAdult());
+                    } else {
+                        entityList.removeIf(entity -> ((Ageable) entity).isAdult());
+                    }
+                    break;
+                }
+                case NERFED: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)) break;
+                    entityList.removeIf(entity -> entity.hasAI() != initialEntity.hasAI());
+                }
+                case IS_TAMED: {
+                    if (!(initialEntity instanceof Tameable)) break;
+                    if (((Tameable) initialEntity).isTamed()) {
+                        entityList.removeIf(entity -> !((Tameable) entity).isTamed());
+                    } else {
+                        entityList.removeIf(entity -> ((Tameable) entity).isTamed());
+                    }
+                }
+                case ANIMAL_OWNER: {
+                    if (!(initialEntity instanceof Tameable)) break;
+
+                    Tameable tameable = ((Tameable) initialEntity);
+                    entityList.removeIf(entity -> ((Tameable) entity).getOwner() != tameable.getOwner());
+                }
+                case PIG_SADDLE: {
+                    if (!(initialEntity instanceof Pig)) break;
+                    entityList.removeIf(entity -> ((Pig) entity).hasSaddle());
+                    break;
+                }
+                case SKELETON_TYPE: {
+                    if (!(initialEntity instanceof Skeleton)) break;
+
+                    Skeleton skeleton = (Skeleton) initialEntity;
+                    entityList.removeIf(entity -> ((Skeleton) entity).getSkeletonType() != skeleton.getSkeletonType());
+                    break;
+                }
+                case SHEEP_COLOR: {
+                    if (!(initialEntity instanceof Sheep)) break;
+
+                    Sheep sheep = ((Sheep) initialEntity);
+                    entityList.removeIf(entity -> ((Sheep) entity).getColor() != sheep.getColor());
+                    break;
+                }
+                case SHEEP_SHEARED: {
+                    if (!(initialEntity instanceof Sheep)) break;
+
+                    Sheep sheep = ((Sheep) initialEntity);
+                    if (sheep.isSheared()) {
+                        entityList.removeIf(entity -> !((Sheep) entity).isSheared());
+                    } else {
+                        entityList.removeIf(entity -> ((Sheep) entity).isSheared());
+                    }
+                    break;
+                }
+                case SNOWMAN_DERPED: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9)
+                            || !(initialEntity instanceof Snowman)) break;
+
+                    Snowman snowman = ((Snowman) initialEntity);
+                    if (snowman.isDerp()) {
+                        entityList.removeIf(entity -> !((Snowman) entity).isDerp());
+                    } else {
+                        entityList.removeIf(entity -> ((Snowman) entity).isDerp());
+                    }
+                    break;
+                }
+                case LLAMA_COLOR: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
+                            || !(initialEntity instanceof Llama)) break;
+                    Llama llama = ((Llama) initialEntity);
+                    entityList.removeIf(entity -> ((Llama) entity).getColor() != llama.getColor());
+                    break;
+                }
+                case LLAMA_STRENGTH: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
+                            || !(initialEntity instanceof Llama)) break;
+                    Llama llama = ((Llama) initialEntity);
+                    entityList.removeIf(entity -> ((Llama) entity).getStrength() != llama.getStrength());
+                    break;
+                }
+                case VILLAGER_PROFESSION: {
+                    if (!(initialEntity instanceof Villager)) break;
+                    Villager villager = ((Villager) initialEntity);
+                    entityList.removeIf(entity -> ((Villager) entity).getProfession() != villager.getProfession());
+                    break;
+                }
+                case SLIME_SIZE: {
+                    if (!(initialEntity instanceof Slime)) break;
+                    Slime slime = ((Slime) initialEntity);
+                    entityList.removeIf(entity -> ((Slime) entity).getSize() != slime.getSize());
+                    break;
+                }
+                case HORSE_CARRYING_CHEST: {
+                    if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
+                        if (!(initialEntity instanceof ChestedHorse)) break;
+                        entityList.removeIf(entity -> ((ChestedHorse) entity).isCarryingChest());
+                    } else {
+                        if (!(initialEntity instanceof Horse)) break;
+                        entityList.removeIf(entity -> ((Horse) entity).isCarryingChest());
+                    }
+                    break;
+                }
+                case HORSE_HAS_ARMOR: {
+                    if (!(initialEntity instanceof Horse)) break;
+                    entityList.removeIf(entity -> ((Horse) entity).getInventory().getArmor() != null);
+                    break;
+                }
+                case HORSE_HAS_SADDLE: {
+                    if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            && initialEntity instanceof AbstractHorse) {
+                        entityList.removeIf(entity -> ((AbstractHorse) entity).getInventory().getSaddle() != null);
+                        break;
+                    }
+                    if (!(initialEntity instanceof Horse)) break;
+                    entityList.removeIf(entity -> ((Horse) entity).getInventory().getSaddle() != null);
+                    break;
+                }
+                case HORSE_JUMP: {
+                    if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
+                        if (!(initialEntity instanceof AbstractHorse)) break;
+                        AbstractHorse horse = ((AbstractHorse) initialEntity);
+                        entityList.removeIf(entity -> ((AbstractHorse) entity).getJumpStrength() != horse.getJumpStrength());
+                    } else {
+                        if (!(initialEntity instanceof Horse)) break;
+                        Horse horse = ((Horse) initialEntity);
+                        entityList.removeIf(entity -> ((Horse) entity).getJumpStrength() != horse.getJumpStrength());
+
+                    }
+                    break;
+                }
+                case HORSE_COLOR: {
+                    if (!(initialEntity instanceof Horse)) break;
+                    Horse horse = ((Horse) initialEntity);
+                    entityList.removeIf(entity -> ((Horse) entity).getColor() != horse.getColor());
+                    break;
+                }
+                case HORSE_STYLE: {
+                    if (!(initialEntity instanceof Horse)) break;
+                    Horse horse = ((Horse) initialEntity);
+                    entityList.removeIf(entity -> ((Horse) entity).getStyle() != horse.getStyle());
+                    break;
+                }
+                case ZOMBIE_BABY: {
+                    if (!(initialEntity instanceof Zombie)) break;
+                    Zombie zombie = (Zombie) initialEntity;
+                    entityList.removeIf(entity -> ((Zombie) entity).isBaby() != zombie.isBaby());
+                    break;
+                }
+                case WOLF_COLLAR_COLOR: {
+                    if (!(initialEntity instanceof Wolf)) break;
+                    Wolf wolf = (Wolf) initialEntity;
+                    entityList.removeIf(entity -> ((Wolf) entity).getCollarColor() != wolf.getCollarColor());
+                    break;
+                }
+                case OCELOT_TYPE: {
+                    if (!(initialEntity instanceof Ocelot)) break;
+                    Ocelot ocelot = (Ocelot) initialEntity;
+                    entityList.removeIf(entity -> ((Ocelot) entity).getCatType() != ocelot.getCatType());
+                }
+                case CAT_TYPE: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)
+                            || !(initialEntity instanceof Cat)) break;
+                    Cat cat = (Cat) initialEntity;
+                    entityList.removeIf(entity -> ((Cat) entity).getCatType() != cat.getCatType());
+                    break;
+                }
+                case HAS_EQUIPMENT: {
+                    if (initialEntity.getEquipment() == null) break;
+                    boolean imEquipped = isEquipped(initialEntity);
+                    if (imEquipped)
+                        entityList = new ArrayList<>();
+                    else
+                        entityList.removeIf(this::isEquipped);
+                    break;
+                }
+                case RABBIT_TYPE: {
+                    if (!(initialEntity instanceof Rabbit)) break;
+                    Rabbit rabbit = (Rabbit) initialEntity;
+                    entityList.removeIf(entity -> ((Rabbit) entity).getRabbitType() != rabbit.getRabbitType());
+                    break;
+                }
+                case PARROT_TYPE: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)
+                            || !(initialEntity instanceof Parrot)) break;
+                    Parrot parrot = (Parrot) initialEntity;
+                    entityList.removeIf(entity -> ((Parrot) entity).getVariant() != parrot.getVariant());
+                    break;
+                }
+                case PUFFERFISH_STATE: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            || !(initialEntity instanceof PufferFish)) break;
+                    PufferFish pufferFish = (PufferFish) initialEntity;
+                    entityList.removeIf(entity -> ((PufferFish) entity).getPuffState() != pufferFish.getPuffState());
+                    break;
+                }
+                case TROPICALFISH_PATTERN: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
+                    entityList.removeIf(entity -> ((TropicalFish) entity).getPattern() != tropicalFish.getPattern());
+                    break;
+                }
+                case TROPICALFISH_PATTERN_COLOR: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
+                    entityList.removeIf(entity -> ((TropicalFish) entity).getPatternColor() != tropicalFish.getPatternColor());
+                    break;
+                }
+                case TROPICALFISH_BODY_COLOR: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            || !(initialEntity instanceof TropicalFish)) break;
+                    TropicalFish tropicalFish = (TropicalFish) initialEntity;
+                    entityList.removeIf(entity -> ((TropicalFish) entity).getBodyColor() != tropicalFish.getBodyColor());
+                    break;
+                }
+                case PHANTOM_SIZE: {
+                    if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                            || !(initialEntity instanceof Phantom)) break;
+                    Phantom phantom = (Phantom) initialEntity;
+                    entityList.removeIf(entity -> ((Phantom) entity).getSize() != phantom.getSize());
+                    break;
+                }
+            }
+        }
+
+        if (initialEntity.hasMetadata("breedCooldown")) {
+            entityList.removeIf(entity -> !entity.hasMetadata("breedCooldown"));
+        }
+
+        return entityList;
+    }
+
+    public boolean isEquipped(LivingEntity initialEntity) {
+        if (initialEntity.getEquipment() == null) return false;
+        EntityEquipment equipment = initialEntity.getEquipment();
+
+        return (equipment.getItemInHand().getType() != Material.AIR
+                && !weaponsArentEquipment && !equipment.getItemInHand().getEnchantments().isEmpty()
+                || (equipment.getHelmet() != null && equipment.getHelmet().getType() != Material.AIR)
+                || (equipment.getChestplate() != null && equipment.getChestplate().getType() != Material.AIR)
+                || (equipment.getLeggings() != null && equipment.getLeggings().getType() != Material.AIR)
+                || (equipment.getBoots() != null && equipment.getBoots().getType() != Material.AIR));
     }
 
     private int getEntityStackSize(LivingEntity initialEntity) {
@@ -326,5 +652,18 @@ public class StackingTask extends BukkitRunnable {
             entityStackSizes.put(initialEntity.getType(), max);
         }
         return max;
+    }
+
+    public boolean canFly(LivingEntity entity) {
+        switch (entity.getType()) {
+            case GHAST:
+            case BLAZE:
+            case PHANTOM:
+            case BAT:
+            case BEE:
+                return true;
+            default:
+                return false;
+        }
     }
 }

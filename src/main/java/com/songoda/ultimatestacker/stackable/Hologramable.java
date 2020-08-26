@@ -9,4 +9,6 @@ public interface Hologramable {
     String getHologramName();
 
     boolean areHologramsEnabled();
+
+    boolean isValid();
 }

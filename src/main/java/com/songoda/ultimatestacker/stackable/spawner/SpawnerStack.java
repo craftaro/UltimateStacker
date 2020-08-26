@@ -1,10 +1,11 @@
 package com.songoda.ultimatestacker.stackable.spawner;
 
+import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
-import com.songoda.ultimatestacker.stackable.Stackable;
+import com.songoda.ultimatestacker.utils.Stackable;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
 import org.bukkit.Bukkit;
@@ -32,6 +33,11 @@ public class SpawnerStack implements Stackable, Hologramable {
     @Override
     public int getAmount() {
         return amount;
+    }
+
+    @Override
+    public boolean isValid() {
+        return CompatibleMaterial.getMaterial(location.getBlock()) == CompatibleMaterial.SPAWNER;
     }
 
     public void setAmount(int amount) {

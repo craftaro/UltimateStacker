@@ -360,6 +360,12 @@ public class UltimateStacker extends SongodaPlugin {
 
 
     public void updateHologram(Hologramable stack) {
+        // Is this stack invalid?
+        if (!stack.isValid())
+            if (stack instanceof BlockStack)
+                blockStackManager.removeBlock(stack.getLocation());
+            else if (stack instanceof SpawnerStack)
+                spawnerStackManager.removeSpawner(stack.getLocation());
         // are holograms enabled?
         if (!stack.areHologramsEnabled() && !HologramManager.getManager().isEnabled()) return;
         // create the hologram

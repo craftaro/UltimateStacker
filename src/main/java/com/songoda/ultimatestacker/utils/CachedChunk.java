@@ -51,7 +51,8 @@ public class CachedChunk {
         if (!Bukkit.getWorld(world).isChunkLoaded(x, z)) {
             return new Entity[0];
         }
-        return getChunk().getEntities();
+        Chunk chunk = getChunk();
+        return chunk == null ? new Entity[0] : getChunk().getEntities();
     }
 
     @Override

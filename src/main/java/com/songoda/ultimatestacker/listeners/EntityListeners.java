@@ -76,7 +76,8 @@ public class EntityListeners implements Listener {
 
         ItemStack item = event.getEntity().getItemStack();
         int amount = (stack.getAmount() - 1) + item.getAmount();
-        item.setAmount(Math.min((stack.getAmount() - 1) + item.getAmount(), item.getMaxStackSize()));
+        if (amount < 1) return;
+        item.setAmount(Math.min(amount, item.getMaxStackSize()));
         if (amount > item.getMaxStackSize())
             UltimateStacker.updateItemAmount(event.getEntity(), amount);
         event.getEntity().setItemStack(item);

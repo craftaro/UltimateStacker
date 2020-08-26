@@ -3,7 +3,7 @@ package com.songoda.ultimatestacker.stackable.entity;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.nms.nbt.NBTEntity;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.stackable.Stackable;
+import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -95,6 +95,11 @@ public class ColdEntityStack implements Stackable {
     @Override
     public int getAmount() {
         return stackedEntities.size() + 1;
+    }
+
+    @Override
+    public boolean isValid() {
+        return true;
     }
 
     public void createDuplicates(int duplicates) {

@@ -189,16 +189,16 @@ public class StackingTask extends BukkitRunnable {
 
                 // If we are a stack lets merge our stack with the just found friend stack.
                 if (isStack) {
+                    // Get the host entity.
+                    StackedEntity host = stack.getHostAsStackedEntity();
                     // Get all the stacked entities in our stack and add them to a list.
                     List<StackedEntity> entities = stack.takeAllEntities();
                     // Add the host to this list.
-                    entities.add(stack.getHostAsStackedEntity());
+                    entities.add(host);
                     // Add the collected entities to the new stack.
                     friendStack.addEntitiesToStackSilently(entities);
                     // Update friend stack to display changes.
                     friendStack.updateStack();
-                    // Destroy our stack.
-                    stack.destroy();
                     // Push changes to the database.
                     plugin.getDataManager().createStackedEntities(friendStack, entities);
                 } else {

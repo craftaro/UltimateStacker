@@ -66,10 +66,12 @@ public class LootablesManager {
         Entity killerEntity = null;
         if (entity.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
             killerEntity = ((EntityDamageByEntityEvent) entity.getLastDamageCause()).getDamager();
+            killer = killerEntity.getType();
             if (killerEntity instanceof Projectile) {
                 Projectile projectile = (Projectile) killerEntity;
                 if (projectile.getShooter() instanceof Entity) {
-                    killer = ((Entity) projectile.getShooter()).getType();
+                    killerEntity = ((Entity) projectile.getShooter());
+                    killer = killerEntity.getType();
                 }
             }
         }

@@ -17,7 +17,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class EntityStack extends ColdEntityStack {
@@ -83,7 +82,6 @@ public class EntityStack extends ColdEntityStack {
         plugin.getEntityStackManager().removeStack(event.getEntity());
         plugin.getDataManager().deleteHost(this);
 
-
         Location killedLocation = killed.getLocation();
         List<Drop> preStackedDrops = new ArrayList<>();
         for (int i = 1; i < getAmount(); i++) {
@@ -98,14 +96,14 @@ public class EntityStack extends ColdEntityStack {
                 drops = plugin.getLootablesManager().getDrops(killed);
             preStackedDrops.addAll(drops);
         }
-        if (!preStackedDrops.isEmpty())
-            DropUtils.processStackedDrop(killed, preStackedDrops, event);
+
+        DropUtils.processStackedDrop(killed, preStackedDrops, event);
 
         if (droppedExp > 0)
             killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * getAmount());
 
         if (killed.getKiller() == null) return;
-        UltimateStacker.getInstance().addExp(killed.getKiller(), this);
+        plugin.addExp(killed.getKiller(), this);
     }
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, EntityDeathEvent event) {

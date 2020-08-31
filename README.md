@@ -8,12 +8,13 @@
 
 <br />
 
+[<img alt="Discord" src="https://img.shields.io/discord/293212540723396608?color=7289DA&label=Discord&logo=discord&logoColor=white&style=for-the-badge" height=32>](https://discord.gg/songoda) [<img alt="Patreon" src="https://img.shields.io/badge/-Support_on_Patreon-F96854.svg?logo=patreon&style=flat-square&logoColor=white" height=32>](https://www.patreon.com/songoda)
+
 ## Table of Contents 
 
 * [Introduction](#introduction)
 * [Marketplace](#marketplace)
 * [Documentation](#documentation)
-* [Discord](#discord)
 * [Support](#support)
 * [Suggestions](#suggestions)
 
@@ -26,9 +27,6 @@ You can visit [our marketplace](https://songoda.com/marketplace/product/ultimate
 ## Documentation
 You can find all the information about the plugin, including dependencies, commands, permissions, incompatible plugins on [our wiki](https://wiki.songoda.com/Ultimate_Stacker). Feel free to also contribute to the wiki as a way to help others in the community with using the plugin.
   
-## Discord
-Come join our community over on [our discord](https://discord.gg/songoda) and interact with others who use the plugin.
-
 ## Support
 If you encounter any problems while using the plugin, feel free to create a ticket on [our support desk](https://support.songoda.com).
 

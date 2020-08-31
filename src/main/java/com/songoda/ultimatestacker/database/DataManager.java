@@ -119,9 +119,9 @@ public class DataManager extends DataManagerAbstract {
 
     public void createStackedEntity(EntityStack hostStack, StackedEntity stackedEntity) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
-            if (hostStack.getHostUniqueId() == null) return;
             String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                if (hostStack.getHostUniqueId() == null) return;
                 statement.setString(1, stackedEntity.getUniqueId().toString());
                 statement.setInt(2, hostStack.getId());
                 statement.setBytes(3, stackedEntity.getSerializedEntity());
@@ -132,10 +132,10 @@ public class DataManager extends DataManagerAbstract {
 
     public void createStackedEntities(ColdEntityStack hostStack, List<StackedEntity> stackedEntities) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
-            if (hostStack.getHostUniqueId() == null) return;
             String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)" +
                     "ON CONFLICT(uuid) DO UPDATE SET host = ?, serialized_entity = ?";
             try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                if (hostStack.getHostUniqueId() == null) return;
                 for (StackedEntity entity : stackedEntities) {
                     statement.setString(1, entity.getUniqueId().toString());
                     statement.setInt(2, hostStack.getId());
@@ -151,9 +151,9 @@ public class DataManager extends DataManagerAbstract {
 
     public void updateHost(ColdEntityStack hostStack) {
         this.async(() -> this.databaseConnector.connect(connection -> {
-            if (hostStack.getHostUniqueId() == null) return;
             String updateHost = "UPDATE " + this.getTablePrefix() + "host_entities SET uuid = ?, create_duplicates = ? WHERE id = ?";
             try (PreparedStatement statement = connection.prepareStatement(updateHost)) {
+                if (hostStack.getHostUniqueId() == null) return;
                 statement.setString(1, hostStack.getHostUniqueId().toString());
                 statement.setInt(2, hostStack.getCreateDuplicates());
                 statement.setInt(3, hostStack.getId());

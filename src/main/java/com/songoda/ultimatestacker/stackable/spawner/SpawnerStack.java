@@ -5,9 +5,9 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
-import com.songoda.ultimatestacker.utils.Stackable;
 import com.songoda.ultimatestacker.utils.Methods;
 import com.songoda.ultimatestacker.utils.Reflection;
+import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -85,6 +85,10 @@ public class SpawnerStack implements Stackable, Hologramable {
 
     @Override
     public String getHologramName() {
+        if (!(location.getBlock().getState() instanceof CreatureSpawner)) {
+            plugin.getSpawnerStackManager().removeSpawner(location);
+            return null;
+        }
         CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
         return Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), amount);
     }

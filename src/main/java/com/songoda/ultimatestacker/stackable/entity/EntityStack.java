@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -39,6 +40,20 @@ public class EntityStack extends ColdEntityStack {
         StackedEntity stackedEntity = addEntityToStackSilently(entity);
         updateStack();
         return stackedEntity;
+    }
+
+    @Override
+    public List<StackedEntity> takeEntities(int amount) {
+        List<StackedEntity> entities = super.takeEntities(amount);
+        if (this.stackedEntities.isEmpty())
+            destroy(true);
+        return entities;
+    }
+
+    @Override
+    public List<StackedEntity> takeAllEntities() {
+        destroy(true);
+        return super.takeAllEntities();
     }
 
     public void updateStack() {

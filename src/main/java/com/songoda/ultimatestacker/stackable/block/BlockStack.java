@@ -4,8 +4,8 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
-import com.songoda.ultimatestacker.utils.Stackable;
 import com.songoda.ultimatestacker.utils.Methods;
+import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Location;
 import org.bukkit.World;
 

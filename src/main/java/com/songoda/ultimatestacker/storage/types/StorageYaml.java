@@ -6,19 +6,9 @@ import com.songoda.ultimatestacker.storage.StorageItem;
 import com.songoda.ultimatestacker.storage.StorageRow;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.MemorySection;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+
+import java.io.*;
+import java.util.*;
 
 public class StorageYaml extends Storage {
 

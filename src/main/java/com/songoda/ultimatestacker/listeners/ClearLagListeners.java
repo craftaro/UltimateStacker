@@ -9,17 +9,17 @@ import org.bukkit.event.Listener;
 
 public class ClearLagListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public ClearLagListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public ClearLagListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
     public void onClearLaggTask(EntityRemoveEvent event) {
         for (Entity entity : event.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity && instance.getEntityStackManager().isStackedAndLoaded((LivingEntity)entity)) {
-                instance.getEntityStackManager().removeStack(entity);
+            if (entity instanceof LivingEntity && plugin.getEntityStackManager().isStackedAndLoaded((LivingEntity)entity)) {
+                plugin.getEntityStackManager().removeStack(entity);
                 event.addEntity(entity);
             }
         }

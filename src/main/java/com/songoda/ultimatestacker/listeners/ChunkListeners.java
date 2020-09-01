@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.listeners;
 
-import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
@@ -14,8 +13,8 @@ public class ChunkListeners implements Listener {
 
     private final EntityStackManager entityStackManager;
 
-    public ChunkListeners(UltimateStacker plugin) {
-        this.entityStackManager = plugin.getEntityStackManager();
+    public ChunkListeners(EntityStackManager entityStackManager) {
+        this.entityStackManager = entityStackManager;
     }
 
     @EventHandler

@@ -119,8 +119,9 @@ public class InteractListeners implements Listener {
                 return type == Material.HAY_BLOCK;
             case "TURTLE":
                 return type == Material.SEAGRASS;
+            default:
+                return false;
         }
-        return false;
     }
 
 }

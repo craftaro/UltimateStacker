@@ -6,7 +6,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.Reflection;
+import com.songoda.ultimatestacker.utils.ReflectionUtil;
 import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -56,7 +56,7 @@ public class SpawnerStack implements Stackable, Hologramable {
                 creatureSpawner.setMaxNearbyEntities(maxNearby);
                 creatureSpawner.setSpawnCount(count);
             } else {
-                Reflection.updateSpawner(creatureSpawner, count, maxNearby);
+                ReflectionUtil.updateSpawner(creatureSpawner, count, maxNearby);
             }
             creatureSpawner.update();
         }, 1L);

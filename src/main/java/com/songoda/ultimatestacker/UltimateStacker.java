@@ -111,7 +111,7 @@ public class UltimateStacker extends SongodaPlugin {
                         new CommandGiveSpawner(this),
                         new CommandSpawn(this),
                         new CommandLootables(this),
-                        new CommandConvert(this, guiManager)
+                        new CommandConvert( guiManager)
                 );
 
         this.lootablesManager = new LootablesManager();
@@ -228,7 +228,7 @@ public class UltimateStacker extends SongodaPlugin {
             entityStackManager.addStacks(entities.values());
             entityStackManager.tryAndLoadColdEntities();
             this.stackingTask = new StackingTask(this);
-            getServer().getPluginManager().registerEvents(new ChunkListeners(this), this);
+            getServer().getPluginManager().registerEvents(new ChunkListeners(entityStackManager), this);
         });
         final boolean useBlockHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
         this.dataManager.getBlocks((blocks) -> {

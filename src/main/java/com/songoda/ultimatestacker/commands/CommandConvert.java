@@ -2,7 +2,6 @@ package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.gui.GuiManager;
-import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.gui.GUIConvert;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -13,13 +12,11 @@ import java.util.List;
 
 public class CommandConvert extends AbstractCommand {
 
-    private final UltimateStacker plugin;
     private final GuiManager guiManager;
 
-    public CommandConvert(UltimateStacker plugin, GuiManager guiManager) {
+    public CommandConvert(GuiManager guiManager) {
         super(CommandType.PLAYER_ONLY, "convert");
         this.guiManager = guiManager;
-        this.plugin = plugin;
     }
 
     @Override

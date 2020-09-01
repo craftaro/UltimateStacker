@@ -10,21 +10,21 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 public class BreedListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public BreedListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public BreedListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBread(EntityBreedEvent event) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(instance, () -> {
-            event.getFather().removeMetadata("breedCooldown", instance);
-            event.getMother().removeMetadata("breedCooldown", instance);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            event.getFather().removeMetadata("breedCooldown", plugin);
+            event.getMother().removeMetadata("breedCooldown", plugin);
         }, 5 * 20 * 60);
-        event.getFather().setMetadata("breedCooldown", new FixedMetadataValue(instance, true));
-        event.getFather().removeMetadata("inLove", instance);
-        event.getMother().setMetadata("breedCooldown", new FixedMetadataValue(instance, true));
-        event.getMother().removeMetadata("inLove", instance);
+        event.getFather().setMetadata("breedCooldown", new FixedMetadataValue(plugin, true));
+        event.getFather().removeMetadata("inLove", plugin);
+        event.getMother().setMetadata("breedCooldown", new FixedMetadataValue(plugin, true));
+        event.getMother().removeMetadata("inLove", plugin);
     }
 }

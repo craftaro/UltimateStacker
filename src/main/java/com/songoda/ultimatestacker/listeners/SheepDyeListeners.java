@@ -13,7 +13,7 @@ import org.bukkit.event.entity.SheepDyeWoolEvent;
 
 public class SheepDyeListeners implements Listener {
 
-    private UltimateStacker plugin;
+    private final UltimateStacker plugin;
 
     public SheepDyeListeners(UltimateStacker plugin) {
         this.plugin = plugin;

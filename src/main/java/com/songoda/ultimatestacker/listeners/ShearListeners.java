@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class ShearListeners implements Listener {
 
-    private UltimateStacker plugin;
+    private final UltimateStacker plugin;
 
     public ShearListeners(UltimateStacker plugin) {
         this.plugin = plugin;

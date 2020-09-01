@@ -53,7 +53,7 @@ public class CommandGiveSpawner extends AbstractCommand {
 
             int amt = args.length == 3 ? Integer.parseInt(args[2]) : 1;
             ItemStack itemStack = Methods.getSpawnerItem(type, amt);
-            if (!args[0].trim().toLowerCase().equals("all")) {
+            if (!args[0].trim().equalsIgnoreCase("all")) {
                 Player player = Bukkit.getOfflinePlayer(args[0]).getPlayer();
                 player.getInventory().addItem(itemStack);
                 plugin.getLocale().getMessage("command.give.success")

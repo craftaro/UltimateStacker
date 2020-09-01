@@ -14,7 +14,13 @@ import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
-import com.songoda.ultimatestacker.commands.*;
+import com.songoda.ultimatestacker.commands.CommandConvert;
+import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
+import com.songoda.ultimatestacker.commands.CommandLootables;
+import com.songoda.ultimatestacker.commands.CommandReload;
+import com.songoda.ultimatestacker.commands.CommandRemoveAll;
+import com.songoda.ultimatestacker.commands.CommandSettings;
+import com.songoda.ultimatestacker.commands.CommandSpawn;
 import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
@@ -46,7 +52,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class UltimateStacker extends SongodaPlugin {
 

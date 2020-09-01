@@ -13,6 +13,8 @@
 
 ## Table of Contents 
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f4d5bc0fea134082a40c898c58e05fc0)](https://app.codacy.com/gh/songoda/UltimateStacker?utm_source=github.com&utm_medium=referral&utm_content=songoda/UltimateStacker&utm_campaign=Badge_Grade_Settings)
+
 * [Introduction](#introduction)
 * [Marketplace](#marketplace)
 * [Documentation](#documentation)

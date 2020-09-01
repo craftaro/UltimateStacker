@@ -19,11 +19,11 @@ import java.util.List;
 
 public class CommandRemoveAll extends AbstractCommand {
 
-    UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public CommandRemoveAll() {
-        super(false, "removeall");
-        instance = UltimateStacker.getInstance();
+    public CommandRemoveAll(UltimateStacker plugin) {
+        super(CommandType.CONSOLE_OK, "removeall");
+        this.plugin = plugin;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class CommandRemoveAll extends AbstractCommand {
         }
 
         int amountRemoved = 0;
-        EntityStackManager stackManager = instance.getEntityStackManager();
+        EntityStackManager stackManager = plugin.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
             for (Entity entityO : world.getEntities()) {
                 if (entityO instanceof Player || !(entityO instanceof LivingEntity)) continue;
@@ -61,10 +61,10 @@ public class CommandRemoveAll extends AbstractCommand {
         if (type.equalsIgnoreCase("items") && amountRemoved == 1) type = "Item";
 
         if (amountRemoved == 0) {
-            instance.getLocale().newMessage("&7No" + (all ? " " : " stacked ")
+            plugin.getLocale().newMessage("&7No" + (all ? " " : " stacked ")
                     + type + " exist that could be removed.").sendPrefixedMessage(sender);
         } else {
-            instance.getLocale().newMessage("&7Removed &6" + amountRemoved + (all ? " " : " stacked ")
+            plugin.getLocale().newMessage("&7Removed &6" + amountRemoved + (all ? " " : " stacked ")
                     + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
         }
         return ReturnType.SUCCESS;

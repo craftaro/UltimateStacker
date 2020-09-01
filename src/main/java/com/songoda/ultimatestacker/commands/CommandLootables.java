@@ -10,17 +10,17 @@ import java.util.List;
 
 public class CommandLootables extends AbstractCommand {
 
-    UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public CommandLootables() {
-        super(true, "lootables");
-        instance = UltimateStacker.getInstance();
+    public CommandLootables(UltimateStacker plugin) {
+        super(CommandType.PLAYER_ONLY, "lootables");
+        this.plugin = plugin;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         Player p = (Player) sender;
-        instance.getGuiManager().showGUI(p, new GuiEditor(instance.getLootablesManager().getLootManager()));
+        plugin.getGuiManager().showGUI(p, new GuiEditor(plugin.getLootablesManager().getLootManager()));
         return ReturnType.SUCCESS;
     }
 

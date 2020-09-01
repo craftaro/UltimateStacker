@@ -105,13 +105,13 @@ public class UltimateStacker extends SongodaPlugin {
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addMainCommand("us")
-                .addSubCommands(new CommandSettings(guiManager),
-                        new CommandRemoveAll(),
-                        new CommandReload(),
-                        new CommandGiveSpawner(),
-                        new CommandSpawn(),
-                        new CommandLootables(),
-                        new CommandConvert(guiManager)
+                .addSubCommands(new CommandSettings(this, guiManager),
+                        new CommandRemoveAll(this),
+                        new CommandReload(this),
+                        new CommandGiveSpawner(this),
+                        new CommandSpawn(this),
+                        new CommandLootables(this),
+                        new CommandConvert(this, guiManager)
                 );
 
         this.lootablesManager = new LootablesManager();

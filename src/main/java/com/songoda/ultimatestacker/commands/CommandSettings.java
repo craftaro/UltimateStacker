@@ -12,18 +12,18 @@ import java.util.List;
 
 public class CommandSettings extends AbstractCommand {
 
-    UltimateStacker instance;
-    GuiManager guiManager;
+    private final UltimateStacker plugin;
+    private final GuiManager guiManager;
 
-    public CommandSettings(GuiManager guiManager) {
+    public CommandSettings(UltimateStacker plugin, GuiManager guiManager) {
         super(CommandType.PLAYER_ONLY, "Settings");
         this.guiManager = guiManager;
-        instance = UltimateStacker.getInstance();
+        this.plugin = plugin;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        guiManager.showGUI((Player) sender, new PluginConfigGui(instance));
+        guiManager.showGUI((Player) sender, new PluginConfigGui(plugin));
         return ReturnType.SUCCESS;
     }
 

@@ -8,17 +8,17 @@ import java.util.List;
 
 public class  CommandReload extends AbstractCommand {
 
-    UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public CommandReload() {
-        super(false, "reload");
-        instance = UltimateStacker.getInstance();
+    public CommandReload(UltimateStacker plugin) {
+        super(CommandType.CONSOLE_OK, "reload");
+        this.plugin = plugin;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
-        instance.reloadConfig();
-        instance.getLocale().getMessage("&7Configuration and Language files reloaded.").sendPrefixedMessage(sender);
+        plugin.reloadConfig();
+        plugin.getLocale().getMessage("&7Configuration and Language files reloaded.").sendPrefixedMessage(sender);
         return ReturnType.SUCCESS;
     }
 

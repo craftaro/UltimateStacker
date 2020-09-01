@@ -13,13 +13,13 @@ import java.util.List;
 
 public class CommandConvert extends AbstractCommand {
 
-    UltimateStacker instance;
-    GuiManager guiManager;
+    private final UltimateStacker plugin;
+    private final GuiManager guiManager;
 
-    public CommandConvert(GuiManager guiManager) {
-        super(true, "convert");
+    public CommandConvert(UltimateStacker plugin, GuiManager guiManager) {
+        super(CommandType.PLAYER_ONLY, "convert");
         this.guiManager = guiManager;
-        instance = UltimateStacker.getInstance();
+        this.plugin = plugin;
     }
 
     @Override

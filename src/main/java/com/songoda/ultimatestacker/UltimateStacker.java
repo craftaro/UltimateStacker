@@ -34,14 +34,10 @@ import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
-import com.songoda.ultimatestacker.storage.Storage;
-import com.songoda.ultimatestacker.storage.StorageRow;
-import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -50,7 +46,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 
-import java.io.File;
 import java.util.*;
 
 public class UltimateStacker extends SongodaPlugin {
@@ -215,31 +210,6 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onDataLoad() {
-        // Legacy Data
-        File folder = getDataFolder();
-        File dataFile = new File(folder, "data.yml");
-
-        if (dataFile.exists()) {
-            Storage storage = new StorageYaml(this);
-            if (storage.containsGroup("spawners")) {
-                for (StorageRow row : storage.getRowsByGroup("spawners")) {
-                    try {
-                        Location location = Methods.unserializeLocation(row.getKey());
-
-                        SpawnerStack stack = new SpawnerStack(
-                                location,
-                                row.get("amount").asInt());
-
-                        getDataManager().createSpawner(stack);
-                    } catch (Exception e) {
-                        console.sendMessage("Failed to load spawner.");
-                        e.printStackTrace();
-                    }
-                }
-            }
-            dataFile.delete();
-        }
-
         // Load current data.
         final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
         this.dataManager.getSpawners((spawners) -> {

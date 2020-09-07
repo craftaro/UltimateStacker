@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemCurrentListener implements Listener {
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;

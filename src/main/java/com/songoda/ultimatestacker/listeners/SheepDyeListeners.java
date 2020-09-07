@@ -1,11 +1,11 @@
 package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.entity.Split;
-import com.songoda.ultimatestacker.settings.Settings;
-import org.bukkit.entity.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -13,7 +13,7 @@ import org.bukkit.event.entity.SheepDyeWoolEvent;
 
 public class SheepDyeListeners implements Listener {
 
-    private UltimateStacker plugin;
+    private final UltimateStacker plugin;
 
     public SheepDyeListeners(UltimateStacker plugin) {
         this.plugin = plugin;

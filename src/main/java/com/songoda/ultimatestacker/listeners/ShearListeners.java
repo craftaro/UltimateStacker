@@ -3,13 +3,17 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.entity.Split;
-import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.MushroomCow;
+import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,7 +24,7 @@ import java.util.Random;
 
 public class ShearListeners implements Listener {
 
-    private UltimateStacker plugin;
+    private final UltimateStacker plugin;
 
     public ShearListeners(UltimateStacker plugin) {
         this.plugin = plugin;

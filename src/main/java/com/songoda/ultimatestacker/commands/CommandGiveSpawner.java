@@ -16,18 +16,18 @@ import java.util.stream.Collectors;
 
 public class CommandGiveSpawner extends AbstractCommand {
 
-    UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public CommandGiveSpawner() {
-        super(false, "givespawner");
-        instance = UltimateStacker.getInstance();
+    public CommandGiveSpawner(UltimateStacker plugin) {
+        super(CommandType.CONSOLE_OK, "givespawner");
+        this.plugin = plugin;
     }
 
     @Override
     protected ReturnType runCommand(CommandSender sender, String... args) {
         if (args.length < 2) return ReturnType.SYNTAX_ERROR;
 
-        if (Bukkit.getPlayer(args[0]) == null && !args[0].trim().toLowerCase().equals("all")) {
+        if (Bukkit.getPlayer(args[0]) == null && !args[0].trim().equalsIgnoreCase("all")) {
             sender.sendMessage(args[0] + " is not a player...");
             return ReturnType.SYNTAX_ERROR;
         }
@@ -41,7 +41,7 @@ public class CommandGiveSpawner extends AbstractCommand {
         }
 
         if (type == null) {
-            instance.getLocale().newMessage("&7The entity StackType &6" + args[1] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
+            plugin.getLocale().newMessage("&7The entity StackType &6" + args[1] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {
@@ -53,16 +53,16 @@ public class CommandGiveSpawner extends AbstractCommand {
 
             int amt = args.length == 3 ? Integer.parseInt(args[2]) : 1;
             ItemStack itemStack = Methods.getSpawnerItem(type, amt);
-            if (!args[0].trim().toLowerCase().equals("all")) {
+            if (!args[0].trim().equalsIgnoreCase("all")) {
                 Player player = Bukkit.getOfflinePlayer(args[0]).getPlayer();
                 player.getInventory().addItem(itemStack);
-                instance.getLocale().getMessage("command.give.success")
+                plugin.getLocale().getMessage("command.give.success")
                         .processPlaceholder("type", Methods.compileSpawnerName(type, amt))
                         .sendPrefixedMessage(player);
             } else {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.getInventory().addItem(itemStack);
-                    instance.getLocale().getMessage("command.give.success")
+                    plugin.getLocale().getMessage("command.give.success")
                             .processPlaceholder("type", Methods.compileSpawnerName(type, amt))
                             .sendPrefixedMessage(player);
                 }

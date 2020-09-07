@@ -19,7 +19,15 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -345,12 +353,17 @@ public class StackingTask extends BukkitRunnable {
         List<LivingEntity> entities = new ArrayList<>();
         for (CachedChunk chunk : getNearbyChunks(location, radius, singleChunk)) {
             if (chunk == null) continue;
-            Entity[] entityArray;
+            Entity[] entityArray = new Entity[0];
             if (cachedChunks.containsKey(chunk)) {
                 entityArray = cachedChunks.get(chunk);
             } else {
-                entityArray = chunk.getEntities();
-                cachedChunks.put(chunk, entityArray);
+                try {
+                    entityArray = chunk.getEntities();
+                    cachedChunks.put(chunk, entityArray);
+                } catch (Exception ignored) {
+                    // Sometimes accessing this method asynchronously throws an error. This is super rare and
+                    // as such doesn't really affect the plugin so we're just going to ignore this failure.
+                }
             }
             if (entityArray == null) continue;
             for (Entity e : entityArray) {

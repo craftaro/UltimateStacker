@@ -1,7 +1,6 @@
 package com.songoda.ultimatestacker.stackable.block;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 

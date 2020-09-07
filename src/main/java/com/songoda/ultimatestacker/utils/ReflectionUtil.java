@@ -7,7 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class Reflection {
+public class ReflectionUtil {
+
     private static Class<?> clazzCraftCreatureSpawner, clazzTileEntityMobSpawner = null;
     private static Method methodGetTileEntity, methodGetSpawner;
     private static Field fieldSpawnount, fieldMaxNearbyEntities, fieldSpawner;
@@ -68,12 +69,11 @@ public class Reflection {
     }
 
     public static Object getNMSItemStack(ItemStack item) {
-        @SuppressWarnings("rawtypes")
-        Class cis = getCraftItemStack();
-        java.lang.reflect.Method method;
+        Class<?> cis = getCraftItemStack();
+        java.lang.reflect.Method methodAsNMSCopy;
         try {
-            method = cis.getMethod("asNMSCopy", ItemStack.class);
-            Object answer = method.invoke(cis, item);
+            methodAsNMSCopy = cis.getMethod("asNMSCopy", ItemStack.class);
+            Object answer = methodAsNMSCopy.invoke(cis, item);
             return answer;
         } catch (Exception e) {
             // TODO Auto-generated catch block
@@ -82,15 +82,12 @@ public class Reflection {
         return null;
     }
 
-    @SuppressWarnings({"unchecked"})
     public static Object getNBTTagCompound(Object nmsitem) {
-        @SuppressWarnings("rawtypes")
-        Class c = nmsitem.getClass();
-        java.lang.reflect.Method method;
+        Class<?> c = nmsitem.getClass();
+        java.lang.reflect.Method methodGetTag;
         try {
-            method = c.getMethod("getTag");
-            Object answer = method.invoke(nmsitem);
-            return answer;
+            methodGetTag = c.getMethod("getTag");
+            return methodGetTag.invoke(nmsitem);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -98,14 +95,10 @@ public class Reflection {
         return null;
     }
 
-    @SuppressWarnings("rawtypes")
-    public static Class getCraftItemStack() {
+    public static Class<?> getCraftItemStack() {
         String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
         try {
-            Class c = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-            //Constructor<?> cons = c.getConstructor(ItemStack.class);
-            //return cons.newInstance(item);
-            return c;
+            return Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
         } catch (Exception ex) {
             System.out.println("Error in ItemNBTAPI! (Outdated plugin?)");
             ex.printStackTrace();

@@ -5,8 +5,8 @@ import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.lootables.loot.Drop;
 import com.songoda.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -29,12 +29,12 @@ import java.util.stream.Collectors;
 
 public class DeathListeners implements Listener {
 
-    private final UltimateStacker instance;
-    private Random random;
+    private final UltimateStacker plugin;
+    private final Random random;
 
-    public DeathListeners(UltimateStacker instance) {
-        this.instance = instance;
-        random = new Random();
+    public DeathListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
+        this.random = new Random();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -43,7 +43,7 @@ public class DeathListeners implements Listener {
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
         boolean custom = Settings.CUSTOM_DROPS.getBoolean();
-        List<Drop> drops = custom ? instance.getLootablesManager().getDrops(event.getEntity())
+        List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
                 : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
 
         if (custom) {
@@ -57,8 +57,8 @@ public class DeathListeners implements Listener {
                 && !event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
             drops.clear();
 
-        if (instance.getEntityStackManager().isStackedAndLoaded(event.getEntity()))
-            instance.getEntityStackManager().getStack(event.getEntity())
+        if (plugin.getEntityStackManager().isStackedAndLoaded(event.getEntity()))
+            plugin.getEntityStackManager().getStack(event.getEntity())
                     .onDeath(event.getEntity(), drops, custom, event.getDroppedExp(), event);
         else
             DropUtils.processStackedDrop(event.getEntity(), drops, event);
@@ -70,15 +70,14 @@ public class DeathListeners implements Listener {
             items.add(entity.getEquipment().getItemInHand());
             if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9))
                 items.add(entity.getEquipment().getItemInOffHand());
-            for (ItemStack item : items) {
+            for (ItemStack item : items)
                 if (item.getType() == material)
                     return true;
-            }
         }
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11) && entity instanceof ChestedHorse) {
-            if (((ChestedHorse) entity).getInventory().contains(material))
-                return true;
-        }
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
+                && entity instanceof ChestedHorse
+                && ((ChestedHorse) entity).getInventory().contains(material))
+            return true;
 
         switch (material.name()) {
             case "SADDLE":
@@ -118,8 +117,8 @@ public class DeathListeners implements Listener {
 
         if (!(event.getEntity() instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) event.getEntity();
-        if (!instance.getEntityStackManager().isStackedAndLoaded(entity)) return;
-        EntityStack stack = instance.getEntityStackManager().getStack(entity);
+        if (!plugin.getEntityStackManager().isStackedAndLoaded(entity)) return;
+        EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 
         if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
             Player player = (Player) event.getDamager();

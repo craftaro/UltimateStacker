@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
  */
 public class CommandSpawn extends AbstractCommand {
 
-    UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public CommandSpawn() {
-        super(true, "spawn");
-        instance = UltimateStacker.getInstance();
+    public CommandSpawn(UltimateStacker plugin) {
+        super(CommandType.PLAYER_ONLY, "spawn");
+        this.plugin = plugin;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CommandSpawn extends AbstractCommand {
         }
 
         if (type == null) {
-            instance.getLocale().newMessage("&7The entity &6" + args[0] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
+            plugin.getLocale().newMessage("&7The entity &6" + args[0] + " &7does not exist. Try one of these:").sendPrefixedMessage(sender);
             StringBuilder list = new StringBuilder();
 
             for (EntityType types : EntityType.values()) {
@@ -54,10 +54,10 @@ public class CommandSpawn extends AbstractCommand {
             sender.sendMessage(Methods.formatText("&6" + list));
         } else {
             LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getTargetBlock((Set<Material>)null, 200).getLocation(), type);
-            EntityStack stack = instance.getEntityStackManager().addStack(entity);
+            EntityStack stack = plugin.getEntityStackManager().addStack(entity);
             stack.createDuplicates(((Methods.isInt(args[1])) ? Integer.parseInt(args[1]) : 1) - 1);
             stack.updateStack();
-            instance.getStackingTask().attemptSplit(stack, entity);
+            plugin.getStackingTask().attemptSplit(stack, entity);
         }
 
         return ReturnType.SUCCESS;

@@ -19,10 +19,10 @@ import java.util.List;
 
 public class ItemListeners implements Listener {
 
-    private final UltimateStacker instance;
+    private final UltimateStacker plugin;
 
-    public ItemListeners(UltimateStacker instance) {
-        this.instance = instance;
+    public ItemListeners(UltimateStacker plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
@@ -39,7 +39,7 @@ public class ItemListeners implements Listener {
 
         event.setCancelled(true);
 
-        int specific = instance.getItemFile().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
+        int specific = plugin.getItemFile().getInt("Items." + itemStack.getType().name() + ".Max Stack Size");
         int max;
 
         if (UltimateStacker.isMaterialBlacklisted(itemStack))

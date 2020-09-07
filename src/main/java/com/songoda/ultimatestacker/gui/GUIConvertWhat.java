@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class GUIConvertWhat extends Gui {
 
-    private Convert convertFrom = null;
+    private Convert convertFrom;
 
     private boolean entities = true;
     private boolean spawners = true;
@@ -41,17 +41,17 @@ public class GUIConvertWhat extends Gui {
 
     }
 
-    void toggleEntities() {
+    private void toggleEntities() {
         entities = !entities;
         this.updateItem(0, ChatColor.GRAY + "Stacked Entities", entities ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No");
     }
 
-    void toggleSpawners() {
+    private void toggleSpawners() {
         spawners = !spawners;
         this.updateItem(1, ChatColor.GRAY + "Stacked Spawners", spawners ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No");
     }
 
-    void run(Player player) {
+    private void run(Player player) {
         if (entities) {
             convertFrom.convertEntities();
             UltimateStacker.getInstance().getEntityStackManager().tryAndLoadColdEntities();

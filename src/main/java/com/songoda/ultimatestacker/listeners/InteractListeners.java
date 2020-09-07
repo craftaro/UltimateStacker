@@ -3,9 +3,9 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.Split;
-import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Ageable;
@@ -125,8 +125,9 @@ public class InteractListeners implements Listener {
                 return type == Material.HAY_BLOCK;
             case "TURTLE":
                 return type == Material.SEAGRASS;
+            default:
+                return false;
         }
-        return false;
     }
 
 }

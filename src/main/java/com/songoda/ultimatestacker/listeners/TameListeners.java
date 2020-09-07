@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntityTameEvent;
 
 public class TameListeners implements Listener {
 
-    private UltimateStacker plugin;
+    private final UltimateStacker plugin;
 
     public TameListeners(UltimateStacker plugin) {
         this.plugin = plugin;

@@ -14,7 +14,13 @@ import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
-import com.songoda.ultimatestacker.commands.*;
+import com.songoda.ultimatestacker.commands.CommandConvert;
+import com.songoda.ultimatestacker.commands.CommandGiveSpawner;
+import com.songoda.ultimatestacker.commands.CommandLootables;
+import com.songoda.ultimatestacker.commands.CommandReload;
+import com.songoda.ultimatestacker.commands.CommandRemoveAll;
+import com.songoda.ultimatestacker.commands.CommandSettings;
+import com.songoda.ultimatestacker.commands.CommandSpawn;
 import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
@@ -34,14 +40,10 @@ import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
-import com.songoda.ultimatestacker.storage.Storage;
-import com.songoda.ultimatestacker.storage.StorageRow;
-import com.songoda.ultimatestacker.storage.types.StorageYaml;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -50,8 +52,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class UltimateStacker extends SongodaPlugin {
 
@@ -110,13 +115,13 @@ public class UltimateStacker extends SongodaPlugin {
         // Setup plugin commands
         this.commandManager = new CommandManager(this);
         this.commandManager.addMainCommand("us")
-                .addSubCommands(new CommandSettings(guiManager),
-                        new CommandRemoveAll(),
-                        new CommandReload(),
-                        new CommandGiveSpawner(),
-                        new CommandSpawn(),
-                        new CommandLootables(),
-                        new CommandConvert(guiManager)
+                .addSubCommands(new CommandSettings(this, guiManager),
+                        new CommandRemoveAll(this),
+                        new CommandReload(this),
+                        new CommandGiveSpawner(this),
+                        new CommandSpawn(this),
+                        new CommandLootables(this),
+                        new CommandConvert( guiManager)
                 );
 
         this.lootablesManager = new LootablesManager();
@@ -215,31 +220,6 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onDataLoad() {
-        // Legacy Data
-        File folder = getDataFolder();
-        File dataFile = new File(folder, "data.yml");
-
-        if (dataFile.exists()) {
-            Storage storage = new StorageYaml(this);
-            if (storage.containsGroup("spawners")) {
-                for (StorageRow row : storage.getRowsByGroup("spawners")) {
-                    try {
-                        Location location = Methods.unserializeLocation(row.getKey());
-
-                        SpawnerStack stack = new SpawnerStack(
-                                location,
-                                row.get("amount").asInt());
-
-                        getDataManager().createSpawner(stack);
-                    } catch (Exception e) {
-                        console.sendMessage("Failed to load spawner.");
-                        e.printStackTrace();
-                    }
-                }
-            }
-            dataFile.delete();
-        }
-
         // Load current data.
         final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
         this.dataManager.getSpawners((spawners) -> {
@@ -258,7 +238,7 @@ public class UltimateStacker extends SongodaPlugin {
             entityStackManager.addStacks(entities.values());
             entityStackManager.tryAndLoadColdEntities();
             this.stackingTask = new StackingTask(this);
-            getServer().getPluginManager().registerEvents(new ChunkListeners(this), this);
+            getServer().getPluginManager().registerEvents(new ChunkListeners(entityStackManager), this);
         });
         final boolean useBlockHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
         this.dataManager.getBlocks((blocks) -> {

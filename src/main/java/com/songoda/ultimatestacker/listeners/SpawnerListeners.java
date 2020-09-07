@@ -3,12 +3,12 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.Reflection;
+import com.songoda.ultimatestacker.utils.ReflectionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -92,7 +92,7 @@ public class SpawnerListeners implements Listener {
                     .replace("MOOSHROOM", "MUSHROOM_COW")
                     .replace("ZOMBIE_PIGMAN", "PIG_ZOMBIE"));
         else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
-            String str = Reflection.getNBTTagCompound(Reflection.getNMSItemStack(event.getItem())).toString();
+            String str = ReflectionUtil.getNBTTagCompound(ReflectionUtil.getNMSItemStack(event.getItem())).toString();
             if (str.contains("minecraft:"))
                 entityType = EntityType.fromName(str.substring(str.indexOf("minecraft:") + 10, str.indexOf("\"}")));
             else

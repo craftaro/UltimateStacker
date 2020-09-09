@@ -70,10 +70,18 @@ public class StackingTask extends BukkitRunnable {
         // Loop through each world.
         for (World world : Bukkit.getWorlds()) {
             // If world is disabled then continue to the next world.
+
             if (isWorldDisabled(world)) continue;
 
             // Get the loaded entities from the current world and reverse them.
-            List<Entity> entities = new ArrayList<>(world.getEntities());
+            List<Entity> entities;
+            try {
+                entities = new ArrayList<>(world.getEntities());
+            } catch (Exception ignored) {
+                continue;
+                // Sometimes accessing this method asynchronously throws an error. This is super rare and
+                // as such doesn't really affect the plugin so we're just going to ignore this failure.
+            }
             Collections.reverse(entities);
 
             // Loop through the entities.

@@ -4,6 +4,7 @@ import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.nms.nbt.NBTItem;
+import com.songoda.core.utils.PlayerUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
@@ -45,13 +46,12 @@ public class BlockListeners implements Listener {
     public void onBlockInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
-        ItemStack item = event.getPlayer().getInventory().getItemInHand();
+        CompatibleHand hand = CompatibleHand.getHand(event);
+        ItemStack inHand = hand.getItem(player);
 
         if (block == null) return;
 
         if (Settings.STACK_BLOCKS.getBoolean()) {
-            CompatibleHand hand = CompatibleHand.getHand(event);
-            ItemStack inHand = hand.getItem(player);
             BlockStackManager blockStackManager = plugin.getBlockStackManager();
 
             boolean isStacked = blockStackManager.isBlock(block.getLocation());
@@ -109,7 +109,7 @@ public class BlockListeners implements Listener {
         }
 
         if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
-                || item.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+                || inHand.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
@@ -118,12 +118,12 @@ public class BlockListeners implements Listener {
 
         if (!plugin.spawnersEnabled()) return;
 
-        BlockStateMeta bsm = (BlockStateMeta) item.getItemMeta();
+        BlockStateMeta bsm = (BlockStateMeta) inHand.getItemMeta();
         CreatureSpawner cs = (CreatureSpawner) bsm.getBlockState();
 
         EntityType itemType = cs.getSpawnedType();
 
-        int itemAmount = getSpawnerAmount(item);
+        int itemAmount = getSpawnerAmount(inHand);
         int specific = plugin.getSpawnerFile().getInt("Spawners." + cs.getSpawnedType().name() + ".Max Stack Size");
         int maxStackSize = specific == -1 ? Settings.MAX_STACK_SPAWNERS.getInt() : specific;
 
@@ -161,7 +161,7 @@ public class BlockListeners implements Listener {
 
                 stack.setAmount(stack.getAmount() + itemAmount);
                 plugin.updateHologram(stack);
-                Methods.takeItem(player, itemAmount);
+                hand.takeItem(player);
             }
         }
     }

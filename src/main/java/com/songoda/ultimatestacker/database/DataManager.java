@@ -136,16 +136,13 @@ public class DataManager extends DataManagerAbstract {
 
     public void createStackedEntities(ColdEntityStack hostStack, List<StackedEntity> stackedEntities) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
-            String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)" +
-                    "ON CONFLICT(uuid) DO UPDATE SET host = ?, serialized_entity = ?";
+            String createSerializedEntity = "REPLACE INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
                 if (hostStack.getHostUniqueId() == null) return;
                 for (StackedEntity entity : stackedEntities) {
                     statement.setString(1, entity.getUniqueId().toString());
                     statement.setInt(2, hostStack.getId());
                     statement.setBytes(3, entity.getSerializedEntity());
-                    statement.setInt(4, hostStack.getId());
-                    statement.setBytes(5, entity.getSerializedEntity());
                     statement.addBatch();
                 }
                 statement.executeBatch();

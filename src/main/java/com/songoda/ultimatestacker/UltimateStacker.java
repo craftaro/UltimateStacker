@@ -28,6 +28,8 @@ import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
+import com.songoda.ultimatestacker.listeners.entity.EntityCurrentListener;
+import com.songoda.ultimatestacker.listeners.entity.EntityListeners;
 import com.songoda.ultimatestacker.listeners.item.ItemCurrentListener;
 import com.songoda.ultimatestacker.listeners.item.ItemLegacyListener;
 import com.songoda.ultimatestacker.listeners.item.ItemListeners;
@@ -168,6 +170,9 @@ public class UltimateStacker extends SongodaPlugin {
         pluginManager.registerEvents(new DeathListeners(this), this);
         pluginManager.registerEvents(new ShearListeners(this), this);
         pluginManager.registerEvents(new InteractListeners(this), this);
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
+            pluginManager.registerEvents(new EntityCurrentListener(this), this);
+
         pluginManager.registerEvents(new EntityListeners(this), this);
         pluginManager.registerEvents(new ItemListeners(this), this);
 

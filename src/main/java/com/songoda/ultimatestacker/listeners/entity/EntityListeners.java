@@ -1,4 +1,4 @@
-package com.songoda.ultimatestacker.listeners;
+package com.songoda.ultimatestacker.listeners.entity;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
@@ -39,20 +39,6 @@ public class EntityListeners implements Listener {
 
     public EntityListeners(UltimateStacker plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onSpawn(EntityTransformEvent event) {
-        EntityStackManager stackManager = plugin.getEntityStackManager();
-        if (stackManager.isStackedAndLoaded(event.getEntity().getUniqueId())
-                && event.getEntity() instanceof LivingEntity
-                && event.getTransformedEntity() instanceof LivingEntity) {
-            EntityStack stack = stackManager.updateStack((LivingEntity) event.getEntity(),
-                    (LivingEntity) event.getTransformedEntity());
-            stack.releaseHost();
-            stack.updateStack();
-        }
-
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

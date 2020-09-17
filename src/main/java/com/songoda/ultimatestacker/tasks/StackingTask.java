@@ -321,6 +321,7 @@ public class StackingTask extends BukkitRunnable {
         Bukkit.getScheduler().runTask(plugin, () -> {
             for (int i = stackSize; i > 0; i -= maxEntityStackAmount) {
                 LivingEntity entity = stack.takeOneAndSpawnEntity(livingEntity.getLocation());
+                if (entity == null) continue;
                 EntityStack newStack = plugin.getEntityStackManager().addStack(entity);
                 newStack.moveEntitiesFromStack(stack, Math.min(i, maxEntityStackAmount) - 1);
                 newStack.updateStack();

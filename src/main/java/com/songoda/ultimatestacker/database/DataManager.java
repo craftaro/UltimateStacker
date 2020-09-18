@@ -109,7 +109,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void createHostEntity(ColdEntityStack stack) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
-            if (stack.getHostUniqueId() == null) return;
+            if (stack == null || stack.getHostUniqueId() == null) return;
             String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
                 statement.setString(1, stack.getHostUniqueId().toString());

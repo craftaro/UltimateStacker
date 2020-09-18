@@ -87,6 +87,7 @@ public class ColdEntityStack implements Stackable {
     }
 
     public LivingEntity takeOneAndSpawnEntity(Location location) {
+        if (stackedEntities.isEmpty()) return null;
         NBTEntity nbtEntity = NmsManager.getNbt().newEntity();
         nbtEntity.deSerialize(stackedEntities.getFirst().getSerializedEntity());
         LivingEntity newEntity = (LivingEntity)nbtEntity.spawn(location);

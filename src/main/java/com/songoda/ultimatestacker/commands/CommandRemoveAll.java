@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -43,13 +44,13 @@ public class CommandRemoveAll extends AbstractCommand {
         EntityStackManager stackManager = plugin.getEntityStackManager();
         for (World world : Bukkit.getWorlds()) {
             for (Entity entityO : world.getEntities()) {
-                if (entityO instanceof Player || !(entityO instanceof LivingEntity)) continue;
+                if (entityO instanceof Player) continue;
 
-                if (entityO.getType() != EntityType.DROPPED_ITEM && (stackManager.isStackedAndLoaded((LivingEntity)entityO) || all) && type.equalsIgnoreCase("entities")) {
+                if (entityO instanceof LivingEntity && (stackManager.isStackedAndLoaded((LivingEntity)entityO) || all) && type.equalsIgnoreCase("entities")) {
                     entityO.remove();
                     amountRemoved++;
                 } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
-                    if (entityO.isCustomNameVisible() && !entityO.getCustomName().contains(TextUtils.convertToInvisibleString("IS")) || all)
+                    if (!UltimateStacker.hasCustomAmount((Item)entityO) && !all)
                         continue;
                     entityO.remove();
                     amountRemoved++;

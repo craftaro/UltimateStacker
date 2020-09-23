@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.convert;
 
-import com.bgsoftware.wildstacker.WildStackerPlugin;
 import com.bgsoftware.wildstacker.api.WildStackerAPI;
 import com.bgsoftware.wildstacker.api.objects.StackedSpawner;
 import com.songoda.core.database.DatabaseConnector;
@@ -10,6 +9,7 @@ import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.plugin.Plugin;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -17,12 +17,12 @@ import java.util.UUID;
 
 public class WildStackerConvert implements Convert {
 
-    private WildStackerPlugin wildStacker;
+    private Plugin wildStacker;
     private final UltimateStacker plugin;
 
     public WildStackerConvert() {
         this.plugin = UltimateStacker.getInstance();
-        this.wildStacker = (WildStackerPlugin) Bukkit.getPluginManager().getPlugin("WildStacker");
+        this.wildStacker = Bukkit.getPluginManager().getPlugin("WildStacker");
 
     }
 
@@ -75,6 +75,6 @@ public class WildStackerConvert implements Convert {
 
     @Override
     public void disablePlugin() {
-        Bukkit.getPluginManager().disablePlugin(WildStackerPlugin.getPlugin());
+        Bukkit.getPluginManager().disablePlugin(wildStacker);
     }
 }

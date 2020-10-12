@@ -245,7 +245,7 @@ public class UltimateStacker extends SongodaPlugin {
             this.stackingTask = new StackingTask(this);
             getServer().getPluginManager().registerEvents(new ChunkListeners(entityStackManager), this);
         });
-        final boolean useBlockHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
+        final boolean useBlockHolo = Settings.BLOCK_HOLOGRAMS.getBoolean();
         this.dataManager.getBlocks((blocks) -> {
             this.blockStackManager.addBlocks(blocks);
             if (useBlockHolo) {

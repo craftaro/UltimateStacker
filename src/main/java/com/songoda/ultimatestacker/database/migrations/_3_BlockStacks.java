@@ -23,7 +23,7 @@ public class _3_BlockStacks extends DataMigration {
             statement.execute("CREATE TABLE " + tablePrefix + "blocks (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "amount INTEGER NOT NULL," +
-                    "material STRING NOT NULL," +
+                    "material TEXT NOT NULL," +
                     "world TEXT NOT NULL, " +
                     "x DOUBLE NOT NULL, " +
                     "y DOUBLE NOT NULL, " +

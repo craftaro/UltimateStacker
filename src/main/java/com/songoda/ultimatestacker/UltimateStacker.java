@@ -40,6 +40,7 @@ import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
@@ -77,6 +78,7 @@ public class UltimateStacker extends SongodaPlugin {
     private BlockStackManager blockStackManager;
     private LootablesManager lootablesManager;
     private CommandManager commandManager;
+    private CustomEntityManager customEntityManager;
     private StackingTask stackingTask;
 
     private DatabaseConnector databaseConnector;
@@ -161,6 +163,7 @@ public class UltimateStacker extends SongodaPlugin {
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager(this);
         this.blockStackManager = new BlockStackManager();
+        this.customEntityManager = new CustomEntityManager();
 
         guiManager.init();
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -343,6 +346,9 @@ public class UltimateStacker extends SongodaPlugin {
         return blockStackManager;
     }
 
+    public CustomEntityManager getCustomEntityManager() {
+        return customEntityManager;
+    }
 
     public void updateHologram(Hologramable stack) {
         // Is this stack invalid?

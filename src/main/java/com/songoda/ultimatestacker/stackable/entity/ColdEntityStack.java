@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.stackable.entity;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.nms.nbt.NBTEntity;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -71,7 +72,7 @@ public class ColdEntityStack implements Stackable {
 
     public List<StackedEntity> takeEntities(int amount) {
         List<StackedEntity> entities = new LinkedList<>();
-        for (int i = 0; i < amount; i ++) {
+        for (int i = 0; i < amount; i++) {
             StackedEntity entity = stackedEntities.pollFirst();
             if (entity != null)
                 entities.add(entity);
@@ -90,7 +91,18 @@ public class ColdEntityStack implements Stackable {
         if (stackedEntities.isEmpty()) return null;
         NBTEntity nbtEntity = NmsManager.getNbt().newEntity();
         nbtEntity.deSerialize(stackedEntities.getFirst().getSerializedEntity());
-        LivingEntity newEntity = (LivingEntity)nbtEntity.spawn(location);
+
+        for (CustomEntity customEntity : plugin.getCustomEntityManager().getRegisteredCustomEntities()) {
+            String identifier = customEntity.getPluginName() + "_UltimateStacker";
+            if (!nbtEntity.has(identifier)) continue;
+            LivingEntity entity = customEntity.spawnFromIdentifier(nbtEntity.getString(identifier), location);
+            if (entity == null) continue;
+            stackedEntities.removeFirst();
+            plugin.getDataManager().deleteStackedEntity(entity.getUniqueId());
+            return entity;
+        }
+
+        LivingEntity newEntity = (LivingEntity) nbtEntity.spawn(location);
         stackedEntities.removeFirst();
         plugin.getDataManager().deleteStackedEntity(newEntity.getUniqueId());
 
@@ -126,6 +138,9 @@ public class ColdEntityStack implements Stackable {
             uuid = UUID.randomUUID();
             nbtEntity.set("UUID", uuid);
         }
+        CustomEntity customEntity = plugin.getCustomEntityManager().getCustomEntity(entity);
+        if (customEntity != null)
+            nbtEntity.set(customEntity.getPluginName() + "_UltimateStacker", customEntity.getNBTIdentifier(entity));
         return new StackedEntity(uuid, nbtEntity.serialize("Attributes"));
     }
 

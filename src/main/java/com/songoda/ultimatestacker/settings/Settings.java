@@ -152,6 +152,15 @@ public class Settings {
     public static final ConfigSetting SHEAR_IN_ONE_CLICK = new ConfigSetting(config, "Entities.Shear In One Click", false,
             "Should entities be sheared in a single click?");
 
+    public static final ConfigSetting ENABLED_CUSTOM_ENTITY_PLUGINS = new ConfigSetting(config, "Entities.Enabled Custom Entity Plugins", Collections.singletonList("MythicMobs"),
+            "Which custom entity plugins should be used?",
+            "Remove a plugin from this list to disable the stacking of their entities.");
+
+    public static final ConfigSetting BLACKLISTED_CUSTOM_ENTITIES = new ConfigSetting(config, "Entities.Blacklisted Custom Entities", Collections.singletonList("mythicmobs_test"),
+            "Which custom entities should not be stacked?",
+            "List the entities using their plugin name as a prefix in all lowercase.",
+            "Example: mythicmobs_test");
+
     public static final ConfigSetting STACK_ITEMS = new ConfigSetting(config, "Items.Enabled", true,
             "Should items be stacked?");
 

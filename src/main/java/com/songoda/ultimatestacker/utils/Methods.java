@@ -6,6 +6,8 @@ import com.songoda.core.nms.nbt.NBTItem;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -124,6 +126,10 @@ public class Methods {
     public static String compileEntityName(Entity entity, int amount) {
         String nameFormat = Settings.NAME_FORMAT_ENTITY.getString();
         String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
+
+        CustomEntity customEntity =  UltimateStacker.getInstance().getCustomEntityManager().getCustomEntity(entity);
+        if (customEntity != null)
+            displayName = customEntity.getDisplayName(entity);
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));

@@ -9,6 +9,7 @@ import com.songoda.ultimatestacker.stackable.entity.Check;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.songoda.ultimatestacker.utils.CachedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -167,8 +168,9 @@ public class StackingTask extends BukkitRunnable {
         // Attempt to split our stack. If the split is successful then skip this entity.
         if (isStack && attemptSplit(stack, livingEntity)) return;
 
-        // If this entity is named or disabled then skip it.
-        if (!isStack && livingEntity.getCustomName() != null
+        // If this entity is named, a custom entity or disabled then skip it.
+        if (!isStack && (livingEntity.getCustomName() != null
+                && plugin.getCustomEntityManager().getCustomEntity(livingEntity) == null)
                 || !configurationSection.getBoolean("Mobs." + livingEntity.getType().name() + ".Enabled"))
             return;
 
@@ -286,7 +288,8 @@ public class StackingTask extends BukkitRunnable {
                 && !this.processed.contains(entity.getUniqueId())).limit(maxEntityStackSize).forEach(entity -> {
 
             // Make sure we're not naming some poor kids pet.
-            if (entity.getCustomName() != null) {
+            if (entity.getCustomName() != null
+                    && plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
                 processed.add(livingEntity.getUniqueId());
                 newStack.destroy();
                 return;
@@ -404,6 +407,10 @@ public class StackingTask extends BukkitRunnable {
                 continue;
             entityList.add(entity);
         }
+
+        CustomEntity customEntity = plugin.getCustomEntityManager().getCustomEntity(initialEntity);
+        if (customEntity != null)
+            entityList.removeIf(entity -> !customEntity.isSimilar(initialEntity, entity));
 
         if (stackFlyingDown && canFly(initialEntity))
             entityList.removeIf(entity -> entity.getLocation().getY() > initialEntity.getLocation().getY());

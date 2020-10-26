@@ -160,5 +160,10 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.23.1</version>
         </dependency>
+        <dependency>
+            <groupId>io.lumine</groupId>
+            <artifactId>MythicMobs</artifactId>
+            <version>4.10.1</version>
+        </dependency>
     </dependencies>
 </project>

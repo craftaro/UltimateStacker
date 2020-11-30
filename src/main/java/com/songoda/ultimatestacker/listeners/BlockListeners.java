@@ -57,6 +57,7 @@ public class BlockListeners implements Listener {
             boolean isStacked = blockStackManager.isBlock(block.getLocation());
 
             CompatibleMaterial blockType = CompatibleMaterial.getMaterial(block);
+            if (blockType == null) return;
 
             if (isStacked || Settings.STACKABLE_BLOCKS.getStringList().contains(blockType.name())) {
                 BlockStack stack = blockStackManager.getBlock(block, blockType);

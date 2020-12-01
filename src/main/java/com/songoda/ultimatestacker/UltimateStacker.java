@@ -228,6 +228,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onDataLoad() {
+        if (HologramManager.isEnabled())
+            // Set the offset so that the holograms don't end up inside the blocks.
+            HologramManager.getHolograms().setPositionOffset(.5,.65,.5);
+
         // Load current data.
         final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
         this.dataManager.getSpawners((spawners) -> {

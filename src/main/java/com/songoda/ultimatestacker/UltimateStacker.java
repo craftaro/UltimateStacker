@@ -192,9 +192,9 @@ public class UltimateStacker extends SongodaPlugin {
             pluginManager.registerEvents(new ClearLagListeners(this), this);
 
         // Register Hooks
-        if (pluginManager.isPluginEnabled("Jobs")) {
+        if (pluginManager.isPluginEnabled("Jobs"))
             stackerHooks.add(new JobsHook());
-        }
+
         HologramManager.load(this);
 
         // Database stuff, go!

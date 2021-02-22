@@ -11,6 +11,7 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -18,13 +19,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DeathListeners implements Listener {
@@ -37,8 +42,23 @@ public class DeathListeners implements Listener {
         this.random = new Random();
     }
 
+
+    private final Map<UUID, List<ItemStack>> finalItems = new HashMap<>();
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity))
+            return;
+        LivingEntity entity = (LivingEntity) event.getEntity();
+
+        if (entity.getHealth() - event.getFinalDamage() < 0)
+            finalItems.put(entity.getUniqueId(), getItems(entity));
+
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
+        LivingEntity entity = event.getEntity();
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
@@ -54,25 +74,25 @@ public class DeathListeners implements Listener {
         }
 
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                && !event.getEntity().getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
+                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
             drops.clear();
 
         if (plugin.getEntityStackManager().isStackedAndLoaded(event.getEntity()))
             plugin.getEntityStackManager().getStack(event.getEntity())
-                    .onDeath(event.getEntity(), drops, custom, event.getDroppedExp(), event);
+                    .onDeath(entity, drops, custom, event.getDroppedExp(), event);
         else
             DropUtils.processStackedDrop(event.getEntity(), drops, event);
+        finalItems.remove(entity.getUniqueId());
     }
 
     private boolean shouldDrop(LivingEntity entity, Material material) {
         if (entity.getEquipment() != null && entity.getEquipment().getArmorContents().length != 0) {
-            List<ItemStack> items = new ArrayList<>(Arrays.asList(entity.getEquipment().getArmorContents()));
-            items.add(entity.getEquipment().getItemInHand());
-            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9))
-                items.add(entity.getEquipment().getItemInOffHand());
-            for (ItemStack item : items)
-                if (item.getType() == material)
-                    return true;
+            if (finalItems.containsKey(entity.getUniqueId())) {
+                List<ItemStack> items = finalItems.get(entity.getUniqueId());
+                for (ItemStack item : items)
+                    if (item.getType() == material)
+                        return true;
+            }
         }
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
                 && entity instanceof ChestedHorse
@@ -108,6 +128,17 @@ public class DeathListeners implements Listener {
             default:
                 return false;
         }
+    }
+
+    public List<ItemStack> getItems(LivingEntity entity) {
+        if (entity.getEquipment() != null && entity.getEquipment().getArmorContents().length != 0) {
+            List<ItemStack> items = new ArrayList<>(Arrays.asList(entity.getEquipment().getArmorContents()));
+            items.add(entity.getEquipment().getItemInHand());
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_9))
+                items.add(entity.getEquipment().getItemInOffHand());
+            return items;
+        }
+        return new ArrayList<>();
     }
 
     @EventHandler

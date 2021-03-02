@@ -102,9 +102,18 @@ public class ColdEntityStack implements Stackable {
             return entity;
         }
 
-        LivingEntity newEntity = (LivingEntity) nbtEntity.spawn(location);
-        stackedEntities.removeFirst();
-        plugin.getDataManager().deleteStackedEntity(newEntity.getUniqueId());
+        LivingEntity newEntity = null;
+        for (int i = 0; i < 5; i++) {
+            newEntity = (LivingEntity) nbtEntity.spawn(location);
+
+            if (newEntity != null) {
+                stackedEntities.removeFirst();
+                plugin.getDataManager().deleteStackedEntity(newEntity.getUniqueId());
+                break;
+            }
+        }
+        if (newEntity == null)
+            plugin.getDataManager().deleteStackedEntity(hostUniqueId);
 
         return newEntity;
     }

@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -48,7 +49,7 @@ public class CommandGiveSpawner extends AbstractCommand {
                 if (types.isSpawnable() && types.isAlive() && !types.toString().contains("ARMOR"))
                     list.append(types.name().toUpperCase().replace(" ", "_")).append("&7, &6");
             }
-            sender.sendMessage(Methods.formatText("&6" + list));
+            sender.sendMessage(TextUtils.formatText("&6" + list));
         } else {
 
             int amt = args.length == 3 ? Integer.parseInt(args[2]) : 1;

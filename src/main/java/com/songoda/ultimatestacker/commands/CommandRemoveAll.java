@@ -66,7 +66,7 @@ public class CommandRemoveAll extends AbstractCommand {
                     + type + " exist that could be removed.").sendPrefixedMessage(sender);
         } else {
             plugin.getLocale().newMessage("&7Removed &6" + amountRemoved + (all ? " " : " stacked ")
-                    + Methods.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
+                    + TextUtils.formatText(type.toLowerCase(), true) + " &7Successfully.").sendPrefixedMessage(sender);
         }
         return ReturnType.SUCCESS;
     }

@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.gui;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.gui.Gui;
 import com.songoda.core.gui.GuiUtils;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.convert.Convert;
 import com.songoda.ultimatestacker.utils.Methods;
@@ -62,6 +63,6 @@ public class GUIConvertWhat extends Gui {
 
         convertFrom.disablePlugin();
         exit();
-        player.sendMessage(Methods.formatText("&7Data converted successfully. Remove &6" + convertFrom.getName() + " &7and restart your server to continue."));
+        player.sendMessage(TextUtils.formatText("&7Data converted successfully. Remove &6" + convertFrom.getName() + " &7and restart your server to continue."));
     }
 }

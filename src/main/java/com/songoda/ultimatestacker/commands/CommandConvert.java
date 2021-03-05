@@ -2,6 +2,7 @@ package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.gui.GuiManager;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.gui.GUIConvert;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -25,7 +26,7 @@ public class CommandConvert extends AbstractCommand {
                 || Bukkit.getPluginManager().isPluginEnabled("StackMob")) {
             guiManager.showGUI((Player) sender, new GUIConvert());
         } else {
-            sender.sendMessage(Methods.formatText("&cYou need to have the plugin &4WildStacker &cor &4StackMob &cenabled " +
+            sender.sendMessage(TextUtils.formatText("&cYou need to have the plugin &4WildStacker &cor &4StackMob &cenabled " +
                     "in order to convert data."));
         }
         return ReturnType.SUCCESS;

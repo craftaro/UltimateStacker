@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.utils.Methods;
@@ -51,7 +52,7 @@ public class CommandSpawn extends AbstractCommand {
                 if (types.isSpawnable() && types.isAlive() && !types.toString().contains("ARMOR"))
                     list.append(types.name().toUpperCase().replace(" ", "_")).append("&7, &6");
             }
-            sender.sendMessage(Methods.formatText("&6" + list));
+            sender.sendMessage(TextUtils.formatText("&6" + list));
         } else {
             LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getTargetBlock((Set<Material>)null, 200).getLocation(), type);
             EntityStack stack = plugin.getEntityStackManager().addStack(entity);

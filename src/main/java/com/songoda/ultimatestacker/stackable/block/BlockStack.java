@@ -1,6 +1,7 @@
 package com.songoda.ultimatestacker.stackable.block;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
@@ -83,12 +84,12 @@ public class BlockStack implements Stackable, Hologramable {
     @Override
     public String getHologramName() {
         String nameFormat = Settings.NAME_FORMAT_BLOCK.getString();
-        String displayName = Methods.formatText(material.name().toLowerCase().replace("_", " "), true);
+        String displayName = TextUtils.formatText(material.name().toLowerCase().replace("_", " "), true);
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        return Methods.formatText(nameFormat).trim();
+        return TextUtils.formatText(nameFormat).trim();
     }
 
     @Override

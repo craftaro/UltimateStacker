@@ -7,13 +7,9 @@ import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
-import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -24,9 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Methods {
@@ -92,7 +85,7 @@ public class Methods {
 
     public static String compileItemName(ItemStack item, int amount) {
         String nameFormat = Settings.NAME_FORMAT_ITEM.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getItemFile()
+        String displayName = TextUtils.formatText(UltimateStacker.getInstance().getItemFile()
                 .getString("Items." + item.getType().name() + ".Display Name"));
 
         if (item.hasItemMeta() && item.getItemMeta().hasDisplayName())
@@ -110,31 +103,31 @@ public class Methods {
 
         String info = TextUtils.convertToInvisibleString(Methods.insertSemicolon(String.valueOf(amount)) + ":");
 
-        return info + Methods.formatText(nameFormat).trim();
+        return info + TextUtils.formatText(nameFormat).trim();
     }
 
     public static String compileSpawnerName(EntityType entityType, int amount) {
         String nameFormat = UltimateStacker.getInstance().getConfig().getString("Spawners.Name Format");
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getSpawnerFile().getString("Spawners." + entityType.name() + ".Display Name"));
+        String displayName = TextUtils.formatText(UltimateStacker.getInstance().getSpawnerFile().getString("Spawners." + entityType.name() + ".Display Name"));
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        return Methods.formatText(nameFormat).trim();
+        return TextUtils.formatText(nameFormat).trim();
     }
 
     public static String compileEntityName(Entity entity, int amount) {
         String nameFormat = Settings.NAME_FORMAT_ENTITY.getString();
-        String displayName = Methods.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
+        String displayName = TextUtils.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
-        CustomEntity customEntity =  UltimateStacker.getInstance().getCustomEntityManager().getCustomEntity(entity);
+        CustomEntity customEntity = UltimateStacker.getInstance().getCustomEntityManager().getCustomEntity(entity);
         if (customEntity != null)
             displayName = customEntity.getDisplayName(entity);
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));
 
-        return Methods.formatText(nameFormat).trim();
+        return TextUtils.formatText(nameFormat).trim();
     }
 
     public static void takeItem(Player player, int amount) {
@@ -173,69 +166,11 @@ public class Methods {
         return true;
     }
 
-    private static Map<String, Location> serializeCache = new HashMap<>();
-
-    /**
-     * Deserializes a location from the string.
-     *
-     * @param str The string to parse.
-     * @return The location that was serialized in the string.
-     */
-    public static Location unserializeLocation(String str) {
-        if (str == null || str.equals(""))
-            return null;
-        if (serializeCache.containsKey(str)) {
-            return serializeCache.get(str).clone();
-        }
-        String cacheKey = str;
-        str = str.replace("y:", ":").replace("z:", ":").replace("w:", "").replace("x:", ":").replace("/", ".");
-        List<String> args = Arrays.asList(str.split("\\s*:\\s*"));
-
-        World world = Bukkit.getWorld(args.get(0));
-        double x = Double.parseDouble(args.get(1)), y = Double.parseDouble(args.get(2)), z = Double.parseDouble(args.get(3));
-        Location location = new Location(world, x, y, z, 0, 0);
-        serializeCache.put(cacheKey, location.clone());
-        return location;
-    }
-
     public static String insertSemicolon(String s) {
         if (s == null || s.equals(""))
             return "";
         StringBuilder hidden = new StringBuilder();
         for (char c : s.toCharArray()) hidden.append(";").append(c);
         return hidden.toString();
-    }
-
-
-    public static String formatText(String text) {
-        if (text == null || text.equals(""))
-            return "";
-        return formatText(text, false);
-    }
-
-    public static String formatText(String text, boolean cap) {
-        if (text == null || text.equals(""))
-            return "";
-        if (cap)
-            text = text.substring(0, 1).toUpperCase() + text.substring(1);
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
-
-    public static class Tuple<key, value> {
-        public final key x;
-        public final value y;
-
-        public Tuple(key x, value y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public key getKey() {
-            return this.x;
-        }
-
-        public value getValue() {
-            return this.y;
-        }
     }
 }

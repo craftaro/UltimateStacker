@@ -97,7 +97,6 @@ public class EntityStack extends ColdEntityStack {
         plugin.getEntityStackManager().removeStack(event.getEntity());
         plugin.getDataManager().deleteHost(this);
 
-        Location killedLocation = killed.getLocation();
         List<Drop> preStackedDrops = new ArrayList<>();
         for (int i = 1; i < getAmount(); i++) {
             if (i == 1) {
@@ -113,9 +112,6 @@ public class EntityStack extends ColdEntityStack {
         }
 
         DropUtils.processStackedDrop(killed, preStackedDrops, event);
-
-        if (droppedExp > 0)
-            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * getAmount());
 
         if (killed.getKiller() == null) return;
         plugin.addExp(killed.getKiller(), this);

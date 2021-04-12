@@ -46,8 +46,10 @@ public class CommandRemoveAll extends AbstractCommand {
             for (Entity entityO : world.getEntities()) {
                 if (entityO instanceof Player) continue;
 
-                if (entityO instanceof LivingEntity && (stackManager.isStackedAndLoaded((LivingEntity)entityO) || all) && type.equalsIgnoreCase("entities")) {
+                if (entityO instanceof LivingEntity && (stackManager.isStackedAndLoaded((LivingEntity)entityO) || all)
+                        && type.equalsIgnoreCase("entities")) {
                     entityO.remove();
+                    plugin.getEntityStackManager().removeStack(entityO);
                     amountRemoved++;
                 } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
                     if (!UltimateStacker.hasCustomAmount((Item)entityO) && !all)

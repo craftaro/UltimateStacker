@@ -162,7 +162,8 @@ public class BlockListeners implements Listener {
 
                 stack.setAmount(stack.getAmount() + itemAmount);
                 plugin.updateHologram(stack);
-                hand.takeItem(player);
+                if (player.getGameMode() != GameMode.CREATIVE)
+                    hand.takeItem(player);
             }
         }
     }

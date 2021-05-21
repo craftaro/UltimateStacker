@@ -130,17 +130,6 @@ public class Methods {
         return TextUtils.formatText(nameFormat).trim();
     }
 
-    public static void takeItem(Player player, int amount) {
-        if (player.getGameMode() == GameMode.CREATIVE) return;
-
-        ItemStack item = player.getInventory().getItemInHand();
-
-        int result = item.getAmount() - amount;
-        item.setAmount(result);
-
-        player.setItemInHand(result > 0 ? item : null);
-    }
-
     public static ItemStack getSpawnerItem(EntityType entityType, int amount) {
         ItemStack item = CompatibleMaterial.SPAWNER.getItem();
         ItemMeta meta = item.getItemMeta();

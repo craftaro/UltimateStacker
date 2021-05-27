@@ -87,6 +87,8 @@ public class DeathListeners implements Listener {
 
     private boolean shouldDrop(LivingEntity entity, Material material) {
         if (entity.getEquipment() != null && entity.getEquipment().getArmorContents().length != 0) {
+            if (Settings.DONT_DROP_ARMOR.getBoolean())
+                return false;
             if (finalItems.containsKey(entity.getUniqueId())) {
                 List<ItemStack> items = finalItems.get(entity.getUniqueId());
                 for (ItemStack item : items)

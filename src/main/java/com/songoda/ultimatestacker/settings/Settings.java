@@ -88,6 +88,9 @@ public class Settings {
     public static final ConfigSetting NO_EXP_INSTANT_KILL = new ConfigSetting(config, "Entities.No Exp For Instant Kills", false,
             "Should no experience be dropped when an instant kill is performed?");
 
+    public static final ConfigSetting DONT_DROP_ARMOR = new ConfigSetting(config, "Entities.Dont Drop Armor", false,
+            "Should entities not drop their armor when custom drops are enabled?");
+
     public static final ConfigSetting STACK_CHECKS = new ConfigSetting(config, "Entities.Stack Checks", Arrays.asList(Check.values()).stream()
             .filter(Check::isEnabledByDefault).map(Check::name).collect(Collectors.toList()),
             "These are checks that are processed before an entity is stacked.",

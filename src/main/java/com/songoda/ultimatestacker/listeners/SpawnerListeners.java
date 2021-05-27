@@ -8,6 +8,7 @@ import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,10 +24,13 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.SpawnEgg;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class SpawnerListeners implements Listener {
 
     private final UltimateStacker plugin;
+
+    private static final boolean mcmmo = Bukkit.getPluginManager().isPluginEnabled("mcMMO");
 
     public SpawnerListeners(UltimateStacker plugin) {
         this.plugin = plugin;
@@ -65,6 +69,9 @@ public class SpawnerListeners implements Listener {
         spawnerStack.spawn(spawnerStack.calculateSpawnCount(), "EXPLOSION_NORMAL", null, (e) -> {
             if (Settings.NO_AI.getBoolean())
                 EntityUtils.setUnaware(e);
+
+            if (mcmmo)
+                entity.setMetadata("mcMMO: Spawned Entity", new FixedMetadataValue(plugin, true));
             return true;
         }, event.getEntityType());
     }

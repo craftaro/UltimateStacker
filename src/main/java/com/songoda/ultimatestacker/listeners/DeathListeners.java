@@ -94,7 +94,7 @@ public class DeathListeners implements Listener {
                         return true;
             }
         }
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)
                 && entity instanceof ChestedHorse
                 && ((ChestedHorse) entity).getInventory().contains(material))
             return true;

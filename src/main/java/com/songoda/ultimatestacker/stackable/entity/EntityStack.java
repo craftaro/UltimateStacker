@@ -111,6 +111,10 @@ public class EntityStack extends ColdEntityStack {
             preStackedDrops.addAll(drops);
         }
 
+        Location killedLocation = killed.getLocation();
+        if (droppedExp > 0)
+            killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * getAmount());
+
         DropUtils.processStackedDrop(killed, preStackedDrops, event);
 
         if (killed.getKiller() == null) return;

@@ -11,6 +11,7 @@ import com.songoda.core.database.DatabaseConnector;
 import com.songoda.core.database.MySQLConnector;
 import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
+import com.songoda.core.hooks.EntityStackerManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
@@ -25,6 +26,7 @@ import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
 import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
+import com.songoda.ultimatestacker.database.migrations._4_DataPurge;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
@@ -196,6 +198,7 @@ public class UltimateStacker extends SongodaPlugin {
             stackerHooks.add(new JobsHook());
 
         HologramManager.load(this);
+        EntityStackerManager.load();
 
         // Database stuff, go!
         try {
@@ -222,7 +225,8 @@ public class UltimateStacker extends SongodaPlugin {
         this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
                 new _1_InitialMigration(),
                 new _2_EntityStacks(),
-                new _3_BlockStacks());
+                new _3_BlockStacks(),
+                new _4_DataPurge());
         this.dataMigrationManager.runMigrations();
     }
 

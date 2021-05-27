@@ -88,6 +88,9 @@ public class Settings {
     public static final ConfigSetting NO_EXP_INSTANT_KILL = new ConfigSetting(config, "Entities.No Exp For Instant Kills", false,
             "Should no experience be dropped when an instant kill is performed?");
 
+    public static final ConfigSetting DONT_DROP_ARMOR = new ConfigSetting(config, "Entities.Dont Drop Armor", false,
+            "Should entities not drop their armor when custom drops are enabled?");
+
     public static final ConfigSetting STACK_CHECKS = new ConfigSetting(config, "Entities.Stack Checks", Arrays.asList(Check.values()).stream()
             .filter(Check::isEnabledByDefault).map(Check::name).collect(Collectors.toList()),
             "These are checks that are processed before an entity is stacked.",
@@ -161,6 +164,11 @@ public class Settings {
             "List the entities using their plugin name as a prefix in all lowercase.",
             "Example: mythicmobs_test");
 
+    public static final ConfigSetting DATABASE_PURGE = new ConfigSetting(config, "Entities.Database purge", 14,
+            "How many days must an entity be dormant before it is removed",
+            "from the database? This setting will prevent dead entities killed incorrectly",
+            "by other plugins from building up inside of your database and creating lag.");
+
     public static final ConfigSetting STACK_ITEMS = new ConfigSetting(config, "Items.Enabled", true,
             "Should items be stacked?");
 
@@ -230,6 +238,9 @@ public class Settings {
 
     public static final ConfigSetting EXPLOSION_DROP_CHANCE_CREEPER = new ConfigSetting(config, "Spawners.Chance On Creeper Explosion", "100%",
             "Chance of a creeper explosion dropping a spawner.");
+
+    public static final ConfigSetting NO_AI = new ConfigSetting(config, "Spawners.Nerf Spawner Mobs", false,
+            "If enabled mobs spawned by spawners will not move or attack.");
 
     public static final ConfigSetting NAME_FORMAT_SPAWNER = new ConfigSetting(config, "Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
             "The text displayed above a stacked spawner where {TYPE} refers to",

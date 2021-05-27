@@ -111,6 +111,15 @@ public class EntityStack extends ColdEntityStack {
             preStackedDrops.addAll(drops);
         }
 
+        // In versions 1.14 and below experience is not dropping. Because of this we are doing this ourselves.
+        if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_14)) {
+            Location killedLocation = killed.getLocation();
+            if (droppedExp > 0)
+                killedLocation.getWorld().spawn(killedLocation, ExperienceOrb.class).setExperience(droppedExp * getAmount());
+        } else {
+            event.setDroppedExp(droppedExp * getAmount());
+        }
+
         DropUtils.processStackedDrop(killed, preStackedDrops, event);
 
         if (killed.getKiller() == null) return;
@@ -122,9 +131,6 @@ public class EntityStack extends ColdEntityStack {
 
         killed.remove();
         LivingEntity newEntity = takeOneAndSpawnEntity(killed.getLocation());
-
-        //if (!EntityUtils.isAware(killed))
-        //    EntityUtils.setUnaware(newEntity);
 
         // In versions 1.14 and below experience is not dropping. Because of this we are doing this ourselves.
         if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_14)) {

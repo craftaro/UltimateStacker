@@ -164,6 +164,11 @@ public class Settings {
             "List the entities using their plugin name as a prefix in all lowercase.",
             "Example: mythicmobs_test");
 
+    public static final ConfigSetting DATABASE_PURGE = new ConfigSetting(config, "Entities.Database purge", 14,
+            "How many days must an entity be dormant before it is removed",
+            "from the database? This setting will prevent dead entities killed incorrectly",
+            "by other plugins from building up inside of your database and creating lag.");
+
     public static final ConfigSetting STACK_ITEMS = new ConfigSetting(config, "Items.Enabled", true,
             "Should items be stacked?");
 

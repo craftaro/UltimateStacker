@@ -11,6 +11,7 @@ import com.songoda.core.database.DatabaseConnector;
 import com.songoda.core.database.MySQLConnector;
 import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
+import com.songoda.core.hooks.EntityStackerManager;
 import com.songoda.core.hooks.HologramManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
@@ -196,6 +197,7 @@ public class UltimateStacker extends SongodaPlugin {
             stackerHooks.add(new JobsHook());
 
         HologramManager.load(this);
+        EntityStackerManager.load();
 
         // Database stuff, go!
         try {

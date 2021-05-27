@@ -234,6 +234,9 @@ public class Settings {
     public static final ConfigSetting EXPLOSION_DROP_CHANCE_CREEPER = new ConfigSetting(config, "Spawners.Chance On Creeper Explosion", "100%",
             "Chance of a creeper explosion dropping a spawner.");
 
+    public static final ConfigSetting NO_AI = new ConfigSetting(config, "Spawners.Nerf Spawner Mobs", false,
+            "If enabled mobs spawned by spawners will not move or attack.");
+
     public static final ConfigSetting NAME_FORMAT_SPAWNER = new ConfigSetting(config, "Spawners.Name Format", "&f{TYPE} Spawner &6{AMT}x",
             "The text displayed above a stacked spawner where {TYPE} refers to",
             "The entities type and {AMT} is the amount currently stacked.");

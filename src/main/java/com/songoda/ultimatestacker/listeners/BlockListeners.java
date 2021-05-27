@@ -4,7 +4,6 @@ import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.nms.nbt.NBTItem;
-import com.songoda.core.utils.PlayerUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
 import com.songoda.ultimatestacker.events.SpawnerPlaceEvent;
@@ -65,7 +64,7 @@ public class BlockListeners implements Listener {
                     if (!isStacked) plugin.getDataManager().createBlock(stack);
                     if (stack.getMaterial() == CompatibleMaterial.getMaterial(inHand)) {
                         int amountToAdd = player.isSneaking() || Settings.ALWAYS_ADD_ALL.getBoolean() ? inHand.getAmount() : 1;
-                        if (!isStacked) amountToAdd ++;
+                        if (!isStacked) amountToAdd++;
                         stack.add(amountToAdd);
                         event.setCancelled(true);
                         if (player.getGameMode() != GameMode.CREATIVE)

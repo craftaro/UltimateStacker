@@ -1,32 +1,28 @@
 package com.songoda.ultimatestacker.stackable.spawner;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.compatibility.ServerVersion;
+import com.songoda.core.world.SSpawner;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.Hologramable;
 import com.songoda.ultimatestacker.utils.Methods;
-import com.songoda.ultimatestacker.utils.ReflectionUtil;
 import com.songoda.ultimatestacker.utils.Stackable;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 
 import java.util.Random;
 
-public class SpawnerStack implements Stackable, Hologramable {
+public class SpawnerStack extends SSpawner implements Stackable, Hologramable {
 
     private int id;
-    private boolean initialized = false;
 
-    private final Location location;
     private int amount;
 
     private static final UltimateStacker plugin = UltimateStacker.getInstance();
 
     public SpawnerStack(Location location, int amount) {
-        this.location = location;
+        super(location);
         this.amount = amount;
     }
 
@@ -43,23 +39,6 @@ public class SpawnerStack implements Stackable, Hologramable {
     public void setAmount(int amount) {
         this.amount = amount;
         plugin.getDataManager().updateSpawner(this);
-    }
-
-    public void updateAmount() {
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (!(location.getBlock().getState() instanceof CreatureSpawner)) return;
-            int count = Settings.STACK_ENTITIES.getBoolean()
-                    && !plugin.getStackingTask().isWorldDisabled(location.getWorld()) ? 1 : calculateSpawnCount();
-            int maxNearby = amount > 6 ? amount + 3 : 6;
-            CreatureSpawner creatureSpawner = (CreatureSpawner) location.getBlock().getState();
-            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
-                creatureSpawner.setMaxNearbyEntities(maxNearby);
-                creatureSpawner.setSpawnCount(count);
-            } else {
-                ReflectionUtil.updateSpawner(creatureSpawner, count, maxNearby);
-            }
-            creatureSpawner.update();
-        }, 1L);
     }
 
     public int calculateSpawnCount() {
@@ -112,13 +91,6 @@ public class SpawnerStack implements Stackable, Hologramable {
 
     public World getWorld() {
         return location.getWorld();
-    }
-
-    public void initialize() {
-        if (!initialized) {
-            updateAmount();
-            this.initialized = true;
-        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.tasks;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.hooks.WorldGuardHook;
+import com.songoda.core.world.SWorld;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.Check;
@@ -55,9 +56,15 @@ public class StackingTask extends BukkitRunnable {
             onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean(),
             onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
+    Set<SWorld> loadedWorlds = new HashSet<>();
+
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
         this.stackManager = plugin.getEntityStackManager();
+
+        // Add loaded worlds.
+        for (World world : Bukkit.getWorlds())
+            loadedWorlds.add(new SWorld(world));
 
         // Start the stacking task.
         runTaskTimerAsynchronously(plugin, 0, Settings.STACK_SEARCH_TICK_SPEED.getInt());
@@ -69,15 +76,14 @@ public class StackingTask extends BukkitRunnable {
         if (!Settings.STACK_ENTITIES.getBoolean()) return;
 
         // Loop through each world.
-        for (World world : Bukkit.getWorlds()) {
+        for (SWorld sWorld : loadedWorlds) {
             // If world is disabled then continue to the next world.
-
-            if (isWorldDisabled(world)) continue;
+            if (isWorldDisabled(sWorld.getWorld())) continue;
 
             // Get the loaded entities from the current world and reverse them.
-            List<Entity> entities;
+            List<LivingEntity> entities;
             try {
-                entities = new ArrayList<>(world.getEntities());
+                entities = sWorld.getLivingEntities();
             } catch (Exception ignored) {
                 continue;
                 // Sometimes accessing this method asynchronously throws an error. This is super rare and
@@ -86,7 +92,7 @@ public class StackingTask extends BukkitRunnable {
             Collections.reverse(entities);
 
             // Loop through the entities.
-            for (Entity entity : entities) {
+            for (LivingEntity entity : entities) {
                 // Get entity location to pass around as its faster this way.
                 Location location = entity.getLocation();
 
@@ -98,12 +104,8 @@ public class StackingTask extends BukkitRunnable {
                 // Skip it if it has been.
                 if (this.processed.contains(entity.getUniqueId())) continue;
 
-                // Cast our entity to living entity.
-                LivingEntity livingEntity = (LivingEntity) entity;
-
                 // Process the entity.
-                this.processEntity(livingEntity, location);
-
+                this.processEntity(entity, sWorld, location);
             }
         }
         // Clear caches in preparation for the next run.
@@ -118,7 +120,6 @@ public class StackingTask extends BukkitRunnable {
     private boolean isEntityStackable(Entity entity) {
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
-                || !(entity instanceof LivingEntity)
                 || entity instanceof HumanEntity
                 || entity instanceof ArmorStand
 
@@ -154,7 +155,7 @@ public class StackingTask extends BukkitRunnable {
 
     }
 
-    private void processEntity(LivingEntity livingEntity, Location location) {
+    private void processEntity(LivingEntity livingEntity, SWorld sWorld, Location location) {
         // Get the stack from the entity. It should be noted that this value will
         // be null if our entity is not a stack.
         EntityStack stack = plugin.getEntityStackManager().getStack(livingEntity);
@@ -179,7 +180,7 @@ public class StackingTask extends BukkitRunnable {
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
         List<LivingEntity> stackableFriends = new LinkedList<>();
-        for (LivingEntity entity : getSimilarEntitiesAroundEntity(livingEntity, location)) {
+        for (LivingEntity entity : getSimilarEntitiesAroundEntity(livingEntity, sWorld, location)) {
             // Check to see if entity is not stackable.
             if (!isEntityStackable(entity))
                 continue;
@@ -228,7 +229,7 @@ public class StackingTask extends BukkitRunnable {
                 if (livingEntity.isLeashed())
                     Bukkit.getScheduler().runTask(plugin, () -> livingEntity.getWorld()
                             .dropItemNaturally(livingEntity.getLocation(), CompatibleMaterial.LEAD.getItem()));
-                livingEntity.remove();
+                Bukkit.getScheduler().runTask(plugin, livingEntity::remove);
                 processed.add(livingEntity.getUniqueId());
 
                 return;
@@ -246,7 +247,7 @@ public class StackingTask extends BukkitRunnable {
                 plugin.getDataManager().createStackedEntity(newStack, newStack.addEntityToStack(livingEntity));
 
                 // Remove our entity and mark it as processed.
-                livingEntity.remove();
+                Bukkit.getScheduler().runTask(plugin, livingEntity::remove);
                 processed.add(livingEntity.getUniqueId());
                 return;
             }
@@ -265,8 +266,8 @@ public class StackingTask extends BukkitRunnable {
 
         // If the stack cap is met then delete this entity.
         if (maxPerTypeStacksPerChunk != -1
-                && (getSimilarStacksInChunk(livingEntity) + 1) > maxPerTypeStacksPerChunk) {
-            livingEntity.remove();
+                && (getSimilarStacksInChunk(sWorld, livingEntity) + 1) > maxPerTypeStacksPerChunk) {
+            Bukkit.getScheduler().runTask(plugin, livingEntity::remove);
             this.processed.add(livingEntity.getUniqueId());
             return;
         }
@@ -299,7 +300,7 @@ public class StackingTask extends BukkitRunnable {
             if (entity.isLeashed())
                 entity.getWorld().dropItemNaturally(entity.getLocation(), CompatibleMaterial.LEAD.getItem());
             livingEntities.add(entity);
-            entity.remove();
+            Bukkit.getScheduler().runTask(plugin, entity::remove);
             processed.add(entity.getUniqueId());
 
         });
@@ -332,17 +333,17 @@ public class StackingTask extends BukkitRunnable {
         });
 
         // Remove our entity and mark it as processed.
-        livingEntity.remove();
+        Bukkit.getScheduler().runTask(plugin, livingEntity::remove);
         processed.add(livingEntity.getUniqueId());
         return true;
     }
 
-    private Set<CachedChunk> getNearbyChunks(Location location, double radius, boolean singleChunk) {
+    private Set<CachedChunk> getNearbyChunks(SWorld sWorld, Location location, double radius, boolean singleChunk) {
         World world = location.getWorld();
         Set<CachedChunk> chunks = new HashSet<>();
         if (world == null) return chunks;
 
-        CachedChunk firstChunk = new CachedChunk(location);
+        CachedChunk firstChunk = new CachedChunk(sWorld, location);
         chunks.add(firstChunk);
 
         if (singleChunk) return chunks;
@@ -355,15 +356,15 @@ public class StackingTask extends BukkitRunnable {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
-                chunks.add(new CachedChunk(world.getName(), x, z));
+                chunks.add(new CachedChunk(sWorld, x, z));
             }
         }
         return chunks;
     }
 
-    private List<LivingEntity> getNearbyEntities(Location location, double radius, boolean singleChunk) {
+    private List<LivingEntity> getNearbyEntities(SWorld sWorld, Location location, double radius, boolean singleChunk) {
         List<LivingEntity> entities = new ArrayList<>();
-        for (CachedChunk chunk : getNearbyChunks(location, radius, singleChunk)) {
+        for (CachedChunk chunk : getNearbyChunks(sWorld, location, radius, singleChunk)) {
             if (chunk == null) continue;
             Entity[] entityArray = new Entity[0];
             if (cachedChunks.containsKey(chunk)) {
@@ -389,20 +390,20 @@ public class StackingTask extends BukkitRunnable {
         return entities;
     }
 
-    public int getSimilarStacksInChunk(LivingEntity entity) {
+    public int getSimilarStacksInChunk(SWorld sWorld, LivingEntity entity) {
         int count = 0;
-        for (LivingEntity e : getNearbyEntities(entity.getLocation(), -1, true)) {
+        for (LivingEntity e : getNearbyEntities(sWorld, entity.getLocation(), -1, true)) {
             if (entity.getType() == e.getType() && plugin.getEntityStackManager().isStackedAndLoaded(e))
                 count++;
         }
         return count;
     }
 
-    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
+    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, SWorld sWorld, Location location) {
         // Create a list of all entities around the initial entity of the same type.
         List<LivingEntity> entityList = new LinkedList<>();
 
-        for (LivingEntity entity : getNearbyEntities(location, searchRadius, stackWholeChunk)) {
+        for (LivingEntity entity : getNearbyEntities(sWorld, location, searchRadius, stackWholeChunk)) {
             if (entity.getType() != initialEntity.getType() || entity == initialEntity)
                 continue;
             entityList.add(entity);

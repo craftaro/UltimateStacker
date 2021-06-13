@@ -1,8 +1,8 @@
 package com.songoda.ultimatestacker.stackable.entity;
 
 import com.songoda.core.compatibility.ServerVersion;
-import com.songoda.lootables.loot.Drop;
-import com.songoda.lootables.loot.DropUtils;
+import com.songoda.core.lootables.loot.Drop;
+import com.songoda.core.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;

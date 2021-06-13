@@ -2,13 +2,13 @@ package com.songoda.ultimatestacker.lootables;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
-import com.songoda.lootables.Lootables;
-import com.songoda.lootables.Modify;
-import com.songoda.lootables.loot.Drop;
-import com.songoda.lootables.loot.Loot;
-import com.songoda.lootables.loot.LootBuilder;
-import com.songoda.lootables.loot.LootManager;
-import com.songoda.lootables.loot.Lootable;
+import com.songoda.core.lootables.Lootables;
+import com.songoda.core.lootables.Modify;
+import com.songoda.core.lootables.loot.Drop;
+import com.songoda.core.lootables.loot.Loot;
+import com.songoda.core.lootables.loot.LootBuilder;
+import com.songoda.core.lootables.loot.LootManager;
+import com.songoda.core.lootables.loot.Lootable;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import org.bukkit.enchantments.Enchantment;
@@ -96,6 +96,21 @@ public class LootablesManager {
     }
 
     public void createDefaultLootables() {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {
+            // Add Glow Squid.
+            lootManager.addLootable(new Lootable("GLOW_SQUID",
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.GLOW_INK_SAC)
+                            .setMin(1)
+                            .setMax(3).build()));
+
+            // Add Glow Squid.
+            lootManager.addLootable(new Lootable("SQUID",
+                    new LootBuilder()
+                            .setMaterial(CompatibleMaterial.GLOW_INK_SAC)
+                            .setMin(1)
+                            .setMax(3).build()));
+        }
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             // Add Trader Llama.
             lootManager.addLootable(new Lootable("TRADER_LLAMA",

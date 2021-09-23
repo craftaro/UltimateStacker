@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.database;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.database.DataManagerAbstract;
 import com.songoda.core.database.DatabaseConnector;
+import com.songoda.core.database.SQLiteConnector;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.entity.ColdEntityStack;
@@ -230,19 +231,21 @@ public class DataManager extends DataManagerAbstract {
 
             Map<Integer, ColdEntityStack> entities = new HashMap<>();
 
-            String selectOldEntities = "SELECT * FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')";
-            try (Statement statement = connection.createStatement()) {
-                List<String> toDelete = new ArrayList<>();
+            if (this.databaseConnector instanceof SQLiteConnector) {
+                String selectOldEntities = "SELECT * FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')";
+                try (Statement statement = connection.createStatement()) {
+                    List<String> toDelete = new ArrayList<>();
 
-                ResultSet result = statement.executeQuery(selectOldEntities);
-                while (result.next()) {
-                    int hostId = result.getInt("id");
-                    toDelete.add(String.valueOf(hostId));
+                    ResultSet result = statement.executeQuery(selectOldEntities);
+                    while (result.next()) {
+                        int hostId = result.getInt("id");
+                        toDelete.add(String.valueOf(hostId));
+                    }
+                    statement.execute("DELETE FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')");
+                    statement.execute("DELETE FROM " + this.getTablePrefix() + "stacked_entities where host IN (" + String.join(", ", toDelete) + ")");
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                statement.execute("DELETE FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')");
-                statement.execute("DELETE FROM " + this.getTablePrefix() + "stacked_entities where host IN (" + String.join(", ", toDelete) + ")");
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
 

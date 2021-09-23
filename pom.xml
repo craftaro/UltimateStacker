@@ -56,7 +56,6 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.songoda:SongodaCore</include>
-                                    <include>com.songoda:Lootables</include>
                                     <include>com.zaxxer:HikariCP</include>
                                     <include>org.slf4j:slf4j-api</include>
                                     <include>org.slf4j:slf4j-nop</include>
@@ -126,11 +125,6 @@
             <artifactId>SongodaCore</artifactId>
             <version>LATEST</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.songoda</groupId>
-            <artifactId>Lootables</artifactId>
-            <version>1.0.9</version>
         </dependency>
         <dependency>
             <groupId>com.bgsoftware</groupId>

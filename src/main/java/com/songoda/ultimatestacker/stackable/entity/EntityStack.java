@@ -129,6 +129,7 @@ public class EntityStack extends ColdEntityStack {
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, int droppedExp, EntityDeathEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
 
+        Vector velocity = killed.getVelocity().clone();
         killed.remove();
         LivingEntity newEntity = takeOneAndSpawnEntity(killed.getLocation());
 
@@ -141,7 +142,7 @@ public class EntityStack extends ColdEntityStack {
 
         DropUtils.processStackedDrop(killed, drops, event);
 
-        newEntity.setVelocity(killed.getVelocity());
+        newEntity.setVelocity(velocity);
         stackManager.updateStack(killed, newEntity);
 
         updateStack();

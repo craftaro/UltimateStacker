@@ -411,6 +411,9 @@ public class UltimateStacker extends SongodaPlugin {
 
     public static void updateItemMeta(Item item, ItemStack itemStack, int newAmount) {
         Material material = itemStack.getType();
+        if (material == Material.AIR)
+            return;
+
         String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
 
         boolean blacklisted = isMaterialBlacklisted(itemStack);

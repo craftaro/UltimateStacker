@@ -182,6 +182,9 @@ public class DataManager extends DataManagerAbstract {
     }
 
     public void deleteStackedEntity(UUID uuid) {
+        if (uuid == null)
+            return;
+
         this.async(() -> this.databaseConnector.connect(connection -> {
             String deleteStackedEntity = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE uuid = ?";
             try (PreparedStatement statement = connection.prepareStatement(deleteStackedEntity)) {
@@ -230,7 +233,11 @@ public class DataManager extends DataManagerAbstract {
 
             Map<Integer, ColdEntityStack> entities = new HashMap<>();
 
-            String selectOldEntities = "SELECT * FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')";
+            boolean mysql = Settings.MYSQL_ENABLED.getBoolean();
+            int databasePurge = Settings.DATABASE_PURGE.getInt();
+            String whereStatement = mysql ? "WHERE updated_at < NOW() - INTERVAL " + databasePurge + " DAY" : "WHERE updated_at <= date('now','-" + databasePurge + " day')";
+            String selectOldEntities = "SELECT * FROM " + this.getTablePrefix() + "host_entities " + whereStatement;
+
             try (Statement statement = connection.createStatement()) {
                 List<String> toDelete = new ArrayList<>();
 
@@ -239,8 +246,11 @@ public class DataManager extends DataManagerAbstract {
                     int hostId = result.getInt("id");
                     toDelete.add(String.valueOf(hostId));
                 }
-                statement.execute("DELETE FROM " + this.getTablePrefix() + "host_entities where updated_at <= date('now','-" + Settings.DATABASE_PURGE.getInt() + " day')");
-                statement.execute("DELETE FROM " + this.getTablePrefix() + "stacked_entities where host IN (" + String.join(", ", toDelete) + ")");
+
+                if (!toDelete.isEmpty()) {
+                    statement.execute("DELETE FROM " + this.getTablePrefix() + "host_entities " + whereStatement);
+                    statement.execute("DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE host IN (" + String.join(", ", toDelete) + ")");
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

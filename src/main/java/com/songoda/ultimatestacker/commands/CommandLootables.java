@@ -1,7 +1,7 @@
 package com.songoda.ultimatestacker.commands;
 
 import com.songoda.core.commands.AbstractCommand;
-import com.songoda.lootables.gui.GuiEditor;
+import com.songoda.core.lootables.gui.GuiEditor;
 import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

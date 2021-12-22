@@ -11,4 +11,6 @@ public interface Hologramable {
     boolean areHologramsEnabled();
 
     boolean isValid();
+
+    String getHologramId();
 }

@@ -10,7 +10,14 @@ import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.util.UUID;
+
 public class BlockStack implements Stackable, Hologramable {
+
+    // This is the unique identifier for this stack.
+    // It is reset on every plugin load.
+    // Used for holograms.
+    private final UUID uniqueId = UUID.randomUUID();
 
     // The id that identifies this stack in the database.
     private int id;
@@ -103,6 +110,11 @@ public class BlockStack implements Stackable, Hologramable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public String getHologramId() {
+        return "UltimateStacker-" + uniqueId;
     }
 
     @Override

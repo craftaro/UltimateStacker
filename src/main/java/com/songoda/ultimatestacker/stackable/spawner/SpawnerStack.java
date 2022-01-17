@@ -12,9 +12,15 @@ import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 
 import java.util.Random;
+import java.util.UUID;
 
 public class SpawnerStack extends SSpawner implements Stackable, Hologramable {
 
+    // This is the unique identifier for this spawner.
+    // It is reset on every plugin load.
+    // Used for holograms.
+    private final UUID uniqueId = UUID.randomUUID();
+    
     private int id;
 
     private int amount;
@@ -91,6 +97,11 @@ public class SpawnerStack extends SSpawner implements Stackable, Hologramable {
 
     public World getWorld() {
         return location.getWorld();
+    }
+
+    @Override
+    public String getHologramId() {
+        return "UltimateStacker-" + uniqueId;
     }
 
     @Override

@@ -2,7 +2,7 @@
     <groupId>com.songoda</groupId>
     <artifactId>UltimateStacker</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <version>2.1.8</version>
+    <version>2.2.0</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>UltimateStacker-${project.version}</finalName>
@@ -101,29 +101,31 @@
     </pluginRepositories>
     <repositories>
         <repository>
-            <id>public</id>
-            <url>http://repo.songoda.com/repository/public/</url>
+            <id>songoda-public</id>
+            <url>https://repo.songoda.com/repository/public/</url>
         </repository>
+
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
         <repository>
             <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-        </repository>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.17</version>
+            <artifactId>spigot-api</artifactId>
+            <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
-            <version>LATEST</version>
+            <version>2.6.10</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -56,9 +56,6 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.songoda:SongodaCore</include>
-                                    <include>com.zaxxer:HikariCP</include>
-                                    <include>org.slf4j:slf4j-api</include>
-                                    <include>org.slf4j:slf4j-nop</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -70,21 +67,11 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                     </excludes>
                                 </filter>
-                                <filter>
-                                    <artifact>com.songoda:Lootables</artifact>
-                                    <excludes>
-                                        <exclude>com/songoda/core/**</exclude>
-                                    </excludes>
-                                </filter>
                             </filters>
                             <relocations>
                                 <relocation>
                                     <pattern>com.songoda.core</pattern>
                                     <shadedPattern>${project.groupId}.ultimatestacker.core</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.songoda.lootables</pattern>
-                                    <shadedPattern>${project.groupId}.ultimatestacker.lootables</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -122,41 +109,40 @@
             <version>1.18-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
             <version>2.6.11</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.bgsoftware</groupId>
             <artifactId>wildstacker</artifactId>
             <version>3.5.1</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>uk.antiperson</groupId>
             <artifactId>stackmob</artifactId>
             <version>4-0-2</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>me.minebuilders</groupId>
             <artifactId>Clearlag</artifactId>
             <version>3.0.6</version>
+            <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>3.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.23.1</version>
-        </dependency>
+
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>MythicMobs</artifactId>
             <version>4.10.1</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

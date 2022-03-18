@@ -1,20 +1,17 @@
 package com.songoda.ultimatestacker.utils;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.nms.NmsManager;
-import com.songoda.core.nms.nbt.NBTItem;
+import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -139,9 +136,9 @@ public class Methods {
         ((BlockStateMeta) meta).setBlockState(cs);
         item.setItemMeta(meta);
 
-        NBTItem nbtItem = NmsManager.getNbt().of(item);
-        nbtItem.set("spawner_stack_size", amount);
-        return nbtItem.finish();
+        NBTItem nbtItem = new NBTItem(item);
+        nbtItem.setInteger("spawner_stack_size", amount);
+        return nbtItem.getItem();
     }
 
     public static boolean isInt(String number) {

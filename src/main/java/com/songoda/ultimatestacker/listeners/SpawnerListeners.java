@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.nms.NmsManager;
+import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.core.utils.EntityUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -99,7 +100,7 @@ public class SpawnerListeners implements Listener {
 
         if (!Settings.EGGS_CONVERT_SPAWNERS.getBoolean()
                 || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName()
-                && !NmsManager.getNbt().of(event.getItem()).has("UC"))) {
+                && !new NBTItem(event.getItem()).hasKey("UC"))) {
             return;
         }
 

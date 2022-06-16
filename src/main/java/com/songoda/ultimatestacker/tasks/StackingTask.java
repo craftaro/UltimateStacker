@@ -297,8 +297,9 @@ public class StackingTask extends BukkitRunnable {
             }
 
             // Drop lead if applicable then remove our entity and mark it as processed.
-            if (entity.isLeashed())
-                entity.getWorld().dropItemNaturally(entity.getLocation(), CompatibleMaterial.LEAD.getItem());
+            if (entity.isLeashed()) {
+                Bukkit.getScheduler().runTask(plugin, () -> entity.getWorld().dropItemNaturally(entity.getLocation(), CompatibleMaterial.LEAD.getItem()));
+            }
             livingEntities.add(entity);
             Bukkit.getScheduler().runTask(plugin, entity::remove);
             processed.add(entity.getUniqueId());

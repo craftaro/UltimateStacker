@@ -57,7 +57,6 @@ public class DataManager extends DataManagerAbstract {
         }));
     }
 
-
     public void createSpawner(SpawnerStack spawnerStack) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
 
@@ -88,7 +87,6 @@ public class DataManager extends DataManagerAbstract {
         }));
     }
 
-
     public void createBlock(BlockStack blockStack) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
 
@@ -108,12 +106,11 @@ public class DataManager extends DataManagerAbstract {
         }), "create");
     }
 
-
     public void createHostEntity(ColdEntityStack stack) {
         this.queueAsync(() -> this.databaseConnector.connect(connection -> {
-            if (stack == null || stack.getHostUniqueId() == null) return;
             String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(createSerializedEntity)) {
+                if (stack == null || stack.getHostUniqueId() == null) return;
                 statement.setString(1, stack.getHostUniqueId().toString());
                 statement.setInt(2, stack.getCreateDuplicates());
                 statement.executeUpdate();

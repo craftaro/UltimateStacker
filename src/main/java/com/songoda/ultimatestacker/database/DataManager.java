@@ -35,7 +35,7 @@ public class DataManager extends DataManagerAbstract {
     }
 
     public void bulkUpdateSpawners(Collection<SpawnerStack> spawnerStacks) {
-        this.databaseConnector.connect(connection -> {
+        try (Connection connection = this.databaseConnector.getConnection()) {
             String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE id = ?";
             PreparedStatement statement = connection.prepareStatement(updateSpawner);
             for (SpawnerStack spawnerStack : spawnerStacks) {
@@ -43,14 +43,15 @@ public class DataManager extends DataManagerAbstract {
                 statement.setInt(2, spawnerStack.getId());
                 statement.addBatch();
             }
-
             statement.executeBatch();
-        });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     public void updateSpawner(SpawnerStack spawnerStack) {
        this.runAsync(() -> {
-            try(Connection connection = this.databaseConnector.getConnection()) {
+            try (Connection connection = this.databaseConnector.getConnection()) {
 
                 String updateSpawner = "UPDATE " + this.getTablePrefix() + "spawners SET amount = ? WHERE id = ?";
 
@@ -66,7 +67,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void createSpawner(SpawnerStack spawnerStack) {
        this.runAsync(() -> {
-            try(Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String createSpawner = "INSERT INTO " + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, spawnerStack.getAmount());
@@ -86,7 +87,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void updateBlock(BlockStack blockStack) {
        this.runAsync(() -> {
-            try(Connection connection = this.databaseConnector.getConnection()) {
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String updateBlock = "UPDATE " + this.getTablePrefix() + "blocks SET amount = ? WHERE id = ?";
                 PreparedStatement statement = connection.prepareStatement(updateBlock);
                 if (blockStack.getAmount() == 0) return;
@@ -101,7 +102,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void createBlock(BlockStack blockStack) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String createSpawner = "INSERT INTO " + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, blockStack.getAmount());
@@ -122,7 +123,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void createHostEntity(ColdEntityStack stack) {
         this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (stack == null || stack.getHostUniqueId() == null) return;
@@ -155,7 +156,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void createStackedEntities(ColdEntityStack hostStack, List<StackedEntity> stackedEntities) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String createSerializedEntity = "REPLACE INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (hostStack.getHostUniqueId() == null) return;
@@ -174,7 +175,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void updateHost(ColdEntityStack hostStack) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String updateHost = "UPDATE " + this.getTablePrefix() + "host_entities SET uuid = ?, create_duplicates = ?, updated_at = current_timestamp WHERE id = ?";
                 PreparedStatement statement = connection.prepareStatement(updateHost);
                 if (hostStack.getHostUniqueId() == null) return;
@@ -190,7 +191,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void deleteHost(ColdEntityStack stack) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String deleteHost = "DELETE FROM " + this.getTablePrefix() + "host_entities WHERE id = ?";
                 try (PreparedStatement statement = connection.prepareStatement(deleteHost)) {
                     statement.setInt(1, stack.getId());
@@ -213,7 +214,7 @@ public class DataManager extends DataManagerAbstract {
             return;
 
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String deleteStackedEntity = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE uuid = ?";
                 PreparedStatement statement = connection.prepareStatement(deleteStackedEntity);
                 statement.setString(1, uuid.toString());
@@ -226,7 +227,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void deleteStackedEntities(List<StackedEntity> entities) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String deleteStackedEntities = "DELETE FROM " + this.getTablePrefix() + "stacked_entities WHERE uuid = ?";
                 PreparedStatement statement = connection.prepareStatement(deleteStackedEntities);
                 for (StackedEntity entity : entities) {
@@ -243,7 +244,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void deleteSpawner(SpawnerStack spawnerStack) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String deleteSpawner = "DELETE FROM " + this.getTablePrefix() + "spawners WHERE id = ?";
                 PreparedStatement statement = connection.prepareStatement(deleteSpawner);
                 statement.setInt(1, spawnerStack.getId());
@@ -256,7 +257,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void deleteBlock(BlockStack blockStack) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
                 String deleteBlock = "DELETE FROM " + this.getTablePrefix() + "blocks WHERE id = ?";
                 PreparedStatement statement = connection.prepareStatement(deleteBlock);
                 statement.setInt(1, blockStack.getId());
@@ -269,7 +270,7 @@ public class DataManager extends DataManagerAbstract {
 
     public void getEntities(Consumer<Map<Integer, ColdEntityStack>> callback) {
        this.runAsync(() -> {
-            try (Connection connection = this.databaseConnector.getConnection()){
+            try (Connection connection = this.databaseConnector.getConnection()) {
 
                 Map<Integer, ColdEntityStack> entities = new HashMap<>();
 

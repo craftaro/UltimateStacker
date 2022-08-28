@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.stackable.entity;
 
+import com.google.common.base.Throwables;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
 import com.songoda.core.lootables.loot.DropUtils;
@@ -94,7 +95,6 @@ public class EntityStack extends ColdEntityStack {
     }
 
     private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
-        plugin.getEntityStackManager().removeStack(event.getEntity());
         plugin.getDataManager().deleteHost(this);
 
         List<Drop> preStackedDrops = new ArrayList<>();
@@ -124,6 +124,7 @@ public class EntityStack extends ColdEntityStack {
 
         if (killed.getKiller() == null) return;
         plugin.addExp(killed.getKiller(), this);
+        plugin.getEntityStackManager().removeStack(event.getEntity());
     }
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, int droppedExp, EntityDeathEvent event) {

@@ -5,6 +5,7 @@ import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
@@ -54,7 +55,7 @@ public class CommandSpawn extends AbstractCommand {
             }
             sender.sendMessage(TextUtils.formatText("&6" + list));
         } else {
-            LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getTargetBlock((Set<Material>)null, 200).getLocation(), type);
+            LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getLocation(), type);
             EntityStack stack = plugin.getEntityStackManager().addStack(entity);
             stack.createDuplicates(((Methods.isInt(args[1])) ? Integer.parseInt(args[1]) : 1) - 1);
             stack.updateStack();

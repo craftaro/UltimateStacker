@@ -7,6 +7,7 @@ import com.songoda.core.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -153,8 +154,9 @@ public class DeathListeners implements Listener {
         if (!plugin.getEntityStackManager().isStackedAndLoaded(entity)) return;
         EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 
-        if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean()) {
-            Player player = (Player) event.getDamager();
+        Player player = (Player) event.getDamager();
+
+        if (Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean() && Settings.REALISTIC_DAMAGE.getBoolean() && !player.getGameMode().equals(GameMode.CREATIVE)) {
             ItemStack tool = player.getInventory().getItemInHand();
             if (tool.getType().getMaxDurability() < 1 || (tool.getItemMeta() != null && (tool.getItemMeta().isUnbreakable()
                     || (ServerProject.isServer(ServerProject.SPIGOT, ServerProject.PAPER) && tool.getItemMeta().isUnbreakable()))))

@@ -17,7 +17,32 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Ageable;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Cat;
+import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Llama;
+import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Parrot;
+import org.bukkit.entity.Phantom;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.PufferFish;
+import org.bukkit.entity.Rabbit;
+import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Skeleton;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Snowman;
+import org.bukkit.entity.Tameable;
+import org.bukkit.entity.TropicalFish;
+import org.bukkit.entity.Villager;
+import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -30,6 +55,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class StackingTask extends BukkitRunnable {
 
@@ -42,7 +70,7 @@ public class StackingTask extends BukkitRunnable {
 
     private final Map<CachedChunk, Entity[]> cachedChunks = new HashMap<>();
 
-    private final HashMap<EntityType, Integer> entityStackSizes = new HashMap();
+    private final Map<EntityType, Integer> entityStackSizes = new HashMap<>();
     private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt(),
             minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt(),
             searchRadius = Settings.SEARCH_RADIUS.getInt(),
@@ -83,11 +111,10 @@ public class StackingTask extends BukkitRunnable {
             // Get the loaded entities from the current world and reverse them.
             List<LivingEntity> entities;
             try {
-                entities = sWorld.getLivingEntities();
-            } catch (Exception ignored) {
+                entities = getLivingEntitiesSync(sWorld).get();
+            } catch (ExecutionException | InterruptedException ex) {
+                ex.printStackTrace();
                 continue;
-                // Sometimes accessing this method asynchronously throws an error. This is super rare and
-                // as such doesn't really affect the plugin so we're just going to ignore this failure.
             }
             Collections.reverse(entities);
 
@@ -111,6 +138,20 @@ public class StackingTask extends BukkitRunnable {
         // Clear caches in preparation for the next run.
         this.processed.clear();
         this.cachedChunks.clear();
+    }
+
+    private Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
+        CompletableFuture<List<LivingEntity>> future = new CompletableFuture<>();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
+
+        return future;
+    }
+
+    private Future<Entity[]> getEntitiesInChunkSync(CachedChunk cachedChunk) {
+        CompletableFuture<Entity[]> future = new CompletableFuture<>();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(cachedChunk.getEntities()));
+
+        return future;
     }
 
     public boolean isWorldDisabled(World world) {
@@ -367,19 +408,21 @@ public class StackingTask extends BukkitRunnable {
         List<LivingEntity> entities = new ArrayList<>();
         for (CachedChunk chunk : getNearbyChunks(sWorld, location, radius, singleChunk)) {
             if (chunk == null) continue;
-            Entity[] entityArray = new Entity[0];
+            Entity[] entityArray;
             if (cachedChunks.containsKey(chunk)) {
                 entityArray = cachedChunks.get(chunk);
             } else {
                 try {
-                    entityArray = chunk.getEntities();
+                    entityArray = getEntitiesInChunkSync(chunk).get();
                     cachedChunks.put(chunk, entityArray);
-                } catch (Exception ignored) {
-                    // Sometimes accessing this method asynchronously throws an error. This is super rare and
-                    // as such doesn't really affect the plugin so we're just going to ignore this failure.
+                } catch (ExecutionException | InterruptedException ex) {
+                    ex.printStackTrace();
+                    continue;
                 }
             }
+
             if (entityArray == null) continue;
+
             for (Entity e : entityArray) {
                 if (e == null) continue;
                 if (e.getWorld() != location.getWorld()
@@ -388,6 +431,7 @@ public class StackingTask extends BukkitRunnable {
                 entities.add((LivingEntity) e);
             }
         }
+
         return entities;
     }
 

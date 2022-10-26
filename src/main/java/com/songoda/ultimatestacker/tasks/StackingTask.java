@@ -284,6 +284,10 @@ public class StackingTask extends BukkitRunnable {
                 // Make the friend the new stack host.
                 EntityStack newStack = stackManager.updateStack(livingEntity, entity);
 
+                if (newStack == null) {
+                    continue;
+                }
+
                 // Add our entity to that stack
                 plugin.getDataManager().createStackedEntity(newStack, newStack.addEntityToStack(livingEntity));
 

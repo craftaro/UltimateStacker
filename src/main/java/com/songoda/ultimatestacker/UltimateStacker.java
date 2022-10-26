@@ -49,6 +49,7 @@ import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -381,6 +382,19 @@ public class UltimateStacker extends SongodaPlugin {
     }
 
     //////// Convenient API //////////
+
+    /**
+     * Spawn a stacked item at a location
+     *
+     * @param item     The item to spawn
+     * @param amount   The amount of items to spawn
+     * @param location The location to spawn the item
+     */
+    public static void spawnStackedItem(ItemStack item, int amount, Location location) {
+        location.getWorld().dropItem(location, item, dropped -> {
+            updateItemAmount(dropped, amount);
+        });
+    }
 
     /**
      * Change the stacked amount for this item

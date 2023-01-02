@@ -83,6 +83,11 @@ public class ItemListeners implements Listener {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
 
-        UltimateStacker.updateItemAmount(event.getEntity(), itemStack, itemStack.getAmount());
+        if (UltimateStacker.hasCustomAmount(event.getEntity())) {
+            UltimateStacker.updateItemAmount(event.getEntity(), itemStack, UltimateStacker.getActualItemAmount(event.getEntity()) + itemStack.getAmount());
+        } else {
+            UltimateStacker.updateItemAmount(event.getEntity(), itemStack, itemStack.getAmount());
+        }
+
     }
 }

@@ -19,11 +19,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class LootablesManager {
 
@@ -41,7 +43,7 @@ public class LootablesManager {
     public List<Drop> getDrops(LivingEntity entity) {
         List<Drop> toDrop = new ArrayList<>();
 
-        if (entity instanceof Ageable && !((Ageable) entity).isAdult()
+        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
                 || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
 
         Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
@@ -63,7 +65,7 @@ public class LootablesManager {
         if (entity instanceof Sheep) {
             modify = (Loot loot2) -> {
                 CompatibleMaterial material = loot2.getMaterial();
-                if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
+                if (material != null && material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
                     if (((Sheep) entity).isSheared()) return null;
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
                         loot2.setMaterial(CompatibleMaterial.valueOf(((Sheep) entity).getColor() + "_WOOL"));
@@ -94,6 +96,72 @@ public class LootablesManager {
                 rerollChance,
                 looting);
     }
+
+    public List<Drop> getDrops(LivingEntity entity, int times) {
+        List<Drop> toDrop = new ArrayList<>();
+        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
+                || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
+
+        Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
+        int looting = entity.getKiller() != null
+                && entity.getKiller().getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)
+                ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
+                : 0;
+
+        int rerollChance = Settings.REROLL.getBoolean() ? looting / (looting + 1) : 0;
+
+        Random random = new Random();
+        for (Loot loot : lootable.getRegisteredLoot()) {
+            List<Drop> drops = runLoot(entity, loot, rerollChance, looting);
+            drops.forEach(drop -> {
+                int max = 2 * (int)(times * 0.55); //this generates more than the original, we need to reduce it
+                int amount = random.nextInt((max - times) + 1) + times;
+                if (loot.getChance() > 0) {
+                    amount = (int)(amount * loot.getChance()/100);
+                }
+                drop.getItemStack().setAmount(amount);
+                toDrop.add(drop);
+            });
+        }
+        if (toDrop.isEmpty()) {
+            return getDrops(entity, times);
+        }
+        return toDrop;
+    }
+
+    public List<Drop> getDrops(LivingEntity entity, int times, int attempts) {
+        attempts--;
+        List<Drop> toDrop = new ArrayList<>();
+        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
+                || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
+
+        Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
+        int looting = entity.getKiller() != null
+                && entity.getKiller().getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)
+                ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
+                : 0;
+
+        int rerollChance = Settings.REROLL.getBoolean() ? looting / (looting + 1) : 0;
+
+        Random random = new Random();
+        for (Loot loot : lootable.getRegisteredLoot()) {
+            List<Drop> drops = runLoot(entity, loot, rerollChance, looting);
+            drops.forEach(drop -> {
+                int max = 2 * (int)(times * 0.55); //this generates more than the original, we need to reduce it
+                int amount = random.nextInt((max - times) + 1) + times;
+                if (loot.getChance() > 0) {
+                    amount = (int)(amount * loot.getChance()/100);
+                }
+                drop.getItemStack().setAmount(amount);
+                toDrop.add(drop);
+            });
+        }
+        if (toDrop.isEmpty() && attempts > 0) {
+            return getDrops(entity, times, 2);
+        }
+        return toDrop;
+    }
+
 
     public void createDefaultLootables() {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {

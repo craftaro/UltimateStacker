@@ -11,6 +11,7 @@ import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
+import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.CachedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

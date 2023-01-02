@@ -2,7 +2,7 @@
     <groupId>com.songoda</groupId>
     <artifactId>UltimateStacker</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <version>2.3.1</version>
+    <version>2.3.2</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>UltimateStacker-${project.version}</finalName>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
-            <version>2.6.17-SNAPSHOT</version>
+            <version>2.6.17</version>
             <scope>compile</scope>
         </dependency>
 
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>io.lumine</groupId>
             <artifactId>Mythic-Dist</artifactId>
-            <version>4.13.0</version>
+            <version>5.2.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

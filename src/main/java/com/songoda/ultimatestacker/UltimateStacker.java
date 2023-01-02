@@ -27,6 +27,7 @@ import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
 import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
 import com.songoda.ultimatestacker.database.migrations._4_DataPurge;
+import com.songoda.ultimatestacker.database.migrations._5_StackedEntitiesTableUpdate;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
@@ -46,6 +47,7 @@ import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
+import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
@@ -104,6 +106,7 @@ public class UltimateStacker extends SongodaPlugin {
     public void onPluginDisable() {
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
         HologramManager.removeAllHolograms();
+        Async.shutdown();
     }
 
     @Override
@@ -227,7 +230,8 @@ public class UltimateStacker extends SongodaPlugin {
                 new _1_InitialMigration(),
                 new _2_EntityStacks(),
                 new _3_BlockStacks(),
-                new _4_DataPurge());
+                new _4_DataPurge(),
+                new _5_StackedEntitiesTableUpdate());
         this.dataMigrationManager.runMigrations();
     }
 
@@ -392,7 +396,7 @@ public class UltimateStacker extends SongodaPlugin {
      */
     public static void spawnStackedItem(ItemStack item, int amount, Location location) {
         location.getWorld().dropItem(location, item, dropped -> {
-            updateItemAmount(dropped, amount);
+            updateItemMeta(dropped, item, amount);
         });
     }
 

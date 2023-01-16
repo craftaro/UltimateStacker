@@ -29,7 +29,7 @@ public class CustomEntityManager {
 
     public CustomEntity getCustomEntity(Entity entity) {
         for (CustomEntity customEntity : registeredCustomEntities) {
-            if (customEntity.isMatchingType(entity)) {
+            if (customEntity.isMatchingType(entity) && customEntity.isCustomEntity(entity)) {
                 if (Settings.BLACKLISTED_CUSTOM_ENTITIES.getStringList()
                         .contains((customEntity.getPluginName() + "_" + customEntity.getNBTIdentifier(entity)).toLowerCase()))
                     continue;
@@ -41,5 +41,9 @@ public class CustomEntityManager {
 
     public List<CustomEntity> getRegisteredCustomEntities() {
         return Collections.unmodifiableList(registeredCustomEntities);
+    }
+
+    public boolean isCustomEntity(Entity entity) {
+        return getCustomEntity(entity) != null && getCustomEntity(entity).isCustomEntity(entity);
     }
 }

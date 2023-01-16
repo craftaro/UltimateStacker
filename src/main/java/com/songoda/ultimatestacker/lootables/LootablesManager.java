@@ -11,6 +11,8 @@ import com.songoda.core.lootables.loot.LootManager;
 import com.songoda.core.lootables.loot.Lootable;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;
@@ -21,11 +23,13 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Sheep;
 import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class LootablesManager {
 
@@ -98,35 +102,7 @@ public class LootablesManager {
     }
 
     public List<Drop> getDrops(LivingEntity entity, int times) {
-        List<Drop> toDrop = new ArrayList<>();
-        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
-                || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
-
-        Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
-        int looting = entity.getKiller() != null
-                && entity.getKiller().getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)
-                ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
-                : 0;
-
-        int rerollChance = Settings.REROLL.getBoolean() ? looting / (looting + 1) : 0;
-
-        Random random = new Random();
-        for (Loot loot : lootable.getRegisteredLoot()) {
-            List<Drop> drops = runLoot(entity, loot, rerollChance, looting);
-            drops.forEach(drop -> {
-                int max = 2 * (int)(times * 0.55); //this generates more than the original, we need to reduce it
-                int amount = random.nextInt((max - times) + 1) + times;
-                if (loot.getChance() > 0) {
-                    amount = (int)(amount * loot.getChance()/100);
-                }
-                drop.getItemStack().setAmount(amount);
-                toDrop.add(drop);
-            });
-        }
-        if (toDrop.isEmpty()) {
-            return getDrops(entity, times);
-        }
-        return toDrop;
+        return getDrops(entity, times, 3);
     }
 
     public List<Drop> getDrops(LivingEntity entity, int times, int attempts) {
@@ -141,23 +117,56 @@ public class LootablesManager {
                 ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
                 : 0;
 
-        int rerollChance = Settings.REROLL.getBoolean() ? looting / (looting + 1) : 0;
+        double extraChance = looting / (looting + 1.0);
 
         Random random = new Random();
-        for (Loot loot : lootable.getRegisteredLoot()) {
-            List<Drop> drops = runLoot(entity, loot, rerollChance, looting);
-            drops.forEach(drop -> {
-                int max = 2 * (int)(times * 0.55); //this generates more than the original, we need to reduce it
-                int amount = random.nextInt((max - times) + 1) + times;
-                if (loot.getChance() > 0) {
-                    amount = (int)(amount * loot.getChance()/100);
-                }
-                drop.getItemStack().setAmount(amount);
-                toDrop.add(drop);
-            });
+        boolean isCharged = entity instanceof Creeper && ((Creeper) entity).isPowered();
+
+        //Run main loot
+        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() != null).collect(Collectors.toList())) {
+            if (loot.isRequireCharged() && !isCharged) continue;
+            if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+            int finalLooting = loot.isAllowLootingEnchant() ? looting : 0;
+
+            int max = (int) (((loot.getMax() + finalLooting) * times) * (loot.getChance()/100));
+            int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
+
+            int amount = random.nextInt((max - min) + 1) + min;
+
+            if (amount > 0) {
+                ItemStack item = entity.getFireTicks() > 0
+                        ? loot.getBurnedMaterial() != null ? loot.getBurnedMaterial().getItem() : loot.getMaterial().getItem()
+                        : loot.getMaterial().getItem().clone();
+                item.setAmount(amount);
+                toDrop.add(new Drop(item));
+            }
         }
+        //Run child loot
+        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() == null).collect(Collectors.toList())) {
+            for (Loot child : loot.getChildLoot()) {
+                if (child.isRequireCharged() && !isCharged) continue;
+                if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+
+                int finalLooting = child.isAllowLootingEnchant() ? looting : 0;
+
+                int max = (int) (((loot.getMax() + finalLooting) * times * (loot.getChance()/100)));
+                int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
+                min = (int) (min - min*0.90);
+
+                int amount = random.nextInt((max - min) + 1) + min;
+
+                if (amount > 0) {
+                    ItemStack item = entity.getFireTicks() > 0
+                            ? child.getBurnedMaterial() != null ? child.getBurnedMaterial().getItem() : child.getMaterial().getItem()
+                            : child.getMaterial().getItem().clone();
+                    item.setAmount(amount);
+                    toDrop.add(new Drop(item));
+                }
+            }
+        }
+
         if (toDrop.isEmpty() && attempts > 0) {
-            return getDrops(entity, times, 2);
+            return getDrops(entity, times, attempts);
         }
         return toDrop;
     }

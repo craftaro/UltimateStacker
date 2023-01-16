@@ -8,6 +8,7 @@ import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 public class MythicMobsCustomEntity extends CustomEntity {
@@ -37,7 +38,7 @@ public class MythicMobsCustomEntity extends CustomEntity {
 
     @Override
     public boolean isSimilar(LivingEntity original, LivingEntity entity) {
-        if (!isMatchingType(original) || !isMatchingType(entity)) return false;
+        if (!isMatchingType(original) || !isMatchingType(entity) || getMob(entity) == null) return false;
         return getMob(original).getType().equals(getMob(entity).getType());
     }
 
@@ -48,10 +49,15 @@ public class MythicMobsCustomEntity extends CustomEntity {
 
     @Override
     public LivingEntity spawnFromIdentifier(String string, Location location) {
-        if (!getMobManager().getMythicMob(string).isPresent()) {
+        if (getMobManager().getMythicMob(string).isPresent()) {
             return null;
         }
         return (LivingEntity)getMobManager().getMythicMob(string).get().spawn(BukkitAdapter.adapt(location), 1).getEntity().getBukkitEntity();
+    }
+
+    @Override
+    public boolean isCustomEntity(Entity entity) {
+        return getMob(entity) != null;
     }
 
     private ActiveMob getMob(Entity entity) {

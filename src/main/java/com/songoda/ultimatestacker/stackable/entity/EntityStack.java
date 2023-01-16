@@ -11,6 +11,7 @@ import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -62,7 +63,7 @@ public class EntityStack extends ColdEntityStack {
         Async.run(() -> {
             if (createDuplicates != 0) {
                 List<StackedEntity> stackedEntities = new ArrayList<>();
-                long start = System.currentTimeMillis();
+
                 for (int i = 0; i < createDuplicates; i++) {
                     StackedEntity entity = addEntityToStackSilently(getStackedEntity(hostEntity, true));
                     if (entity != null)
@@ -71,15 +72,20 @@ public class EntityStack extends ColdEntityStack {
                 plugin.getDataManager().createStackedEntities(this, stackedEntities);
 
                 createDuplicates = 0;
+                updateNametag();
             }
-            if (!Settings.ENTITY_NAMETAGS.getBoolean()) return;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), () -> {
-                if (hostEntity == null) return;
-
-                hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
-                hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));
-            }, hostEntity == null ? 1L : 0L);
         });
+        updateNametag();
+    }
+
+    public void updateNametag() {
+        if (hostEntity == null) {
+            //Delay with 1 tick to make sure the entity is loaded.
+            Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), this::updateNametag, 1L);
+            return;
+        }
+        hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
+        hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));
     }
 
     public LivingEntity getHostEntity() {

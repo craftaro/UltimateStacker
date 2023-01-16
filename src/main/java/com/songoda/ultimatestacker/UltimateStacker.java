@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class UltimateStacker extends SongodaPlugin {
@@ -104,6 +105,8 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onPluginDisable() {
+        this.stackingTask.cancel();
+        this.stackingTask = null;
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
         HologramManager.removeAllHolograms();
         Async.shutdown();
@@ -395,7 +398,9 @@ public class UltimateStacker extends SongodaPlugin {
      * @param location The location to spawn the item
      */
     public static void spawnStackedItem(ItemStack item, int amount, Location location) {
-        location.getWorld().dropItem(location, item, dropped -> {
+        if (item.getType() == Material.AIR) return;
+        Objects.requireNonNull(location.getWorld()).dropItem(location, item, dropped -> {
+            if (dropped.getItemStack().getType() == Material.AIR) return;
             updateItemMeta(dropped, item, amount);
         });
     }

@@ -63,6 +63,9 @@ public class DeathListeners implements Listener {
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
+        //Respect MythicMobs
+        if (plugin.getCustomEntityManager().isCustomEntity(entity)) return;
+
         boolean custom = Settings.CUSTOM_DROPS.getBoolean();
         List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
                 : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());

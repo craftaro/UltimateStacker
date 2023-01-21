@@ -53,6 +53,7 @@ import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -399,10 +400,18 @@ public class UltimateStacker extends SongodaPlugin {
      */
     public static void spawnStackedItem(ItemStack item, int amount, Location location) {
         if (item.getType() == Material.AIR) return;
-        Objects.requireNonNull(location.getWorld()).dropItem(location, item, dropped -> {
+        World world = location.getWorld();
+        if (world == null) return;
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {
+            world.dropItem(location, item, dropped -> {
+                if (dropped.getItemStack().getType() == Material.AIR) return;
+                updateItemMeta(dropped, item, amount);
+            });
+        } else {
+            Item dropped = world.dropItem(location, item);
             if (dropped.getItemStack().getType() == Material.AIR) return;
             updateItemMeta(dropped, item, amount);
-        });
+        }
     }
 
     /**

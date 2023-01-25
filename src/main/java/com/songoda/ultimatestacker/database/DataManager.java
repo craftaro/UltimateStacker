@@ -69,7 +69,7 @@ public class DataManager extends DataManagerAbstract {
     public void createSpawner(SpawnerStack spawnerStack) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSpawner = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
+                String createSpawner = "INSERT " + getSyntax("INTO ", DatabaseType.MYSQL) + getSyntax("OR REPLACE INTO ", DatabaseType.SQLITE) + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, spawnerStack.getAmount());
 
@@ -104,7 +104,7 @@ public class DataManager extends DataManagerAbstract {
     public void createBlock(BlockStack blockStack) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSpawner = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
+                String createSpawner = "INSERT " + getSyntax("INTO ", DatabaseType.MYSQL) + getSyntax("OR REPLACE INTO ", DatabaseType.SQLITE) + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, blockStack.getAmount());
                 statement.setString(2, blockStack.getMaterial().name());
@@ -125,7 +125,7 @@ public class DataManager extends DataManagerAbstract {
     public void createHostEntity(ColdEntityStack stack) {
         this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSerializedEntity = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
+                String createSerializedEntity = "INSERT " + getSyntax("INTO ", DatabaseType.MYSQL) + getSyntax("OR REPLACE INTO ", DatabaseType.SQLITE) + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (stack == null || stack.getHostUniqueId() == null) return;
                 statement.setString(1, stack.getHostUniqueId().toString());
@@ -142,7 +142,7 @@ public class DataManager extends DataManagerAbstract {
     public void createStackedEntity(EntityStack hostStack, StackedEntity stackedEntity) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()){
-                String createSerializedEntity = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?) "
+                String createSerializedEntity = "INSERT " + getSyntax("INTO ", DatabaseType.MYSQL) + getSyntax("OR REPLACE INTO ", DatabaseType.SQLITE) + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?) "
                         + (Settings.MYSQL_ENABLED.getBoolean() ? "ON DUPLICATE KEY UPDATE host = ?, serialized_entity = ?" : "ON CONFLICT(uuid) DO UPDATE SET host = ?, serialized_entity = ?");
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (hostStack.getHostUniqueId() == null) return;

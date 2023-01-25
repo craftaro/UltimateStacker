@@ -16,6 +16,9 @@ public class _5_StackedEntitiesTableUpdate extends DataMigration {
         public void migrate(Connection connection, String tablePrefix) throws SQLException {
             try (Statement statement = connection.createStatement()) {
                 statement.execute("ALTER TABLE " + tablePrefix + "stacked_entities MODIFY serialized_entity VARBINARY(9999)");
+            } catch (SQLException e) {
+                // Ignore
+                //TODO fix it for sqlite
             }
         }
 }

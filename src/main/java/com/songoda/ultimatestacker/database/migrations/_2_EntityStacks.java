@@ -20,7 +20,7 @@ public class _2_EntityStacks extends DataMigration {
 
         // Create host entities table
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "host_entities (" +
+            statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "host_entities (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "uuid VARCHAR(36) NOT NULL," +
                     "create_duplicates INTEGER NOT NULL DEFAULT 0" +
@@ -29,7 +29,7 @@ public class _2_EntityStacks extends DataMigration {
 
         // Create stacked entities table
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "stacked_entities (" +
+            statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "stacked_entities (" +
                     "uuid VARCHAR(36) PRIMARY KEY NOT NULL," +
                     "host INTEGER NOT NULL," +
                     "serialized_entity VARBINARY(9999) NOT NULL" +

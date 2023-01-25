@@ -18,6 +18,8 @@ public class _4_DataPurge extends DataMigration {
     public void migrate(Connection connection, String tablePrefix) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute("ALTER TABLE " + tablePrefix + "host_entities ADD COLUMN updated_at datetime DEFAULT NULL");
+        } catch (SQLException e) {
+            // Ignore
         }
     }
 }

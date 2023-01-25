@@ -20,7 +20,7 @@ public class _1_InitialMigration extends DataMigration {
 
         // Create spawners table
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "spawners (" +
+            statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "spawners (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "amount INTEGER NOT NULL," +
                     "world TEXT NOT NULL, " +

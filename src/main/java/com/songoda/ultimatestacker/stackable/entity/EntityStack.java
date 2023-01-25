@@ -63,16 +63,19 @@ public class EntityStack extends ColdEntityStack {
         Async.run(() -> {
             if (createDuplicates != 0) {
                 List<StackedEntity> stackedEntities = new ArrayList<>();
+                try {
+                    for (int i = 0; i < createDuplicates; i++) {
+                        StackedEntity entity = addEntityToStackSilently(getStackedEntity(hostEntity, true));
+                        if (entity != null)
+                            stackedEntities.add(entity);
+                    }
+                    plugin.getDataManager().createStackedEntities(this, stackedEntities);
 
-                for (int i = 0; i < createDuplicates; i++) {
-                    StackedEntity entity = addEntityToStackSilently(getStackedEntity(hostEntity, true));
-                    if (entity != null)
-                        stackedEntities.add(entity);
+                    createDuplicates = 0;
+                    updateNametag();
+                } catch (Exception ignored) {
+                    //Ignored for now
                 }
-                plugin.getDataManager().createStackedEntities(this, stackedEntities);
-
-                createDuplicates = 0;
-                updateNametag();
             }
         });
         updateNametag();

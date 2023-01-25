@@ -116,6 +116,7 @@ public class UltimateStacker extends SongodaPlugin {
     @Override
     public void onPluginEnable() {
         // Run Songoda Updater
+        Async.start();
         SongodaCore.registerPlugin(this, 16, CompatibleMaterial.IRON_INGOT);
         // Setup Config
         Settings.setupConfig();

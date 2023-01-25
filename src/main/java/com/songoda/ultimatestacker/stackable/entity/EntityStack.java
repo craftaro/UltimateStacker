@@ -130,9 +130,9 @@ public class EntityStack extends ColdEntityStack {
         }
 
         event.getDrops().clear();
+        plugin.getEntityStackManager().removeStack(event.getEntity());
         if (killed.getKiller() == null) return;
         plugin.addExp(killed.getKiller(), this);
-        plugin.getEntityStackManager().removeStack(event.getEntity());
     }
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, int droppedExp, EntityDeathEvent event) {

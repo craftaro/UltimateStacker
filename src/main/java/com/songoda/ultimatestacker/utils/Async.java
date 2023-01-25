@@ -5,7 +5,11 @@ import java.util.concurrent.Executors;
 
 public class Async {
 
-    private static ExecutorService executor = Executors.newFixedThreadPool(10);
+    private static ExecutorService executor;
+
+    public static void start() {
+        executor = Executors.newFixedThreadPool(5);
+    }
 
     public static void run(Runnable runnable) {
         executor.execute(runnable);

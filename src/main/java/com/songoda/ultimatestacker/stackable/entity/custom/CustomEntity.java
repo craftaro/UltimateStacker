@@ -24,4 +24,6 @@ public abstract class CustomEntity {
     public abstract String getNBTIdentifier(Entity entity);
 
     public abstract LivingEntity spawnFromIdentifier(String string, Location location);
+
+    public abstract boolean isCustomEntity(Entity entity);
 }

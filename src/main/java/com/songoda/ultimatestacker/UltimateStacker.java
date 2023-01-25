@@ -27,6 +27,7 @@ import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
 import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
 import com.songoda.ultimatestacker.database.migrations._4_DataPurge;
+import com.songoda.ultimatestacker.database.migrations._5_StackedEntitiesTableUpdate;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
@@ -46,11 +47,13 @@ import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
+import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -62,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class UltimateStacker extends SongodaPlugin {
@@ -102,13 +106,17 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onPluginDisable() {
+        this.stackingTask.cancel();
+        this.stackingTask = null;
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
         HologramManager.removeAllHolograms();
+        Async.shutdown();
     }
 
     @Override
     public void onPluginEnable() {
         // Run Songoda Updater
+        Async.start();
         SongodaCore.registerPlugin(this, 16, CompatibleMaterial.IRON_INGOT);
         // Setup Config
         Settings.setupConfig();
@@ -227,7 +235,8 @@ public class UltimateStacker extends SongodaPlugin {
                 new _1_InitialMigration(),
                 new _2_EntityStacks(),
                 new _3_BlockStacks(),
-                new _4_DataPurge());
+                new _4_DataPurge(),
+                new _5_StackedEntitiesTableUpdate());
         this.dataMigrationManager.runMigrations();
     }
 
@@ -391,9 +400,19 @@ public class UltimateStacker extends SongodaPlugin {
      * @param location The location to spawn the item
      */
     public static void spawnStackedItem(ItemStack item, int amount, Location location) {
-        location.getWorld().dropItem(location, item, dropped -> {
-            updateItemAmount(dropped, amount);
-        });
+        if (item.getType() == Material.AIR) return;
+        World world = location.getWorld();
+        if (world == null) return;
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {
+            world.dropItem(location, item, dropped -> {
+                if (dropped.getItemStack().getType() == Material.AIR) return;
+                updateItemMeta(dropped, item, amount);
+            });
+        } else {
+            Item dropped = world.dropItem(location, item);
+            if (dropped.getItemStack().getType() == Material.AIR) return;
+            updateItemMeta(dropped, item, amount);
+        }
     }
 
     /**

@@ -58,7 +58,7 @@ public class ColdEntityStack implements Stackable {
         this.stackedEntities.addAll(stackedEntities);
     }
 
-    public StackedEntity addEntityToStackSilently(StackedEntity stackedEntity) {
+    public synchronized StackedEntity addEntityToStackSilently(StackedEntity stackedEntity) {
         if (stackedEntity == null) return null;
         stackedEntities.push(stackedEntity);
         return stackedEntity;
@@ -140,17 +140,15 @@ public class ColdEntityStack implements Stackable {
         return getStackedEntity(entity, false);
     }
 
-    protected StackedEntity getStackedEntity(Entity entity, boolean newUUID) {
+    protected synchronized StackedEntity getStackedEntity(Entity entity, boolean newUUID) {
+        if (entity == null) return null;
         UUID uuid = entity.getUniqueId();
         NBTEntity nbtEntity = NmsManager.getNbt().of(entity);
-        if (newUUID) {
-            uuid = UUID.randomUUID();
-            nbtEntity.set("UUID", uuid);
-        }
+
         CustomEntity customEntity = plugin.getCustomEntityManager().getCustomEntity(entity);
         if (customEntity != null)
             nbtEntity.set(customEntity.getPluginName() + "_UltimateStacker", customEntity.getNBTIdentifier(entity));
-        return new StackedEntity(uuid, nbtEntity.serialize("Attributes"));
+        return new StackedEntity(uuid, nbtEntity.serialize());
     }
 
     public int getId() {

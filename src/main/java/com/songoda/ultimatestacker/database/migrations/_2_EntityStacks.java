@@ -32,7 +32,7 @@ public class _2_EntityStacks extends DataMigration {
             statement.execute("CREATE TABLE " + tablePrefix + "stacked_entities (" +
                     "uuid VARCHAR(36) PRIMARY KEY NOT NULL," +
                     "host INTEGER NOT NULL," +
-                    "serialized_entity VARBINARY(999) NOT NULL" +
+                    "serialized_entity VARBINARY(9999) NOT NULL" +
                     ")");
         }
     }

@@ -63,6 +63,9 @@ public class DeathListeners implements Listener {
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
+        //Respect MythicMobs
+        if (plugin.getCustomEntityManager().isCustomEntity(entity)) return;
+
         boolean custom = Settings.CUSTOM_DROPS.getBoolean();
         List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
                 : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
@@ -78,11 +81,14 @@ public class DeathListeners implements Listener {
                 && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
             drops.clear();
 
-        if (plugin.getEntityStackManager().isStackedAndLoaded(event.getEntity()))
-            plugin.getEntityStackManager().getStack(event.getEntity())
-                    .onDeath(entity, drops, custom, event.getDroppedExp(), event);
-        else
-            DropUtils.processStackedDrop(event.getEntity(), drops, event);
+        if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
+            if (plugin.getEntityStackManager().isStackedAndLoaded(event.getEntity())) {
+                plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, custom, event.getDroppedExp(), event);
+            } else {
+                DropUtils.processStackedDrop(event.getEntity(), drops, event);
+            }
+        }
+
         finalItems.remove(entity.getUniqueId());
     }
 

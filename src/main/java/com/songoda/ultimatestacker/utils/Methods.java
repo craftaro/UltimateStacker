@@ -118,8 +118,9 @@ public class Methods {
         String displayName = TextUtils.formatText(UltimateStacker.getInstance().getMobFile().getString("Mobs." + entity.getType().name() + ".Display Name"));
 
         CustomEntity customEntity = UltimateStacker.getInstance().getCustomEntityManager().getCustomEntity(entity);
-        if (customEntity != null)
+        if (customEntity != null) {
             displayName = customEntity.getDisplayName(entity);
+        }
 
         nameFormat = nameFormat.replace("{TYPE}", displayName);
         nameFormat = nameFormat.replace("{AMT}", Integer.toString(amount));

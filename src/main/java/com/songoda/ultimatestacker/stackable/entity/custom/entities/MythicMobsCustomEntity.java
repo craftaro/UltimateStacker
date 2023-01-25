@@ -1,13 +1,14 @@
 package com.songoda.ultimatestacker.stackable.entity.custom.entities;
 
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.mobs.MobManager;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.mythic.api.mobs.MobManager;
+import io.lumine.mythic.bukkit.BukkitAdapter;
+import io.lumine.mythic.bukkit.MythicBukkit;
+import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 public class MythicMobsCustomEntity extends CustomEntity {
@@ -23,17 +24,21 @@ public class MythicMobsCustomEntity extends CustomEntity {
 
     @Override
     public boolean isMatchingType(Entity entity) {
-        return getMobManager().isActiveMob(entity.getUniqueId());
+        return getMobManager().getActiveMobs().stream().anyMatch(activeMob -> activeMob.getEntity().getBukkitEntity().getType().equals(entity.getType()));
     }
 
     @Override
     public String getDisplayName(Entity entity) {
-        return getMobManager().getMythicMobInstance(entity).getType().getDisplayName().toString();
+        return getMobManager().getActiveMobs().stream()
+                .filter(activeMob -> activeMob.getEntity().getBukkitEntity().getUniqueId().equals(entity.getUniqueId()))
+                .findFirst()
+                .map(ActiveMob::getMobType)
+                .orElse(null);
     }
 
     @Override
     public boolean isSimilar(LivingEntity original, LivingEntity entity) {
-        if (!isMatchingType(original) || !isMatchingType(entity)) return false;
+        if (!isMatchingType(original) || !isMatchingType(entity) || getMob(entity) == null) return false;
         return getMob(original).getType().equals(getMob(entity).getType());
     }
 
@@ -44,16 +49,22 @@ public class MythicMobsCustomEntity extends CustomEntity {
 
     @Override
     public LivingEntity spawnFromIdentifier(String string, Location location) {
-        if (getMobManager().getMobTypes().stream().map(MythicMob::getInternalName).noneMatch(t -> t.equals(string)))
+        if (getMobManager().getMythicMob(string).isPresent()) {
             return null;
-        return (LivingEntity)getMobManager().spawnMob(string, location).getEntity().getBukkitEntity();
+        }
+        return (LivingEntity)getMobManager().getMythicMob(string).get().spawn(BukkitAdapter.adapt(location), 1).getEntity().getBukkitEntity();
+    }
+
+    @Override
+    public boolean isCustomEntity(Entity entity) {
+        return getMob(entity) != null;
     }
 
     private ActiveMob getMob(Entity entity) {
-        return getMobManager().getMythicMobInstance(entity);
+        return MythicBukkit.inst().getMobManager().getMythicMobInstance(entity);
     }
 
     private MobManager getMobManager() {
-        return ((MythicMobs) plugin).getMobManager();
+        return ((MythicBukkit) plugin).getMobManager();
     }
 }

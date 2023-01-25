@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.database;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.database.DataManagerAbstract;
 import com.songoda.core.database.DatabaseConnector;
+import com.songoda.core.database.DatabaseType;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.entity.ColdEntityStack;
@@ -68,7 +69,7 @@ public class DataManager extends DataManagerAbstract {
     public void createSpawner(SpawnerStack spawnerStack) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSpawner = "INSERT INTO " + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
+                String createSpawner = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "spawners (amount, world, x, y, z) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, spawnerStack.getAmount());
 
@@ -103,7 +104,7 @@ public class DataManager extends DataManagerAbstract {
     public void createBlock(BlockStack blockStack) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSpawner = "INSERT INTO " + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
+                String createSpawner = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "blocks (amount, material, world, x, y, z) VALUES (?, ?, ?, ?, ?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSpawner);
                 statement.setInt(1, blockStack.getAmount());
                 statement.setString(2, blockStack.getMaterial().name());
@@ -124,7 +125,7 @@ public class DataManager extends DataManagerAbstract {
     public void createHostEntity(ColdEntityStack stack) {
         this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
-                String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
+                String createSerializedEntity = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "host_entities (uuid, create_duplicates) VALUES (?, ?)";
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (stack == null || stack.getHostUniqueId() == null) return;
                 statement.setString(1, stack.getHostUniqueId().toString());
@@ -141,12 +142,15 @@ public class DataManager extends DataManagerAbstract {
     public void createStackedEntity(EntityStack hostStack, StackedEntity stackedEntity) {
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()){
-                String createSerializedEntity = "INSERT INTO " + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?)";
+                String createSerializedEntity = "INSERT INTO " + getSyntax("OR REPLACE ", DatabaseType.SQLITE) + this.getTablePrefix() + "stacked_entities (uuid, host, serialized_entity) VALUES (?, ?, ?) "
+                        + (Settings.MYSQL_ENABLED.getBoolean() ? "ON DUPLICATE KEY UPDATE host = ?, serialized_entity = ?" : "ON CONFLICT(uuid) DO UPDATE SET host = ?, serialized_entity = ?");
                 PreparedStatement statement = connection.prepareStatement(createSerializedEntity);
                 if (hostStack.getHostUniqueId() == null) return;
                 statement.setString(1, stackedEntity.getUniqueId().toString());
                 statement.setInt(2, hostStack.getId());
                 statement.setBytes(3, stackedEntity.getSerializedEntity());
+                statement.setInt(4, hostStack.getId());
+                statement.setBytes(5, stackedEntity.getSerializedEntity());
                 statement.executeUpdate();
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -11,6 +11,8 @@ import com.songoda.core.lootables.loot.LootManager;
 import com.songoda.core.lootables.loot.Lootable;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;
@@ -19,11 +21,15 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Sheep;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 public class LootablesManager {
 
@@ -41,7 +47,7 @@ public class LootablesManager {
     public List<Drop> getDrops(LivingEntity entity) {
         List<Drop> toDrop = new ArrayList<>();
 
-        if (entity instanceof Ageable && !((Ageable) entity).isAdult()
+        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
                 || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
 
         Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
@@ -63,7 +69,7 @@ public class LootablesManager {
         if (entity instanceof Sheep) {
             modify = (Loot loot2) -> {
                 CompatibleMaterial material = loot2.getMaterial();
-                if (material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
+                if (material != null && material.name().contains("WOOL") && ((Sheep) entity).getColor() != null) {
                     if (((Sheep) entity).isSheared()) return null;
                     if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
                         loot2.setMaterial(CompatibleMaterial.valueOf(((Sheep) entity).getColor() + "_WOOL"));
@@ -94,6 +100,77 @@ public class LootablesManager {
                 rerollChance,
                 looting);
     }
+
+    public List<Drop> getDrops(LivingEntity entity, int times) {
+        return getDrops(entity, times, 3);
+    }
+
+    public List<Drop> getDrops(LivingEntity entity, int times, int attempts) {
+        attempts--;
+        List<Drop> toDrop = new ArrayList<>();
+        if (entity instanceof Ageable && !((Ageable) entity).isAdult() && !(entity instanceof Zombie)
+                || !lootManager.getRegisteredLootables().containsKey(entity.getType().name())) return toDrop;
+
+        Lootable lootable = lootManager.getRegisteredLootables().get(entity.getType().name());
+        int looting = entity.getKiller() != null
+                && entity.getKiller().getItemInHand().containsEnchantment(Enchantment.LOOT_BONUS_MOBS)
+                ? entity.getKiller().getItemInHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_MOBS)
+                : 0;
+
+        double extraChance = looting / (looting + 1.0);
+
+        Random random = new Random();
+        boolean isCharged = entity instanceof Creeper && ((Creeper) entity).isPowered();
+
+        //Run main loot
+        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() != null).collect(Collectors.toList())) {
+            if (loot.isRequireCharged() && !isCharged) continue;
+            if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+            int finalLooting = loot.isAllowLootingEnchant() ? looting : 0;
+
+            int max = (int) (((loot.getMax() + finalLooting) * times) * (loot.getChance()/100));
+            int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
+
+            int amount = random.nextInt((max - min) + 1) + min;
+
+            if (amount > 0) {
+                ItemStack item = entity.getFireTicks() > 0
+                        ? loot.getBurnedMaterial() != null ? loot.getBurnedMaterial().getItem() : loot.getMaterial().getItem()
+                        : loot.getMaterial().getItem().clone();
+                item.setAmount(amount);
+                toDrop.add(new Drop(item));
+            }
+        }
+        //Run child loot
+        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() == null).collect(Collectors.toList())) {
+            for (Loot child : loot.getChildLoot()) {
+                if (child.isRequireCharged() && !isCharged) continue;
+                if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+
+                int finalLooting = child.isAllowLootingEnchant() ? looting : 0;
+
+                int max = (int) (((loot.getMax() + finalLooting) * times * (loot.getChance()/100)));
+                int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
+                min = (int) (min - min*0.90);
+
+                int amount = random.nextInt((max - min) + 1) + min;
+
+                if (amount > 0) {
+                    ItemStack item = entity.getFireTicks() > 0
+                            ? child.getBurnedMaterial() != null ? child.getBurnedMaterial().getItem() : child.getMaterial().getItem()
+                            : child.getMaterial().getItem().clone();
+                    item.setAmount(amount);
+                    toDrop.add(new Drop(item));
+                }
+            }
+        }
+
+        if (toDrop.isEmpty() && attempts > 0) {
+            return getDrops(entity, times, attempts);
+        }
+        return toDrop;
+    }
+
 
     public void createDefaultLootables() {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {

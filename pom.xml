@@ -2,7 +2,7 @@
     <groupId>com.songoda</groupId>
     <artifactId>UltimateStacker</artifactId>
     <modelVersion>4.0.0</modelVersion>
-    <version>2.3.2</version>
+    <version>2.3.3</version>
     <build>
         <defaultGoal>clean install</defaultGoal>
         <finalName>UltimateStacker-${project.version}</finalName>
@@ -99,6 +99,16 @@
             <id>CodeMC</id>
             <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
+
+        <repository>
+            <id>bg-repo</id>
+            <url>https://repo.bg-software.com/repository/api/</url>
+        </repository>
+
+        <repository>
+            <id>lumine-repo</id>
+            <url>https://mvn.lumine.io/repository/maven-public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -112,14 +122,14 @@
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
-            <version>2.6.17-SNAPSHOT</version>
+            <version>2.6.18</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.bgsoftware</groupId>
-            <artifactId>wildstacker</artifactId>
-            <version>3.5.1</version>
+            <artifactId>WildStackerAPI</artifactId>
+            <version>3.8.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -139,8 +149,8 @@
 
         <dependency>
             <groupId>io.lumine</groupId>
-            <artifactId>MythicMobs</artifactId>
-            <version>4.10.1</version>
+            <artifactId>Mythic-Dist</artifactId>
+            <version>5.2.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.Collection;
@@ -17,157 +18,92 @@ import java.util.UUID;
 
 public class EntityStackManager {
 
-    // These are all stacked mobs loaded into memory.
-    private static final Map<UUID, EntityStack> stacks = new HashMap<>();
-
-    // This will only be used for stacks that have not yet been loaded into the game.
-    private static final Map<UUID, ColdEntityStack> coldStacks = new HashMap<>();
-
     private final UltimateStacker plugin;
 
     public EntityStackManager(UltimateStacker plugin) {
         this.plugin = plugin;
     }
 
-    public EntityStack addStack(EntityStack stack) {
-        stacks.put(stack.getHostEntity().getUniqueId(), stack);
-        return stack;
+    public EntityStack createStack(LivingEntity entity, int amount) {
+        return new EntityStack(entity, amount);
+    }
+
+    public boolean isStackedEntity(Entity entity) {
+        return entity.hasMetadata("US_AMOUNT");
+    }
+
+    public int getAmount(Entity entity) {
+        if (!isStackedEntity(entity)) return 1;
+        if (entity.getMetadata("US_AMOUNT").isEmpty()) return 1;
+        return entity.getMetadata("US_AMOUNT").get(0).asInt();
     }
 
     public EntityStack addStack(LivingEntity entity) {
-        if (entity == null) return null;
-        EntityStack stack = new EntityStack(entity);
-        plugin.getDataManager().createHostEntity(stack);
-        stacks.put(entity.getUniqueId(), stack);
-        return stack;
+        return addStack(entity, getAmount(entity) == 1 ? 1 : getAmount(entity));
     }
 
     public EntityStack addStack(LivingEntity entity, int amount) {
         if (entity == null) return null;
-        EntityStack stack = new EntityStack(entity);
-        plugin.getDataManager().createHostEntity(stack);
-        stacks.put(entity.getUniqueId(), stack);
-        stack.createDuplicates(amount - 1);
-        plugin.getDataManager().updateHost(stack);
-        stack.updateStack();
-        return stack;
-    }
-
-    @Deprecated
-    public EntityStack addSerializedStack(LivingEntity entity, String customName) {
-        if (customName != null && customName.contains(String.valueOf(ChatColor.COLOR_CHAR))) {
-            String name = customName.replace(String.valueOf(ChatColor.COLOR_CHAR), "")
-                    .replace(";", "");
-            if (!name.contains(":")) return null;
-            String split = name.split(":")[0];
-            int amount = Methods.isInt(split) ? Integer.parseInt(split) : 0;
-            return addStack(entity, amount);
+        if (isStackedEntity(entity)) {
+            EntityStack stack = getStack(entity);
+            stack.addEntityToStack(amount);
+            return stack;
         }
         return null;
     }
 
-    @Deprecated
-    public EntityStack addSerializedStack(LivingEntity entity) {
-        return addSerializedStack(entity, entity.getCustomName());
+    public EntityStack getStack(UUID uuid) {
+        Entity entity = Bukkit.getEntity(uuid);
+        if (entity == null) return null;
+        if (isStackedEntity(entity)) {
+            if (entity instanceof LivingEntity) {
+                return new EntityStack((LivingEntity) entity);
+            }
+        }
+        return null;
     }
 
     public EntityStack getStack(LivingEntity entity) {
-        EntityStack stack = getStack(entity.getUniqueId());
-        if (stack == null) stack = addSerializedStack(entity);
+        if (!isStackedEntity(entity)) return null;
+        return new EntityStack(entity);
+    }
+
+    public EntityStack decreaseStack(Entity entity) {
+        EntityStack stack = getStack((LivingEntity) entity);
+        if (stack == null) return null;
+        stack.removeEntityFromStack(1);
         return stack;
     }
 
-    public EntityStack getStack(UUID uuid) {
-        return stacks.get(uuid);
-    }
-
-    public EntityStack removeStack(Entity entity) {
-        return removeStack(entity.getUniqueId());
-    }
-
-    public EntityStack removeStack(UUID uuid) {
-        EntityStack stack = stacks.remove(uuid);
-        if (stack != null) {
-            plugin.getDataManager().deleteHost(stack);
-            stack.destroy();
-        }
-
+    public EntityStack decreaseStack(Entity entity, int amount) {
+        EntityStack stack = getStack((LivingEntity) entity);
+        if (stack == null) return null;
+        stack.removeEntityFromStack(amount);
         return stack;
     }
 
-    public Map<UUID, EntityStack> getStacks() {
-        return Collections.unmodifiableMap(stacks);
+    public EntityStack updateStack(LivingEntity entity) {
+        EntityStack stack = getStack(entity);
+        if (stack == null) return null;
+        stack.updateNameTag();
+        return stack;
     }
 
     public EntityStack updateStack(LivingEntity oldEntity, LivingEntity newEntity) {
-        EntityStack stack = stacks.remove(oldEntity.getUniqueId());
+        EntityStack stack = getStack(oldEntity);
         if (stack == null) return null;
-        stack.setHostEntity(newEntity);
-        stacks.put(newEntity.getUniqueId(), stack);
-        plugin.getDataManager().updateHost(stack);
-        return stack;
-    }
-
-    @Deprecated
-    public boolean isStacked(UUID entity) {
-        return isStackedAndLoaded(entity);
-    }
-
-    public boolean isStackedAndLoaded(LivingEntity entity) {
-        return stacks.containsKey(entity.getUniqueId());
-    }
-
-    public boolean isStackedAndLoaded(UUID entity) {
-        return stacks.containsKey(entity);
-    }
-
-    public boolean isEntityInColdStorage(UUID entity) {
-        return coldStacks.containsKey(entity);
-    }
-
-    public boolean isEntityInColdStorage(LivingEntity entity) {
-        return isEntityInColdStorage(entity.getUniqueId());
-    }
-
-    public void loadStack(LivingEntity entity) {
-        ColdEntityStack coldStack = coldStacks.get(entity.getUniqueId());
-        if (coldStack == null) return;
-        EntityStack stack = new EntityStack(entity, coldStack);
-        stack.updateStack();
-        stacks.put(entity.getUniqueId(), stack);
-        plugin.getDataManager().updateHost(coldStack);
-    }
-
-    public void unloadStack(LivingEntity entity) {
-        EntityStack stack = stacks.get(entity.getUniqueId());
-        if (stack == null) return;
-        ColdEntityStack coldStack = new EntityStack(entity, stack);
+        int amount = stack.getAmount();
         stack.destroy();
-        coldStacks.put(entity.getUniqueId(), coldStack);
+        return createStack(newEntity, amount);
     }
 
-    public void addStacks(Collection<ColdEntityStack> entities) {
-        for (ColdEntityStack stack : entities)
-            coldStacks.put(stack.hostUniqueId, stack);
-    }
-
-    public ColdEntityStack addLegacyColdStack(UUID entity, int amount) {
-        ColdEntityStack stack = new ColdEntityStack(entity);
-        plugin.getDataManager().createHostEntity(stack);
-        stack.createDuplicates(amount - 1);
-        plugin.getDataManager().updateHost(stack);
-        coldStacks.put(entity, stack);
-        return stack;
-    }
-
-    public void tryAndLoadColdEntities() {
-        for (World world : Bukkit.getWorlds()) {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                for (Entity entity : chunk.getEntities()) {
-                    if (entity instanceof LivingEntity)
-                        loadStack((LivingEntity)entity);
-                }
-            }
+    public void setStack(LivingEntity newEntity, int amount) {
+        if (isStackedEntity(newEntity)) {
+            EntityStack stack = getStack(newEntity);
+            stack.setAmount(amount);
+            System.err.println("Stacked entity already exists, updating stack amount to " + amount);
+        } else {
+            createStack(newEntity, amount);
         }
     }
 }

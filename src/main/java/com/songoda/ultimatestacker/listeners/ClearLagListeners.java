@@ -18,8 +18,8 @@ public class ClearLagListeners implements Listener {
     @EventHandler
     public void onClearLaggTask(EntityRemoveEvent event) {
         for (Entity entity : event.getWorld().getEntities()) {
-            if (entity instanceof LivingEntity && plugin.getEntityStackManager().isStackedAndLoaded((LivingEntity)entity)) {
-                plugin.getEntityStackManager().removeStack(entity);
+            if (entity instanceof LivingEntity && plugin.getEntityStackManager().isStackedEntity(entity)) {
+                plugin.getEntityStackManager().getStack((LivingEntity) entity).destroy();
                 event.addEntity(entity);
             }
         }

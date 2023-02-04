@@ -20,13 +20,11 @@ public class EntityCurrentListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onSpawn(EntityTransformEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
-        if (stackManager.isStackedAndLoaded(event.getEntity().getUniqueId())
+        if (stackManager.isStackedEntity(event.getEntity())
                 && event.getEntity() instanceof LivingEntity
                 && event.getTransformedEntity() instanceof LivingEntity) {
-            EntityStack stack = stackManager.updateStack((LivingEntity) event.getEntity(),
-                    (LivingEntity) event.getTransformedEntity());
+            EntityStack stack = stackManager.updateStack((LivingEntity) event.getEntity(), (LivingEntity) event.getTransformedEntity());
             stack.releaseHost();
-            stack.updateStack();
         }
     }
 }

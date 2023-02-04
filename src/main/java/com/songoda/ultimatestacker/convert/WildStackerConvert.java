@@ -43,23 +43,6 @@ public class WildStackerConvert implements Convert {
 
     @Override
     public void convertEntities() {
-        EntityStackManager entityStackManager = plugin.getEntityStackManager();
-
-        DatabaseConnector connector = new SQLiteConnector(this.wildStacker);
-        connector.connect(connection -> {
-
-            try (Statement statement = connection.createStatement()) {
-                ResultSet result = statement.executeQuery("SELECT uuid, stackAmount FROM entities");
-                while (result.next()) {
-                    UUID uuid = UUID.fromString(result.getString("uuid"));
-                    int amount = result.getInt("stackAmount");
-                    if (!entityStackManager.isEntityInColdStorage(uuid))
-                        entityStackManager.addLegacyColdStack(uuid, amount);
-                }
-            }
-        });
-
-
     }
 
     @Override

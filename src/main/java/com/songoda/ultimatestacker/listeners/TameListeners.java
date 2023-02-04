@@ -22,7 +22,7 @@ public class TameListeners implements Listener {
         LivingEntity entity = event.getEntity();
 
         EntityStackManager stackManager = plugin.getEntityStackManager();
-        if (!stackManager.isStackedAndLoaded(entity)) return;
+        if (!stackManager.isStackedEntity(entity)) return;
 
         EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 

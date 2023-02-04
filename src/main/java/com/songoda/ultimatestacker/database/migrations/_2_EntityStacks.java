@@ -26,14 +26,5 @@ public class _2_EntityStacks extends DataMigration {
                     "create_duplicates INTEGER NOT NULL DEFAULT 0" +
                     ")");
         }
-
-        // Create stacked entities table
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "stacked_entities (" +
-                    "uuid VARCHAR(36) PRIMARY KEY NOT NULL," +
-                    "host INTEGER NOT NULL," +
-                    "serialized_entity VARBINARY(9999) NOT NULL" +
-                    ")");
-        }
     }
 }

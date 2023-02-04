@@ -82,7 +82,7 @@ public class DeathListeners implements Listener {
             drops.clear();
 
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
-            if (plugin.getEntityStackManager().isStackedAndLoaded(event.getEntity())) {
+            if (plugin.getEntityStackManager().isStackedEntity(event.getEntity())) {
                 plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, custom, event.getDroppedExp(), event);
             } else {
                 DropUtils.processStackedDrop(event.getEntity(), drops, event);
@@ -157,7 +157,7 @@ public class DeathListeners implements Listener {
 
         if (!(event.getEntity() instanceof LivingEntity)) return;
         LivingEntity entity = (LivingEntity) event.getEntity();
-        if (!plugin.getEntityStackManager().isStackedAndLoaded(entity)) return;
+        if (!plugin.getEntityStackManager().isStackedEntity(entity)) return;
         EntityStack stack = plugin.getEntityStackManager().getStack(entity);
 
         Player player = (Player) event.getDamager();

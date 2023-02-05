@@ -89,10 +89,25 @@ public class EntityStackManager {
         return stack;
     }
 
+    /**
+     * Transfers the stack from one entity to another.
+     * (e.g. slimes split)
+     * @param oldEntity The old entity to transfer the stack from.
+     * @param newEntity The new entity to transfer the stack to.
+     * @return The new stack.
+     */
+    public EntityStack transferStack(LivingEntity oldEntity, LivingEntity newEntity) {
+        EntityStack stack = getStack(oldEntity);
+        if (stack == null) return null;
+        EntityStack newStack = new EntityStack(newEntity, stack.getAmount());
+        stack.destroy();
+        return newStack;
+    }
+
     public EntityStack updateStack(LivingEntity oldEntity, LivingEntity newEntity) {
         EntityStack stack = getStack(oldEntity);
         if (stack == null) return null;
-        int amount = stack.getAmount();
+        int amount = stack.getAmount()-1;
         stack.destroy();
         return createStack(newEntity, amount);
     }
@@ -101,7 +116,6 @@ public class EntityStackManager {
         if (isStackedEntity(newEntity)) {
             EntityStack stack = getStack(newEntity);
             stack.setAmount(amount);
-            System.err.println("Stacked entity already exists, updating stack amount to " + amount);
         } else {
             createStack(newEntity, amount);
         }

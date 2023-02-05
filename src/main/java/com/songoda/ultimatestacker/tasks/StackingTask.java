@@ -65,7 +65,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public class StackingTask implements Runnable {
 
     private final UltimateStacker plugin;
-    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
+    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     private final EntityStackManager stackManager;
 
@@ -93,7 +93,6 @@ public class StackingTask implements Runnable {
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
         this.stackManager = plugin.getEntityStackManager();
-
         // Add loaded worlds.
         for (World world : Bukkit.getWorlds())
             loadedWorlds.add(new SWorld(world));

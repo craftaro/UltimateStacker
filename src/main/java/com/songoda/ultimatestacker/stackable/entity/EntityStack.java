@@ -53,7 +53,7 @@ public class EntityStack extends StackedEntity {
         return hostEntity;
     }
 
-    protected void setHostEntity(LivingEntity hostEntity) {
+    protected synchronized void setHostEntity(LivingEntity hostEntity) {
         this.hostEntity = hostEntity;
     }
 
@@ -89,7 +89,6 @@ public class EntityStack extends StackedEntity {
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, int droppedExp, EntityDeathEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
-
         Bukkit.getPluginManager().callEvent(new EntityStackKillEvent(this, false));
 
         Vector velocity = killed.getVelocity().clone();
@@ -138,16 +137,16 @@ public class EntityStack extends StackedEntity {
         }
     }
 
-    public LivingEntity takeOneAndSpawnEntity(Location location) {
+    public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
         if (amount <= 0) return null;
-        amount--;
         LivingEntity entity = Objects.requireNonNull(location.getWorld()).spawn(location, hostEntity.getClass());
         this.hostEntity = entity;
+        setAmount(amount--);
         updateNameTag();
         return entity;
     }
 
-    public void releaseHost() {
+    public synchronized void releaseHost() {
         LivingEntity oldHost = hostEntity;
         LivingEntity entity = takeOneAndSpawnEntity(hostEntity.getLocation());
         if (getAmount() >= 0) {
@@ -158,7 +157,7 @@ public class EntityStack extends StackedEntity {
         }
     }
 
-    public void destroy() {
+    public synchronized void destroy() {
         if (hostEntity == null) return;
         Bukkit.getScheduler().runTask(plugin, hostEntity::remove);
         hostEntity = null;

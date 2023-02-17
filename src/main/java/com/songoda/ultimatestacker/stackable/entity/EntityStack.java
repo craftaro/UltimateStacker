@@ -133,8 +133,8 @@ public class EntityStack extends StackedEntity {
                     return;
                 }
             }
-            handleSingleStackDeath(killed, drops, droppedExp, event);
         }
+        handleSingleStackDeath(killed, drops, droppedExp, event);
     }
 
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {

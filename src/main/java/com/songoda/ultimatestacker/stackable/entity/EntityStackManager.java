@@ -109,6 +109,10 @@ public class EntityStackManager {
         if (stack == null) return null;
         int amount = stack.getAmount()-1;
         stack.destroy();
+        if (amount == 0 && newEntity != null) {
+            newEntity.remove();
+            return null;
+        }
         return createStack(newEntity, amount);
     }
 

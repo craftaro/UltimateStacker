@@ -145,7 +145,6 @@ public class EntityStack extends StackedEntity {
                 }
             }
         }
-        System.err.println("Single death");
         handleSingleStackDeath(killed, drops, droppedExp, event);
     }
 

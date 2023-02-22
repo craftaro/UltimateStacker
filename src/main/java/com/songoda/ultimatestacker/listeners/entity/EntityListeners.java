@@ -78,7 +78,12 @@ public class EntityListeners implements Listener {
 
         Entity entity = event.getEntity();
 
-        if (entity instanceof LivingEntity && plugin.getEntityStackManager().isStackedEntity(entity)
+        if (!(entity instanceof LivingEntity)) return;
+        if (event.getDamager() instanceof Player) {
+            plugin.getEntityStackManager().setLastPlayerDamage(entity, (Player) event.getDamager());
+        }
+
+        if (plugin.getEntityStackManager().isStackedEntity(entity)
                 && Settings.DISABLE_KNOCKBACK.getBoolean()
                 && ((Player) event.getDamager()).getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK) == 0) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

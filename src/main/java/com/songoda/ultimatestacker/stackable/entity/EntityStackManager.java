@@ -9,6 +9,8 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,6 +38,19 @@ public class EntityStackManager {
         if (!isStackedEntity(entity)) return 1;
         if (entity.getMetadata("US_AMOUNT").isEmpty()) return 1;
         return entity.getMetadata("US_AMOUNT").get(0).asInt();
+    }
+
+    public String getLastPlayerDamage(Entity entity) {
+        if (!entity.hasMetadata("US_LAST_PLAYER_DAMAGE")) return null;
+        if (entity.getMetadata("US_LAST_PLAYER_DAMAGE").isEmpty()) return null;
+        return entity.getMetadata("US_LAST_PLAYER_DAMAGE").get(0).asString();
+    }
+
+    public void setLastPlayerDamage(Entity entity, Player player) {
+        if (player == null) return;
+        if (entity == null) return;
+        if (entity instanceof Player) return;
+        entity.setMetadata("US_LAST_PLAYER_DAMAGE", new FixedMetadataValue(plugin, player.getName()));
     }
 
     public EntityStack addStack(LivingEntity entity) {

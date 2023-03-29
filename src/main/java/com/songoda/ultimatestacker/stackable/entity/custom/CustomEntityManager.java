@@ -54,4 +54,11 @@ public class CustomEntityManager {
     public boolean isCustomEntity(Entity entity) {
         return getCustomEntity(entity) != null && getCustomEntity(entity).isCustomEntity(entity);
     }
+
+    public boolean isStackable(Entity entity) {
+        CustomEntity customEntity = getCustomEntity(entity);
+        if (customEntity == null) return true;
+        String key = customEntity.getPluginName().toLowerCase() + "_" + customEntity.getNBTIdentifier(entity).toLowerCase();
+        return !Settings.BLACKLISTED_CUSTOM_ENTITIES.getStringList().contains(key);
+    }
 }

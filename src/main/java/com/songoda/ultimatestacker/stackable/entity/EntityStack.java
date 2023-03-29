@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
@@ -116,22 +117,11 @@ public class EntityStack extends StackedEntity {
         killed.setCustomName(null);
         killed.setCustomNameVisible(false);
 
-        //replace %player% in drop commands with the last player to damage the entity
-        String lastDamage = plugin.getEntityStackManager().getLastPlayerDamage(killed);
-        if (lastDamage != null) {
-            drops.forEach(drop -> {
-                if (drop.getCommand() != null) {
-                    drop.setCommand(drop.getCommand().replace("%player%", lastDamage));
-                }
-            });
-        }
-
         boolean killWholeStack = Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
                 || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
 
         if (killWholeStack && getAmount() > 1) {
             handleWholeStackDeath(killed, drops, custom, droppedExp, event);
-            return;
         } else if (getAmount() > 1) {
             List<String> reasons = Settings.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
@@ -144,8 +134,8 @@ public class EntityStack extends StackedEntity {
                     return;
                 }
             }
+            handleSingleStackDeath(killed, drops, droppedExp, event);
         }
-        handleSingleStackDeath(killed, drops, droppedExp, event);
     }
 
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {

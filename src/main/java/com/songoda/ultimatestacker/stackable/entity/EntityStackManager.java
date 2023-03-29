@@ -111,10 +111,10 @@ public class EntityStackManager {
      * @param newEntity The new entity to transfer the stack to.
      * @return The new stack.
      */
-    public EntityStack transferStack(LivingEntity oldEntity, LivingEntity newEntity) {
+    public EntityStack transferStack(LivingEntity oldEntity, LivingEntity newEntity, boolean takeOne) {
         EntityStack stack = getStack(oldEntity);
         if (stack == null) return null;
-        EntityStack newStack = new EntityStack(newEntity, stack.getAmount());
+        EntityStack newStack = new EntityStack(newEntity, takeOne ? stack.getAmount()-1 : stack.getAmount());
         stack.destroy();
         return newStack;
     }

@@ -7,6 +7,7 @@ import com.songoda.core.lootables.loot.DropUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
@@ -82,6 +83,10 @@ public class DeathListeners implements Listener {
             drops.clear();
 
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
+            //replace %player% in drop commands with the last player to damage the entity
+            //Run commands here, or it will be buggy
+            runCommands(entity, drops);
+
             if (plugin.getEntityStackManager().isStackedEntity(event.getEntity())) {
                 plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, custom, event.getDroppedExp(), event);
             } else {
@@ -90,6 +95,25 @@ public class DeathListeners implements Listener {
         }
 
         finalItems.remove(entity.getUniqueId());
+    }
+
+    private void runCommands(LivingEntity entity, List<Drop> drops) {
+        String lastDamage = plugin.getEntityStackManager().getLastPlayerDamage(entity);
+        if (lastDamage != null) {
+            List<String> commands = new ArrayList<>();
+            drops.forEach(drop -> {
+                if (drop.getCommand() != null) {
+                    String command = drop.getCommand().replace("%player%", lastDamage);
+                    drop.setCommand(null);
+                    commands.add(command);
+                }
+            });
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                for (String command : commands) {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
+            });
+        }
     }
 
     private boolean shouldDrop(LivingEntity entity, Material material) {

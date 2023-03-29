@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.commands;
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
+import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -48,7 +49,9 @@ public class CommandRemoveAll extends AbstractCommand {
 
                 if (entityO instanceof LivingEntity && (stackManager.isStackedEntity(entityO) || all)
                         && type.equalsIgnoreCase("entities")) {
-                    plugin.getEntityStackManager().getStack((LivingEntity) entityO).destroy();
+                    EntityStack stack = plugin.getEntityStackManager().getStack((LivingEntity) entityO);
+                    if (stack == null) continue;
+                    stack.destroy();
                     amountRemoved++;
                 } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
                     if (!UltimateStacker.hasCustomAmount((Item)entityO) && !all)

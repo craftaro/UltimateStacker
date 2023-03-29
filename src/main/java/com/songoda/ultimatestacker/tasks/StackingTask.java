@@ -355,16 +355,20 @@ public class StackingTask extends TimerTask {
      */
     private List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity, double radius, boolean singleChunk) {
         List<LivingEntity> entities = new ArrayList<>();
-        Set<CachedChunk> chunks = getNearbyChunks(new SWorld(entity.getWorld()), entity.getLocation(), radius, singleChunk);
-        for (CachedChunk chunk : chunks) {
-            Entity[] entityList = chunk.getEntities();
-            for (Entity e : entityList) {
-                if (!processed.contains(e.getUniqueId()) && e.getType() == entity.getType() && e instanceof LivingEntity && e.isValid() && e.getLocation().distance(entity.getLocation()) <= radius) {
-                    entities.add((LivingEntity) e);
+        try {
+            Set<CachedChunk> chunks = getNearbyChunks(new SWorld(entity.getWorld()), entity.getLocation(), radius, singleChunk);
+            for (CachedChunk chunk : chunks) {
+                Entity[] entityList = getEntitiesInChunkSync(chunk).get();
+                for (Entity e : entityList) {
+                    if (!processed.contains(e.getUniqueId()) && e.getType() == entity.getType() && e instanceof LivingEntity && e.isValid() && e.getLocation().distance(entity.getLocation()) <= radius) {
+                        entities.add((LivingEntity) e);
+                    }
                 }
             }
+            entities.removeIf(entity1 -> entity1.equals(entity) || !UltimateStacker.getInstance().getCustomEntityManager().isStackable(entity1));
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        entities.removeIf(entity1 -> entity1.equals(entity));
         return entities;
     }
 

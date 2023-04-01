@@ -13,6 +13,7 @@ import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.EntityStackerManager;
 import com.songoda.core.hooks.HologramManager;
+import com.songoda.core.hooks.ProtectionManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.CommandConvert;
@@ -169,6 +170,10 @@ public class UltimateStacker extends SongodaPlugin {
         }
         spawnerFile.load();
         spawnerFile.saveChanges();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("BentoBox")) {
+            ProtectionManager.load(Bukkit.getPluginManager().getPlugin("BentoBox"));
+        }
 
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager(this);

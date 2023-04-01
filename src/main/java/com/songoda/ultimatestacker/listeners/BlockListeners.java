@@ -2,6 +2,8 @@ package com.songoda.ultimatestacker.listeners;
 
 import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.hooks.ProtectionManager;
+import com.songoda.core.hooks.protection.BentoBoxProtection;
 import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
@@ -46,10 +48,18 @@ public class BlockListeners implements Listener {
         if (event.useInteractedBlock() == Event.Result.DENY) return;
         Block block = event.getClickedBlock();
         Player player = event.getPlayer();
+
+        if (block == null) return;
+
+        if (!ProtectionManager.canInteract(player, block.getLocation()) || !ProtectionManager.canBreak(player, block.getLocation())) {
+            if (!player.isOp()) {
+                return;
+            }
+        }
+
         CompatibleHand hand = CompatibleHand.getHand(event);
         ItemStack inHand = hand.getItem(player);
 
-        if (block == null) return;
 
         if (Settings.STACK_BLOCKS.getBoolean()) {
             BlockStackManager blockStackManager = plugin.getBlockStackManager();

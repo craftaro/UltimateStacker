@@ -852,6 +852,9 @@ public class LootablesManager {
         lootManager.addLootable(new Lootable("SILVERFISH",
                 new LootBuilder().build()));
 
+        lootManager.addLootable(new Lootable("WOLF",
+                new LootBuilder().build()));
+
         lootManager.saveLootables(true);
     }
 

@@ -109,9 +109,15 @@ public class BlockListeners implements Listener {
                         }
                     }
                     stack.add(amountToRemove);
-                    if (stack.getAmount() < 2)
+                    if (stack.getAmount() < 2) {
                         stack.destroy();
-                    else {
+                        ItemStack item = stack.getMaterial().getItem();
+                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
+                            player.getInventory().addItem(item);
+                        } else {
+                            block.getWorld().dropItemNaturally(block.getLocation().clone().add(.5, 1, .5), item);
+                        }
+                    } else {
                         plugin.updateHologram(stack);
                         plugin.getDataManager().updateBlock(stack);
                     }

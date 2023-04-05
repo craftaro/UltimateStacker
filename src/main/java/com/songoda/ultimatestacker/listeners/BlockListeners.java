@@ -74,7 +74,7 @@ public class BlockListeners implements Listener {
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     if (!isStacked) plugin.getDataManager().createBlock(stack);
                     if (stack.getMaterial() == CompatibleMaterial.getMaterial(inHand)) {
-                        int amountToAdd = player.isSneaking() || Settings.ALWAYS_ADD_ALL.getBoolean() ? inHand.getAmount() : 1;
+                        int amountToAdd = player.isSneaking() || Settings.ALWAYS_ADD_ALL.getBoolean() ? inHand.getAmount()-1 : 1;
                         if (!isStacked) amountToAdd++;
                         stack.add(amountToAdd);
                         event.setCancelled(true);

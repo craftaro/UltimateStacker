@@ -86,6 +86,7 @@ public class DataManager extends DataManagerAbstract {
     }
 
     public void updateBlock(BlockStack blockStack) {
+        if (blockStack.getAmount() == 0) return;
        this.runAsync(() -> {
             try (Connection connection = this.databaseConnector.getConnection()) {
                 String updateBlock = "UPDATE " + this.getTablePrefix() + "blocks SET amount = ? WHERE id = ?";

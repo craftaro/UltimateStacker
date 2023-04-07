@@ -39,6 +39,7 @@ public class SpawnerListeners implements Listener {
 
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
+        if (plugin.getStackingTask() == null) return; //Don't spam error when reloading the plugin
         if (!Settings.STACK_ENTITIES.getBoolean()
                 || !plugin.spawnersEnabled()
                 || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;

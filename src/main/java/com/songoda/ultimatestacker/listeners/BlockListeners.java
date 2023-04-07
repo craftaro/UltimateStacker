@@ -16,6 +16,7 @@ import com.songoda.ultimatestacker.utils.Methods;
 import io.lumine.mythic.bukkit.utils.menu.ClickAction;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -31,6 +32,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
@@ -43,6 +45,14 @@ public class BlockListeners implements Listener {
 
     public BlockListeners(UltimateStacker plugin) {
         this.plugin = plugin;
+    }
+
+    @EventHandler
+    public void onChunkLoad(ChunkLoadEvent event) {
+        if (!Settings.STACK_BLOCKS.getBoolean()) return;
+        Chunk chunk = event.getChunk();
+        BlockStackManager blockStackManager = plugin.getBlockStackManager();
+        blockStackManager.getStacks().stream().filter(stack -> stack.getLocation().getChunk().equals(chunk)).forEach(plugin::updateHologram);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

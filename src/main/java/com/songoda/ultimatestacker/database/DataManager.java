@@ -216,6 +216,11 @@ public class DataManager extends DataManagerAbstract {
 
                     BlockStack blockStack = new BlockStack(material, location, amount);
                     blockStack.setId(blockId);
+                    if (amount == 0) {
+                        //remove from database
+                        this.deleteBlock(blockStack);
+                        continue;
+                    }
                     blocks.put(location, blockStack);
 
                     this.sync(() -> callback.accept(blocks));
@@ -224,5 +229,20 @@ public class DataManager extends DataManagerAbstract {
                 ex.printStackTrace();
             }
         });
+    }
+
+    public void bulkUpdateBlocks(Collection<BlockStack> stacks) {
+        try (Connection connection = this.databaseConnector.getConnection()) {
+            String updateSpawner = "UPDATE " + this.getTablePrefix() + "blocks SET amount = ? WHERE id = ?";
+            PreparedStatement statement = connection.prepareStatement(updateSpawner);
+            for (BlockStack spawnerStack : stacks) {
+                statement.setInt(1, spawnerStack.getAmount());
+                statement.setInt(2, spawnerStack.getId());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

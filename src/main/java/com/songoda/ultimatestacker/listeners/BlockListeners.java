@@ -13,9 +13,11 @@ import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
+import io.lumine.mythic.bukkit.utils.menu.ClickAction;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.enchantments.Enchantment;
@@ -59,72 +61,93 @@ public class BlockListeners implements Listener {
 
         CompatibleHand hand = CompatibleHand.getHand(event);
         ItemStack inHand = hand.getItem(player);
+        boolean isSneaking = player.isSneaking();
+        Action clickAction = event.getAction();
+        int inHandAmount = inHand.getAmount();
 
-
-        if (Settings.STACK_BLOCKS.getBoolean()) {
-            BlockStackManager blockStackManager = plugin.getBlockStackManager();
-
-            boolean isStacked = blockStackManager.isBlock(block.getLocation());
+        //Stacking blocks
+        if (Settings.STACK_BLOCKS.getBoolean()
+                && Settings.STACKABLE_BLOCKS.getStringList().contains(block.getType().name()) //Is block stackable
+                && !block.getType().equals(CompatibleMaterial.SPAWNER.getMaterial()) //Don't stack spawners here
+                ) {
 
             CompatibleMaterial blockType = CompatibleMaterial.getMaterial(block);
             if (blockType == null) return;
 
-            if (isStacked || Settings.STACKABLE_BLOCKS.getStringList().contains(blockType.name())) {
-                BlockStack stack = blockStackManager.getBlock(block, blockType);
-                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                    if (!isStacked) plugin.getDataManager().createBlock(stack);
-                    if (stack.getMaterial() == CompatibleMaterial.getMaterial(inHand)) {
-                        int amountToAdd = player.isSneaking() || Settings.ALWAYS_ADD_ALL.getBoolean() ? inHand.getAmount()-1 : 1;
-                        if (!isStacked) amountToAdd++;
-                        stack.add(amountToAdd);
-                        event.setCancelled(true);
-                        if (player.getGameMode() != GameMode.CREATIVE)
-                            hand.takeItem(player, amountToAdd);
-                        plugin.updateHologram(stack);
-                    }
-                    plugin.getDataManager().updateBlock(stack);
-                } else if (event.getAction() == Action.LEFT_CLICK_BLOCK && stack.getAmount() != 0) {
-                    event.setCancelled(true);
-                    int amountToRemove = player.isSneaking()
-                            ? Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount()) - 1 : 1;
+            BlockStackManager blockStackManager = plugin.getBlockStackManager();
+            boolean isStacked = blockStackManager.isBlock(block.getLocation());
+            BlockStack stack = blockStackManager.getBlock(block.getLocation());
 
-                    ItemStack removed = stack.getMaterial().getItem();
-                    removed.setAmount(amountToRemove);
-                    stack.take(amountToRemove);
-                    int maxStack = removed.getMaxStackSize();
-
-                    while (amountToRemove > 0) {
-                        int subtract = Math.min(amountToRemove, maxStack);
-                        amountToRemove -= subtract;
-                        ItemStack newItem = removed.clone();
-                        newItem.setAmount(subtract);
-                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
-                            Map<Integer, ItemStack> result = player.getInventory().addItem(newItem);
-                            if (result.get(0) != null) {
-                                amountToRemove += result.get(0).getAmount();
-                                break;
-                            }
-                        } else {
-                            block.getWorld().dropItemNaturally(block.getLocation().clone().add(.5, 1, .5), newItem);
-                        }
-                    }
-                    stack.add(amountToRemove);
-                    if (stack.getAmount() < 2) {
-                        stack.destroy();
-                        ItemStack item = stack.getMaterial().getItem();
-                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
-                            player.getInventory().addItem(item);
-                        } else {
-                            block.getWorld().dropItemNaturally(block.getLocation().clone().add(.5, 1, .5), item);
+            //Modify stack
+            if (isStacked) {
+                event.setCancelled(true);
+                //Add to stack
+                if (clickAction == Action.RIGHT_CLICK_BLOCK) {
+                    if (inHand.getType().equals(Material.AIR)) return;
+                    if(!blockType.equals(CompatibleMaterial.getMaterial(inHand))) return;
+                    //Add all held items to stack
+                    if (Settings.ALWAYS_ADD_ALL.getBoolean() || isSneaking) {
+                        stack.add(inHandAmount);
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            hand.takeItem(player, inHandAmount);
                         }
                     } else {
-                        plugin.updateHologram(stack);
-                        plugin.getDataManager().updateBlock(stack);
+                        //Add one held item to stack
+                        stack.add(1);
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            hand.takeItem(player, 1);
+                        }
                     }
                 }
+
+                //Remove from stack
+                if (clickAction == Action.LEFT_CLICK_BLOCK) {
+                    if (isSneaking) {
+                        //Remove all items from stack
+                        int amountToRemove = Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount());
+                        ItemStack removed = stack.getMaterial().getItem();
+                        removed.setAmount(amountToRemove);
+                        stack.take(amountToRemove);
+                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
+                            player.getInventory().addItem(removed);
+                        } else {
+                            player.getWorld().dropItemNaturally(block.getLocation(), removed);
+                        }
+                    } else {
+                        //Remove one item from stack
+                        stack.take(1);
+                        if (Settings.ADD_TO_INVENTORY.getBoolean()) {
+                            player.getInventory().addItem(stack.getMaterial().getItem());
+                        } else {
+                            player.getWorld().dropItemNaturally(block.getLocation(), stack.getMaterial().getItem());
+                        }
+                    }
+                    if (stack.getAmount() == 0) {
+                        //Remove stack
+                        stack.destroy();
+                        return;
+                    }
+                }
+                //update hologram
+                plugin.updateHologram(stack);
+                return;
+            } else {
+                if (isSneaking) return;
+                //Check if player clicked the same type as the clicked block
+                if (inHand.getType().equals(Material.AIR)) return;
+                if(!blockType.equals(CompatibleMaterial.getMaterial(inHand))) return;
+                if (clickAction != Action.RIGHT_CLICK_BLOCK) return;
+                //Create new stack
+                event.setCancelled(true);
+                hand.takeItem(player, 1);
+                BlockStack newStack = blockStackManager.createBlock(block);
+                plugin.getDataManager().createBlock(newStack);
+                plugin.updateHologram(newStack);
             }
+            return;
         }
 
+        //Stacking spawners
         if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || inHand.getType() != CompatibleMaterial.SPAWNER.getMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;

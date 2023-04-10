@@ -30,6 +30,10 @@ public class BlockStackManager {
         return this.registeredBlocks.get(location);
     }
 
+    public BlockStack getBlock(Block block, CompatibleMaterial material) {
+        return this.getBlock(block.getLocation());
+    }
+
     public BlockStack createBlock(Location location, CompatibleMaterial material) {
         return this.registeredBlocks.computeIfAbsent(location, b -> new BlockStack(material, location));
     }

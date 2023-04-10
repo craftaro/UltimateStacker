@@ -281,7 +281,6 @@ public class UltimateStacker extends SongodaPlugin {
                 }
             }
         });
-        getServer().getPluginManager().registerEvents(new ChunkListener(this), this);
     }
 
     public void addExp(Player player, EntityStack stack) {

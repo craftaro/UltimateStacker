@@ -8,11 +8,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class BlockStackManager {
 
-    private final Map<Location, BlockStack> registeredBlocks = new ConcurrentHashMap<>();
+    private final Map<Location, BlockStack> registeredBlocks = new HashMap<>();
 
     public void addBlocks(Map<Location, BlockStack> blocks) {
         this.registeredBlocks.putAll(blocks);

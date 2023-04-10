@@ -138,6 +138,7 @@ public class BlockListeners implements Listener {
                 }
                 //update hologram
                 plugin.updateHologram(stack);
+                plugin.getDataManager().updateBlock(stack);
                 return;
             } else {
                 if (isSneaking) return;
@@ -147,7 +148,9 @@ public class BlockListeners implements Listener {
                 if (clickAction != Action.RIGHT_CLICK_BLOCK) return;
                 //Create new stack
                 event.setCancelled(true);
-                hand.takeItem(player, 1);
+                if (player.getGameMode() != GameMode.CREATIVE) {
+                    hand.takeItem(player, 1);
+                }
                 BlockStack newStack = blockStackManager.createBlock(block);
                 plugin.getDataManager().createBlock(newStack);
                 plugin.updateHologram(newStack);

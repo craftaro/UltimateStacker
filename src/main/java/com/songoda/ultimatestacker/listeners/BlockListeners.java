@@ -45,14 +45,6 @@ public class BlockListeners implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
-    public void onChunkLoad(ChunkLoadEvent event) {
-        if (!Settings.STACK_BLOCKS.getBoolean()) return;
-        Chunk chunk = event.getChunk();
-        BlockStackManager blockStackManager = plugin.getBlockStackManager();
-        blockStackManager.getStacks().stream().filter(stack -> stack.getLocation().getChunk().equals(chunk)).forEach(plugin::updateHologram);
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockInteract(PlayerInteractEvent event) {
         if (event.useInteractedBlock() == Event.Result.DENY) return;

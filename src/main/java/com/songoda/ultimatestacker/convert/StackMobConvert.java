@@ -36,14 +36,6 @@ public class StackMobConvert implements Convert {
 
     @Override
     public void convertEntities() {
-        EntityStackManager entityStackManager = plugin.getEntityStackManager();
-        for (Map.Entry<UUID, Integer> entry : stackMob.getStorageManager().getAmountCache().entrySet()) {
-            if (!entityStackManager.isStackedAndLoaded(entry.getKey())) {
-                entityStackManager.addLegacyColdStack(entry.getKey(), entry.getValue());
-                continue;
-            }
-        }
-
     }
 
     @Override

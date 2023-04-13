@@ -49,7 +49,7 @@ public class CachedChunk {
             return new Entity[0];
         }
         Chunk chunk = getChunk();
-        return chunk == null ? new Entity[0] : sWorld.getEntitiesFromChunk(x, z);
+        return chunk == null ? new Entity[0] : chunk.getEntities();
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.songoda.core.database.SQLiteConnector;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.EntityStackerManager;
 import com.songoda.core.hooks.HologramManager;
+import com.songoda.core.hooks.ProtectionManager;
 import com.songoda.core.hooks.WorldGuardHook;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.commands.CommandConvert;
@@ -26,8 +27,7 @@ import com.songoda.ultimatestacker.database.DataManager;
 import com.songoda.ultimatestacker.database.migrations._1_InitialMigration;
 import com.songoda.ultimatestacker.database.migrations._2_EntityStacks;
 import com.songoda.ultimatestacker.database.migrations._3_BlockStacks;
-import com.songoda.ultimatestacker.database.migrations._4_DataPurge;
-import com.songoda.ultimatestacker.database.migrations._5_StackedEntitiesTableUpdate;
+import com.songoda.ultimatestacker.database.migrations._6_RemoveStackedEntityTable;
 import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.*;
@@ -49,11 +49,13 @@ import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.Methods;
+import io.lumine.mythic.bukkit.listeners.ChunkListeners;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -106,9 +108,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onPluginDisable() {
-        this.stackingTask.cancel();
+        this.stackingTask.stop();
         this.stackingTask = null;
         this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
+        this.dataManager.bulkUpdateBlocks(this.blockStackManager.getStacks());
         HologramManager.removeAllHolograms();
         Async.shutdown();
     }
@@ -169,6 +172,10 @@ public class UltimateStacker extends SongodaPlugin {
         }
         spawnerFile.load();
         spawnerFile.saveChanges();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("BentoBox")) {
+            ProtectionManager.load(Bukkit.getPluginManager().getPlugin("BentoBox"));
+        }
 
         this.spawnerStackManager = new SpawnerStackManager();
         this.entityStackManager = new EntityStackManager(this);
@@ -235,8 +242,7 @@ public class UltimateStacker extends SongodaPlugin {
                 new _1_InitialMigration(),
                 new _2_EntityStacks(),
                 new _3_BlockStacks(),
-                new _4_DataPurge(),
-                new _5_StackedEntitiesTableUpdate());
+                new _6_RemoveStackedEntityTable());
         this.dataMigrationManager.runMigrations();
     }
 
@@ -260,12 +266,8 @@ public class UltimateStacker extends SongodaPlugin {
                 }
             }
         });
-        this.dataManager.getEntities((entities) -> {
-            entityStackManager.addStacks(entities.values());
-            entityStackManager.tryAndLoadColdEntities();
-            this.stackingTask = new StackingTask(this);
-            getServer().getPluginManager().registerEvents(new ChunkListeners(entityStackManager), this);
-        });
+
+        this.stackingTask = new StackingTask(this);
         final boolean useBlockHolo = Settings.BLOCK_HOLOGRAMS.getBoolean();
         this.dataManager.getBlocks((blocks) -> {
             this.blockStackManager.addBlocks(blocks);
@@ -302,7 +304,7 @@ public class UltimateStacker extends SongodaPlugin {
         this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
-        this.stackingTask.cancel();
+        this.stackingTask.stop();
         this.stackingTask = new StackingTask(this);
 
         this.mobFile.load();

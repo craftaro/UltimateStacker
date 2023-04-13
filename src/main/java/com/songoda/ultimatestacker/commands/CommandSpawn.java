@@ -56,9 +56,7 @@ public class CommandSpawn extends AbstractCommand {
             sender.sendMessage(TextUtils.formatText("&6" + list));
         } else {
             LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getLocation(), type);
-            EntityStack stack = plugin.getEntityStackManager().addStack(entity);
-            stack.createDuplicates(((Methods.isInt(args[1])) ? Integer.parseInt(args[1]) : 1) - 1);
-            stack.updateStack();
+            EntityStack stack = plugin.getEntityStackManager().createStack(entity, Integer.parseInt(args[1]));
             plugin.getStackingTask().attemptSplit(stack, entity);
         }
 

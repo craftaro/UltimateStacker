@@ -55,7 +55,7 @@ public class GUIConvertWhat extends Gui {
     private void run(Player player) {
         if (entities) {
             convertFrom.convertEntities();
-            UltimateStacker.getInstance().getEntityStackManager().tryAndLoadColdEntities();
+            //UltimateStacker.getInstance().getEntityStackManager().tryAndLoadColdEntities();
         }
         if (spawners) {
             convertFrom.convertSpawners();

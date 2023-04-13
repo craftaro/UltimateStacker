@@ -20,7 +20,7 @@ public class _3_BlockStacks extends DataMigration {
 
         // Create blocks table
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE " + tablePrefix + "blocks (" +
+            statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "blocks (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "amount INTEGER NOT NULL," +
                     "material TEXT NOT NULL," +

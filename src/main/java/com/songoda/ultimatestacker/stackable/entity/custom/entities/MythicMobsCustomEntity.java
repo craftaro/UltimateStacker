@@ -11,7 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
-public class MythicMobsCustomEntity extends CustomEntity {
+public class MythicMobsCustomEntity extends MythicMobsProvider {
 
     public  MythicMobsCustomEntity() {
         super(Bukkit.getPluginManager().getPlugin("MythicMobs"));
@@ -38,7 +38,7 @@ public class MythicMobsCustomEntity extends CustomEntity {
 
     @Override
     public boolean isSimilar(LivingEntity original, LivingEntity entity) {
-        if (!isMatchingType(original) || !isMatchingType(entity) || getMob(entity) == null) return false;
+        if (!isMatchingType(original) || getMob(entity) == null) return false;
         return getMob(original).getType().equals(getMob(entity).getType());
     }
 

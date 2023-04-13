@@ -39,6 +39,7 @@ public class SpawnerListeners implements Listener {
 
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
+        if (plugin.getStackingTask() == null) return; //Don't spam error when reloading the plugin
         if (!Settings.STACK_ENTITIES.getBoolean()
                 || !plugin.spawnersEnabled()
                 || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;
@@ -67,12 +68,16 @@ public class SpawnerListeners implements Listener {
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(location);
 
-        spawnerStack.spawn(spawnerStack.calculateSpawnCount(), "EXPLOSION_NORMAL", null, (e) -> {
+        int amountToSpawn = spawnerStack.calculateSpawnCount();
+
+        spawnerStack.spawn(amountToSpawn, "EXPLOSION_NORMAL", null, (e) -> {
             if (Settings.NO_AI.getBoolean())
                 EntityUtils.setUnaware(e);
 
             if (mcmmo)
                 entity.setMetadata("mcMMO: Spawned Entity", new FixedMetadataValue(plugin, true));
+
+            UltimateStacker.getInstance().getEntityStackManager().setStack(e, amountToSpawn);
             return true;
         }, event.getEntityType());
     }

@@ -3,9 +3,12 @@ package com.songoda.ultimatestacker.stackable.entity;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
 import com.songoda.core.lootables.loot.DropUtils;
+import com.songoda.core.nms.NmsManager;
+import com.songoda.core.nms.nbt.NBTEntity;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.EntityStackKillEvent;
 import com.songoda.ultimatestacker.settings.Settings;
+import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
@@ -20,97 +23,44 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class EntityStack extends ColdEntityStack {
+public class EntityStack extends StackedEntity {
 
-    // This is the host entity which is not stored in serialized nbt.
-    private LivingEntity hostEntity;
+    private static final UltimateStacker plugin = UltimateStacker.getInstance();
 
     public EntityStack(LivingEntity hostEntity) {
-        super(hostEntity.getUniqueId());
-        this.hostEntity = hostEntity;
+        super(hostEntity);
     }
 
-    public EntityStack(LivingEntity hostEntity, ColdEntityStack coldEntityStack) {
-        this(hostEntity);
-        this.setId(coldEntityStack.getId());
-        this.stackedEntities.addAll(coldEntityStack.stackedEntities);
+    public EntityStack(LivingEntity hostEntity, int amount) {
+        super(hostEntity, amount);
     }
 
-    public StackedEntity addEntityToStack(Entity entity) {
-        StackedEntity stackedEntity = addEntityToStackSilently(entity);
-        updateStack();
-        return stackedEntity;
+    public synchronized EntityStack addEntityToStack(int amount) {
+        setAmount(getAmount() + amount);
+        return this;
     }
 
-    @Override
-    public List<StackedEntity> takeEntities(int amount) {
-        List<StackedEntity> entities = super.takeEntities(amount);
-        if (this.stackedEntities.isEmpty())
-            destroy(true);
-        return entities;
-    }
-
-    @Override
-    public List<StackedEntity> takeAllEntities() {
-        destroy(true);
-        return super.takeAllEntities();
-    }
-
-    public void updateStack() {
-        Async.run(() -> {
-            if (createDuplicates != 0) {
-                List<StackedEntity> stackedEntities = new ArrayList<>();
-                try {
-                    for (int i = 0; i < createDuplicates; i++) {
-                        StackedEntity entity = addEntityToStackSilently(getStackedEntity(hostEntity, true));
-                        if (entity != null)
-                            stackedEntities.add(entity);
-                    }
-                    plugin.getDataManager().createStackedEntities(this, stackedEntities);
-
-                    createDuplicates = 0;
-                    updateNametag();
-                } catch (Exception ignored) {
-                    //Ignored for now
-                }
-            }
-        });
-        updateNametag();
-    }
-
-    public void updateNametag() {
-        if (hostEntity == null) {
-            //Delay with 1 tick to make sure the entity is loaded.
-            Bukkit.getScheduler().scheduleSyncDelayedTask(UltimateStacker.getInstance(), this::updateNametag, 1L);
-            return;
-        }
-        hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
-        hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));
+    public synchronized EntityStack removeEntityFromStack(int amount) {
+        setAmount(getAmount() - amount);
+        return this;
     }
 
     public LivingEntity getHostEntity() {
-        if (hostEntity == null) {
-            plugin.getEntityStackManager().removeStack(this.hostUniqueId);
-            return null;
-        }
         return hostEntity;
     }
 
-    public StackedEntity getHostAsStackedEntity() {
-        return getStackedEntity(hostEntity);
-    }
-
-    protected void setHostEntity(LivingEntity hostEntity) {
+    protected synchronized void setHostEntity(LivingEntity hostEntity) {
         this.hostEntity = hostEntity;
-        this.hostUniqueId = hostEntity.getUniqueId();
     }
 
     private void handleWholeStackDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
-        plugin.getDataManager().deleteHost(this);
 
+        EntityStack stack = plugin.getEntityStackManager().getStack(killed);
         // In versions 1.14 and below experience is not dropping. Because of this we are doing this ourselves.
         if (ServerVersion.isServerVersionAtOrBelow(ServerVersion.V1_14)) {
             Location killedLocation = killed.getLocation();
@@ -133,14 +83,13 @@ public class EntityStack extends ColdEntityStack {
         }
 
         event.getDrops().clear();
-        plugin.getEntityStackManager().removeStack(event.getEntity());
+        stack.destroy();
         if (killed.getKiller() == null) return;
         plugin.addExp(killed.getKiller(), this);
     }
 
     private void handleSingleStackDeath(LivingEntity killed, List<Drop> drops, int droppedExp, EntityDeathEvent event) {
         EntityStackManager stackManager = plugin.getEntityStackManager();
-
         Bukkit.getPluginManager().callEvent(new EntityStackKillEvent(this, false));
 
         Vector velocity = killed.getVelocity().clone();
@@ -162,12 +111,6 @@ public class EntityStack extends ColdEntityStack {
 
         newEntity.setVelocity(velocity);
         stackManager.updateStack(killed, newEntity);
-
-        updateStack();
-
-        if (stackedEntities.isEmpty()) {
-            destroy();
-        }
     }
 
     public void onDeath(LivingEntity killed, List<Drop> drops, boolean custom, int droppedExp, EntityDeathEvent event) {
@@ -177,9 +120,9 @@ public class EntityStack extends ColdEntityStack {
         boolean killWholeStack = Settings.KILL_WHOLE_STACK_ON_DEATH.getBoolean()
                 || plugin.getMobFile().getBoolean("Mobs." + killed.getType().name() + ".Kill Whole Stack");
 
-        if (killWholeStack && getAmount() != 1) {
+        if (killWholeStack && getAmount() > 1) {
             handleWholeStackDeath(killed, drops, custom, droppedExp, event);
-        } else if (getAmount() != 1) {
+        } else if (getAmount() > 1) {
             List<String> reasons = Settings.INSTANT_KILL.getStringList();
             EntityDamageEvent lastDamageCause = killed.getLastDamageCause();
 
@@ -195,42 +138,37 @@ public class EntityStack extends ColdEntityStack {
         }
     }
 
-    public void releaseHost() {
+    public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
+        if (amount <= 0) return null;
+        LivingEntity entity = Objects.requireNonNull(location.getWorld()).spawn(location, hostEntity.getClass());
+        this.hostEntity = entity;
+        setAmount(amount--);
+        updateNameTag();
+        return entity;
+    }
+
+    public synchronized void releaseHost() {
         LivingEntity oldHost = hostEntity;
         LivingEntity entity = takeOneAndSpawnEntity(hostEntity.getLocation());
-        if (!stackedEntities.isEmpty()) {
-            destroy(false);
+        if (getAmount() >= 0) {
             plugin.getEntityStackManager().updateStack(oldHost, entity);
-            entity.setVelocity(new Vector(ThreadLocalRandom.current().nextDouble(-1, 1.01),
-                    0, ThreadLocalRandom.current().nextDouble(-1, 1.01)).normalize().multiply(0.5));
+            updateNameTag();
         } else {
             destroy();
         }
-        updateStack();
-
     }
 
-    public void destroy() {
-        destroy(true);
-    }
-
-    public void destroy(boolean full) {
-        if (full)
-            plugin.getEntityStackManager().removeStack(this.hostUniqueId);
-        if (hostEntity != null) {
-            try {
-                hostEntity.setCustomNameVisible(false);
-                hostEntity.setCustomName(null);
-            } catch (NullPointerException ignored) {}
-        }
+    public synchronized void destroy() {
+        if (hostEntity == null) return;
+        Bukkit.getScheduler().runTask(plugin, hostEntity::remove);
         hostEntity = null;
-        hostUniqueId = null;
     }
 
     @Override
     public String toString() {
         return "EntityStack{" +
                 "hostEntity=" + hostEntity +
+                ", amount=" + amount +
                 '}';
     }
 }

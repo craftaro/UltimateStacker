@@ -2,8 +2,10 @@ package com.songoda.ultimatestacker.stackable.entity.custom;
 
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.custom.entities.MythicMobsCustomEntity;
+import com.songoda.ultimatestacker.stackable.entity.custom.entities.MythicMobsCustomEntityLegacy;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,8 +20,14 @@ public class CustomEntityManager {
     private final List<CustomEntity> registeredCustomEntities = new ArrayList<>();
 
     public void load() {
-        if (isEnabled("MythicMobs"))
-            registeredCustomEntities.add(new MythicMobsCustomEntity());
+        if (isEnabled("MythicMobs")) {
+            Plugin plugin = Bukkit.getPluginManager().getPlugin("MythicMobs");
+            if (plugin.getDescription().getVersion().startsWith("4.")) {
+                registeredCustomEntities.add(new MythicMobsCustomEntityLegacy());
+            } else {
+                registeredCustomEntities.add(new MythicMobsCustomEntity());
+            }
+        }
     }
 
     public boolean isEnabled(String plugin) {
@@ -45,5 +53,12 @@ public class CustomEntityManager {
 
     public boolean isCustomEntity(Entity entity) {
         return getCustomEntity(entity) != null && getCustomEntity(entity).isCustomEntity(entity);
+    }
+
+    public boolean isStackable(Entity entity) {
+        CustomEntity customEntity = getCustomEntity(entity);
+        if (customEntity == null) return true;
+        String key = customEntity.getPluginName().toLowerCase() + "_" + customEntity.getNBTIdentifier(entity).toLowerCase();
+        return !Settings.BLACKLISTED_CUSTOM_ENTITIES.getStringList().contains(key);
     }
 }

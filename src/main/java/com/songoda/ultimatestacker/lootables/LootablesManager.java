@@ -101,6 +101,10 @@ public class LootablesManager {
                 looting);
     }
 
+    public List<ItemStack> getItemStackDrops(LivingEntity entity, int times) {
+        return getDrops(entity, times).stream().map(Drop::getItemStack).collect(Collectors.toList());
+    }
+
     public List<Drop> getDrops(LivingEntity entity, int times) {
         return getDrops(entity, times, 3);
     }
@@ -846,6 +850,9 @@ public class LootablesManager {
 
         // Add Silverfish.
         lootManager.addLootable(new Lootable("SILVERFISH",
+                new LootBuilder().build()));
+
+        lootManager.addLootable(new Lootable("WOLF",
                 new LootBuilder().build()));
 
         lootManager.saveLootables(true);

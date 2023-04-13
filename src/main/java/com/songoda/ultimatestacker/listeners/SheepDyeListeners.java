@@ -24,7 +24,7 @@ public class SheepDyeListeners implements Listener {
         LivingEntity entity = event.getEntity();
 
         EntityStackManager stackManager = plugin.getEntityStackManager();
-        if (!stackManager.isStackedAndLoaded(entity)) return;
+        if (!stackManager.isStackedEntity(entity)) return;
 
         if (Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_DYE))
             return;

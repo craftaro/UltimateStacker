@@ -38,7 +38,7 @@ public class InteractListeners implements Listener {
 
         ItemStack item = player.getInventory().getItemInHand();
 
-        if (!plugin.getEntityStackManager().isStackedAndLoaded(entity)) return;
+        if (!plugin.getEntityStackManager().isStackedEntity(entity)) return;
 
         if (item.getType() != Material.NAME_TAG && !correctFood(item, entity)) return;
 

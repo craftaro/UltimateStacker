@@ -22,7 +22,7 @@ public class BlockStack implements Stackable, Hologramable {
     // The id that identifies this stack in the database.
     private int id;
 
-    private int amount = 0;
+    private int amount = 1;
     private final CompatibleMaterial material;
     private final Location location;
 

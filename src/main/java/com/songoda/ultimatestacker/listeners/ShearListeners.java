@@ -38,7 +38,7 @@ public class ShearListeners implements Listener {
                 && entity.getType() != EntityType.MUSHROOM_COW
                 && entity.getType() != EntityType.SNOWMAN) return;
         EntityStackManager stackManager = plugin.getEntityStackManager();
-        if (!stackManager.isStackedAndLoaded(entity)) return;
+        if (!stackManager.isStackedEntity(entity)) return;
 
         if (event.getEntity().getType() == EntityType.SHEEP
                 && Settings.SPLIT_CHECKS.getStringList().stream().noneMatch(line -> Split.valueOf(line) == Split.SHEEP_SHEAR)

@@ -26,12 +26,20 @@ public class BlockStackManager {
         return registeredBlocks.remove(roundLocation(location));
     }
 
-    public BlockStack getBlock(Location location, CompatibleMaterial material) {
-        return this.registeredBlocks.computeIfAbsent(location, b -> new BlockStack(material, location));
+    public BlockStack getBlock(Location location) {
+        return this.registeredBlocks.get(location);
     }
 
     public BlockStack getBlock(Block block, CompatibleMaterial material) {
-        return this.getBlock(block.getLocation(), material);
+        return this.getBlock(block.getLocation());
+    }
+
+    public BlockStack createBlock(Location location, CompatibleMaterial material) {
+        return this.registeredBlocks.computeIfAbsent(location, b -> new BlockStack(material, location));
+    }
+
+    public BlockStack createBlock(Block block) {
+        return this.createBlock(block.getLocation(), CompatibleMaterial.getMaterial(block));
     }
 
     public boolean isBlock(Location location) {

@@ -1,10 +1,11 @@
 package com.songoda.ultimatestacker.listeners.item;
 
-import com.songoda.core.utils.BlockUtils;
+import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -60,12 +61,17 @@ public class ItemListeners implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInvPickup(InventoryPickupItemEvent event) {
-        if (!Settings.STACK_ITEMS.getBoolean() || !UltimateStacker.hasCustomAmount(event.getItem())) return;
+        if (!Settings.STACK_ITEMS.getBoolean() || !UltimateStacker.hasCustomAmount(event.getItem())) {
+            return;
+        }
+
         event.setCancelled(true);
 
         Methods.updateInventory(event.getItem(), event.getInventory());
-        if (event.getInventory().getHolder() instanceof BlockState)
-            BlockUtils.updateAdjacentComparators(((BlockState) event.getInventory().getHolder()).getLocation());
+        if (event.getInventory().getHolder() instanceof BlockState) {
+            Block invHolder = ((BlockState) event.getInventory().getHolder()).getBlock();
+            NmsManager.getWorld().updateAdjacentComparators(invHolder);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

@@ -13,12 +13,10 @@ import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ChestedHorse;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -47,7 +45,7 @@ public class DeathListeners implements Listener {
 
     private final Map<UUID, List<ItemStack>> finalItems = new HashMap<>();
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof LivingEntity))
             return;
@@ -58,29 +56,32 @@ public class DeathListeners implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
+        boolean custom = Settings.CUSTOM_DROPS.getBoolean();
+
+        if (!custom) return; //Compatibility with other plugins
+
         LivingEntity entity = event.getEntity();
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT)) {
+            return;
+        }
+
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
         //Respect MythicMobs
         if (plugin.getCustomEntityManager().isCustomEntity(entity)) return;
 
-        boolean custom = Settings.CUSTOM_DROPS.getBoolean();
-        List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
-                : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
 
-        if (custom) {
-            for (ItemStack item : new ArrayList<>(event.getDrops())) {
-                if (shouldDrop(event.getEntity(), item.getType()))
-                    drops.add(new Drop(item));
-            }
+        List<Drop> drops = plugin.getLootablesManager().getDrops(event.getEntity());
+
+        for (ItemStack item : new ArrayList<>(event.getDrops())) {
+            if (shouldDrop(event.getEntity(), item.getType()))
+                drops.add(new Drop(item));
         }
-
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
-            drops.clear();
 
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
             //replace %player% in drop commands with the last player to damage the entity
@@ -88,12 +89,11 @@ public class DeathListeners implements Listener {
             runCommands(entity, drops);
 
             if (plugin.getEntityStackManager().isStackedEntity(event.getEntity())) {
-                plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, custom, event.getDroppedExp(), event);
+                plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, true, event.getDroppedExp(), event);
             } else {
                 DropUtils.processStackedDrop(event.getEntity(), drops, event);
             }
         }
-
         finalItems.remove(entity.getUniqueId());
     }
 

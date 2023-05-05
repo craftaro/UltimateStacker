@@ -11,8 +11,6 @@ import com.songoda.core.lootables.loot.LootManager;
 import com.songoda.core.lootables.loot.Lootable;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
-import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
-import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;

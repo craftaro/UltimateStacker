@@ -3,7 +3,6 @@ package com.songoda.ultimatestacker.listeners;
 import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.hooks.ProtectionManager;
-import com.songoda.core.hooks.protection.BentoBoxProtection;
 import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.SpawnerBreakEvent;
@@ -13,7 +12,6 @@ import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import io.lumine.mythic.bukkit.utils.menu.ClickAction;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -35,7 +33,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
-import java.util.Map;
 
 public class BlockListeners implements Listener {
 

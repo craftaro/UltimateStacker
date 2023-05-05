@@ -1,12 +1,8 @@
 package com.songoda.ultimatestacker.convert;
 
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import org.bukkit.Bukkit;
 import uk.antiperson.stackmob.StackMob;
-
-import java.util.Map;
-import java.util.UUID;
 
 public class StackMobConvert implements Convert {
 

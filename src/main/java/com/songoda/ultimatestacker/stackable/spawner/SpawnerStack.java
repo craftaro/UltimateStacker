@@ -10,6 +10,7 @@ import com.songoda.ultimatestacker.utils.Stackable;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
+import org.bukkit.entity.EntityType;
 
 import java.util.Random;
 import java.util.UUID;
@@ -47,7 +48,11 @@ public class SpawnerStack extends SSpawner implements Stackable, Hologramable {
         plugin.getDataManager().updateSpawner(this);
     }
 
-    public int calculateSpawnCount() {
+    public int calculateSpawnCount(EntityType type) {
+        if (!UltimateStacker.getInstance().getMobFile().getBoolean("Mobs." + type.name() + ".Enabled")) {
+            return 0;
+        }
+
         Random random = new Random();
         int count = 0;
         for (int i = 0; i < getAmount(); i++) {

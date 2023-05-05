@@ -8,14 +8,13 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemCurrentListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve

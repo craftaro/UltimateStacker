@@ -4,28 +4,21 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.database.DataManagerAbstract;
 import com.songoda.core.database.DatabaseConnector;
 import com.songoda.core.database.DatabaseType;
-import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.block.BlockStack;
-import com.songoda.ultimatestacker.stackable.entity.EntityStack;
-import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
-import org.checkerframework.common.returnsreceiver.qual.This;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 public class DataManager extends DataManagerAbstract {

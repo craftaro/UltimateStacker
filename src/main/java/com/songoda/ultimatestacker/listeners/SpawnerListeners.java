@@ -51,7 +51,6 @@ public class SpawnerListeners implements Listener {
         if (entity.getType() == EntityType.FIREWORK) return;
         if (entity.getVehicle() != null) {
             entity.getVehicle().remove();
-            entity.remove();
         }
 
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_11)) {
@@ -59,16 +58,16 @@ public class SpawnerListeners implements Listener {
                 for (Entity e : entity.getPassengers()) {
                     e.remove();
                 }
-                entity.remove();
             }
         }
-        entity.remove();
 
         Location location = event.getSpawner().getLocation();
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(location);
 
-        int amountToSpawn = spawnerStack.calculateSpawnCount();
+        int amountToSpawn = spawnerStack.calculateSpawnCount(entity.getType());
+        if (amountToSpawn <= 1) return;
+        entity.remove();
 
         spawnerStack.spawn(amountToSpawn, "EXPLOSION_NORMAL", null, (e) -> {
             if (Settings.NO_AI.getBoolean())

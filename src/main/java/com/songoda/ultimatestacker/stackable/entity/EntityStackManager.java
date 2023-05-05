@@ -1,21 +1,12 @@
 package com.songoda.ultimatestacker.stackable.entity;
 
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class EntityStackManager {
@@ -132,6 +123,7 @@ public class EntityStackManager {
     }
 
     public void setStack(LivingEntity newEntity, int amount) {
+        if (amount <= 0) return;
         if (isStackedEntity(newEntity)) {
             EntityStack stack = getStack(newEntity);
             stack.setAmount(amount);

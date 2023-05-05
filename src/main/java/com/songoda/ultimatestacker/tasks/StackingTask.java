@@ -9,12 +9,9 @@ import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.stackable.entity.Check;
 import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
-import com.songoda.ultimatestacker.stackable.entity.StackedEntity;
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
-import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.CachedChunk;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -45,16 +42,12 @@ import org.bukkit.entity.TropicalFish;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +60,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class StackingTask extends TimerTask {
 
@@ -186,6 +178,10 @@ public class StackingTask extends TimerTask {
                 // Or in breeding cooldown.
                 || entity.hasMetadata("breedCooldown"))
             return false;
+
+        if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled")) {
+            return false;
+        }
 
         // Allow spawn if stackreasons are set and match, or if from a spawner
         final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()

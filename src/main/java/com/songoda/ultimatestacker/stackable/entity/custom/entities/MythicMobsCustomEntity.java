@@ -1,6 +1,5 @@
 package com.songoda.ultimatestacker.stackable.entity.custom.entities;
 
-import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import io.lumine.mythic.api.mobs.MobManager;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.bukkit.MythicBukkit;
@@ -8,7 +7,6 @@ import io.lumine.mythic.core.mobs.ActiveMob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 public class MythicMobsCustomEntity extends MythicMobsProvider {

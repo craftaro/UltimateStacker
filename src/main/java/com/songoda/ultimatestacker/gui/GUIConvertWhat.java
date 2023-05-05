@@ -4,9 +4,7 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.gui.Gui;
 import com.songoda.core.gui.GuiUtils;
 import com.songoda.core.utils.TextUtils;
-import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.convert.Convert;
-import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

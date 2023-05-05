@@ -4,7 +4,6 @@ import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.utils.TextUtils;
 import com.songoda.ultimatestacker.gui.GUIConvert;
-import com.songoda.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

@@ -2,18 +2,11 @@ package com.songoda.ultimatestacker.convert;
 
 import com.bgsoftware.wildstacker.api.WildStackerAPI;
 import com.bgsoftware.wildstacker.api.objects.StackedSpawner;
-import com.songoda.core.database.DatabaseConnector;
-import com.songoda.core.database.SQLiteConnector;
 import com.songoda.ultimatestacker.UltimateStacker;
-import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.plugin.Plugin;
-
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.UUID;
 
 public class WildStackerConvert implements Convert {
 

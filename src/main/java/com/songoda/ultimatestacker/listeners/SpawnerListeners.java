@@ -40,8 +40,7 @@ public class SpawnerListeners implements Listener {
     @EventHandler
     public void onSpawn(SpawnerSpawnEvent event) {
         if (plugin.getStackingTask() == null) return; //Don't spam error when reloading the plugin
-        if (!Settings.STACK_ENTITIES.getBoolean()
-                || !plugin.spawnersEnabled()
+        if (!plugin.spawnersEnabled()
                 || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;
 
         SpawnerStackManager spawnerStackManager = plugin.getSpawnerStackManager();
@@ -65,23 +64,25 @@ public class SpawnerListeners implements Listener {
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(location);
 
-        int amountToSpawn = spawnerStack.calculateSpawnCount(entity.getType());
-        if (amountToSpawn <= 1) return;
+        int amountToSpawn = Settings.STACK_ENTITIES.getBoolean() ? spawnerStack.calculateSpawnCount(entity.getType()) : 1;
+        if (amountToSpawn <= 0) return;
         entity.remove();
 
         spawnerStack.spawn(amountToSpawn, "EXPLOSION_NORMAL", null, (e) -> {
-            if (Settings.NO_AI.getBoolean())
+            if (Settings.NO_AI.getBoolean()) {
                 EntityUtils.setUnaware(e);
+            }
 
-            if (mcmmo)
+            if (mcmmo) {
                 entity.setMetadata("mcMMO: Spawned Entity", new FixedMetadataValue(plugin, true));
+            }
 
             UltimateStacker.getInstance().getEntityStackManager().setStack(e, amountToSpawn);
             return true;
         }, event.getEntityType());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler
     public void PlayerInteractEventEgg(PlayerInteractEvent event) {
         if (!plugin.spawnersEnabled()
                 || !event.getAction().equals(Action.RIGHT_CLICK_BLOCK))

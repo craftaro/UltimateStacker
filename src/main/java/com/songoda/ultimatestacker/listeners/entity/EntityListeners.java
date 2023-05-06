@@ -75,7 +75,7 @@ public class EntityListeners implements Listener {
         event.getEntity().setItemStack(item);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler
     public void onHurt(EntityDamageByEntityEvent event) {
         if (!Settings.STACK_ENTITIES.getBoolean() || !(event.getDamager() instanceof Player)) return;
 
@@ -100,7 +100,7 @@ public class EntityListeners implements Listener {
         event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(plugin, event.getSpawnReason().name()));
     }
     
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler
     public void onBlow(EntityExplodeEvent event) {
         if (!plugin.spawnersEnabled()) return;
 

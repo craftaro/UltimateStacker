@@ -58,30 +58,27 @@ public class DeathListeners implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        boolean custom = Settings.CUSTOM_DROPS.getBoolean();
-
-        if (!custom) return; //Compatibility with other plugins
-
         LivingEntity entity = event.getEntity();
-
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT)) {
-            return;
-        }
-
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
         //Respect MythicMobs
         if (plugin.getCustomEntityManager().isCustomEntity(entity)) return;
 
+        boolean custom = Settings.CUSTOM_DROPS.getBoolean();
+        List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
+                : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
 
-        List<Drop> drops = plugin.getLootablesManager().getDrops(event.getEntity());
-
-        for (ItemStack item : new ArrayList<>(event.getDrops())) {
-            if (shouldDrop(event.getEntity(), item.getType()))
-                drops.add(new Drop(item));
+        if (custom) {
+            for (ItemStack item : new ArrayList<>(event.getDrops())) {
+                if (shouldDrop(event.getEntity(), item.getType()))
+                    drops.add(new Drop(item));
+            }
         }
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
+            drops.clear();
 
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
             //replace %player% in drop commands with the last player to damage the entity
@@ -89,11 +86,12 @@ public class DeathListeners implements Listener {
             runCommands(entity, drops);
 
             if (plugin.getEntityStackManager().isStackedEntity(event.getEntity())) {
-                plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, true, event.getDroppedExp(), event);
+                plugin.getEntityStackManager().getStack(event.getEntity()).onDeath(entity, drops, custom, event.getDroppedExp(), event);
             } else {
                 DropUtils.processStackedDrop(event.getEntity(), drops, event);
             }
         }
+
         finalItems.remove(entity.getUniqueId());
     }
 

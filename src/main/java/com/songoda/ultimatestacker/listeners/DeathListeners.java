@@ -17,6 +17,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -56,9 +57,15 @@ public class DeathListeners implements Listener {
 
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onEntityDeath(EntityDeathEvent event) {
         LivingEntity entity = event.getEntity();
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
+                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT)) {
+            return;
+        }
+
         if (event.getEntityType() == EntityType.PLAYER
                 || event.getEntityType() == EntityType.ARMOR_STAND) return;
 
@@ -76,12 +83,7 @@ public class DeathListeners implements Listener {
             }
         }
 
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                && !entity.getWorld().getGameRuleValue(GameRule.DO_MOB_LOOT))
-            drops.clear();
-
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
-            //replace %player% in drop commands with the last player to damage the entity
             //Run commands here, or it will be buggy
             runCommands(entity, drops);
 

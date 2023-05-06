@@ -3,6 +3,7 @@ package com.songoda.ultimatestacker.stackable.entity;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
 import com.songoda.core.lootables.loot.DropUtils;
+import com.songoda.core.utils.EntityUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.events.EntityStackKillEvent;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -132,6 +133,9 @@ public class EntityStack extends StackedEntity {
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
         if (amount <= 0) return null;
         LivingEntity entity = Objects.requireNonNull(location.getWorld()).spawn(location, hostEntity.getClass());
+        if (Settings.NO_AI.getBoolean()) {
+            EntityUtils.setUnaware(entity);
+        }
         this.hostEntity = entity;
         setAmount(amount--);
         updateNameTag();

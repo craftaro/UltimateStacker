@@ -12,7 +12,7 @@ import com.songoda.ultimatestacker.stackable.block.BlockStack;
 import com.songoda.ultimatestacker.stackable.block.BlockStackManager;
 import com.songoda.ultimatestacker.stackable.spawner.SpawnerStack;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

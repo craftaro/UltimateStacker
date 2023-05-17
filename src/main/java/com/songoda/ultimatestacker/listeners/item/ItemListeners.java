@@ -4,7 +4,7 @@ import com.songoda.core.nms.NmsManager;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Item;

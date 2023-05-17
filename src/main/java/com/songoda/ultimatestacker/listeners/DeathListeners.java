@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.core.compatibility.ServerProject;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
@@ -108,7 +109,7 @@ public class DeathListeners implements Listener {
                     commands.add(command);
                 }
             });
-            Bukkit.getScheduler().runTask(plugin, () -> {
+            SchedulerUtils.runTask(plugin, () -> {
                 for (String command : commands) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                 }

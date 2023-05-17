@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.tasks;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.hooks.WorldGuardHook;
@@ -11,6 +12,9 @@ import com.songoda.ultimatestacker.stackable.entity.EntityStack;
 import com.songoda.ultimatestacker.stackable.entity.EntityStackManager;
 import com.songoda.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.songoda.ultimatestacker.utils.CachedChunk;
+import io.papermc.paper.threadedregions.RegionizedServerInitEvent;
+import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
+import io.papermc.paper.threadedregions.scheduler.RegionScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -63,29 +67,29 @@ import java.util.concurrent.TimeUnit;
 
 public class StackingTask extends TimerTask {
 
-    private final UltimateStacker plugin;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    protected final UltimateStacker plugin;
+    protected final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-    private final EntityStackManager stackManager;
+    protected final EntityStackManager stackManager;
 
-    private final ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
-    private final List<UUID> processed = new ArrayList<>();
+    protected final ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
+    protected final List<UUID> processed = new ArrayList<>();
 
-    private final Map<EntityType, Integer> entityStackSizes = new HashMap<>();
-    private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt(),
+    protected final Map<EntityType, Integer> entityStackSizes = new HashMap<>();
+    protected final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt(),
             minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt(),
             searchRadius = Settings.SEARCH_RADIUS.getInt(),
             maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
-    private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList(),
+    protected final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList(),
             stackReasons = Settings.STACK_REASONS.getStringList();
-    private final List<Check> checks = Check.getChecks(Settings.STACK_CHECKS.getStringList());
-    private final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
+    protected final List<Check> checks = Check.getChecks(Settings.STACK_CHECKS.getStringList());
+    protected final boolean stackFlyingDown = Settings.ONLY_STACK_FLYING_DOWN.getBoolean(),
             stackWholeChunk = Settings.STACK_WHOLE_CHUNK.getBoolean(),
             weaponsArentEquipment = Settings.WEAPONS_ARENT_EQUIPMENT.getBoolean(),
             onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean(),
             onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
-    Set<SWorld> loadedWorlds = new HashSet<>();
+    protected Set<SWorld> loadedWorlds = new HashSet<>();
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
@@ -125,41 +129,64 @@ public class StackingTask extends TimerTask {
                 }
                 Collections.reverse(entities);
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Loop through the entities.
-                    for (LivingEntity entity : entities) {
-                        // Make sure our entity has not already been processed.
-                        // Skip it if it has been.
-                        if (this.processed.contains(entity.getUniqueId())) continue;
+                if (ServerVersion.isFolia()) {
+                    SchedulerUtils.runTask(plugin, () -> {
+                        Map<EntityScheduler, List<LivingEntity>> entitySchedulerMap = sWorld.getRegionizedEntities();
+                        for (EntityScheduler scheduler : entitySchedulerMap.keySet()) {
+                            List<LivingEntity> livingEntities = entitySchedulerMap.get(scheduler);
+                            if (livingEntities == null) continue;
+                            scheduler.run(plugin, scheduledTask -> {
+                                // Loop through the entities.
+                                for (LivingEntity entity : livingEntities) {
+                                    // Make sure our entity has not already been processed.
+                                    // Skip it if it has been.
+                                    if (this.processed.contains(entity.getUniqueId())) continue;
 
-                        // Check to see if entity is not stackable.
-                        if (!isEntityStackable(entity)) {
-                            continue;
+                                    // Check to see if entity is not stackable.
+                                    if (!isEntityStackable(entity)) {
+                                        continue;
+                                    }
+
+                                    // Get entity location to pass around as its faster this way.
+                                    Location location = entity.getLocation();
+
+                                    // Process the entity.
+                                    this.processEntity(entity, sWorld, location);
+                                }
+                            }, null);
                         }
+                    });
+                } else {
+                    SchedulerUtils.runTask(plugin, () -> {
+                        // Loop through the entities.
+                        for (LivingEntity entity : entities) {
+                            // Make sure our entity has not already been processed.
+                            // Skip it if it has been.
+                            if (this.processed.contains(entity.getUniqueId())) continue;
 
-                        // Get entity location to pass around as its faster this way.
-                        Location location = entity.getLocation();
+                            // Check to see if entity is not stackable.
+                            if (!isEntityStackable(entity)) {
+                                continue;
+                            }
 
-                        // Process the entity.
-                        this.processEntity(entity, sWorld, location);
-                    }
-                });
+                            // Get entity location to pass around as its faster this way.
+                            Location location = entity.getLocation();
+
+                            // Process the entity.
+                            this.processEntity(entity, sWorld, location);
+                        }
+                    });
+                }
             }
             // Clear caches in preparation for the next run.
             this.processed.clear();
         } catch (Exception ignored) {}
     }
 
-    private Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
+    protected Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
         CompletableFuture<List<LivingEntity>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
+        SchedulerUtils.runTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
 
-        return future;
-    }
-
-    private Future<Entity[]> getEntitiesInChunkSync(CachedChunk cachedChunk) {
-        CompletableFuture<Entity[]> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(this.plugin, () -> future.complete(cachedChunk.getEntities()));
         return future;
     }
 
@@ -167,7 +194,7 @@ public class StackingTask extends TimerTask {
         return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
-    private boolean isEntityStackable(Entity entity) {
+    protected boolean isEntityStackable(Entity entity) {
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
                 || entity instanceof HumanEntity
@@ -210,7 +237,7 @@ public class StackingTask extends TimerTask {
 
     }
 
-    private void processEntity(LivingEntity baseEntity, SWorld sWorld, Location location) {
+    protected void processEntity(LivingEntity baseEntity, SWorld sWorld, Location location) {
 
         // Check our WorldGuard flag.
         Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(baseEntity.getLocation(), "mob-stacking") : null;
@@ -278,7 +305,7 @@ public class StackingTask extends TimerTask {
                 stackManager.createStack(friendlyEntity, amount + amountToStack);
                 processed.add(baseEntity.getUniqueId());
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
+                SchedulerUtils.runEntityTask(plugin, baseEntity, () -> {
                     if (baseEntity.isLeashed()) {
                         baseEntity.getWorld().dropItemNaturally(baseEntity.getLocation(), CompatibleMaterial.LEAD.getItem());
                     }
@@ -297,7 +324,7 @@ public class StackingTask extends TimerTask {
 
         baseStack.setAmount(maxEntityStackAmount);
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        SchedulerUtils.runLocationTask(plugin, baseStack.getHostEntity().getLocation(), () -> {
             int finalStackSize = stackSize - maxEntityStackAmount;
             do {
                 // Create a new stack, summon entity and add to stack.
@@ -314,7 +341,7 @@ public class StackingTask extends TimerTask {
         return true;
     }
 
-    private Set<CachedChunk> getNearbyChunks(SWorld sWorld, Location location, double radius, boolean singleChunk) {
+    protected Set<CachedChunk> getNearbyChunks(SWorld sWorld, Location location, double radius, boolean singleChunk) {
         //get current chunk
         if (radius == -1) {
             return new HashSet<>(Collections.singletonList(new CachedChunk(sWorld, location.getChunk().getX(), location.getChunk().getZ())));
@@ -349,7 +376,7 @@ public class StackingTask extends TimerTask {
      * @param singleChunk Whether to only get entities in the same chunk as the entity.
      * @return A list of similar entities around the entity.
      */
-    private List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity, double radius, boolean singleChunk) {
+    protected List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity, double radius, boolean singleChunk) {
         List<LivingEntity> entities = new ArrayList<>();
         try {
             Set<CachedChunk> chunks = getNearbyChunks(new SWorld(entity.getWorld()), entity.getLocation(), radius, singleChunk);
@@ -639,7 +666,7 @@ public class StackingTask extends TimerTask {
                 || (equipment.getBoots() != null && equipment.getBoots().getType() != Material.AIR));
     }
 
-    private int getEntityStackSize(LivingEntity initialEntity) {
+    protected int getEntityStackSize(LivingEntity initialEntity) {
         Integer max = entityStackSizes.get(initialEntity.getType());
         if (max == null) {
             max = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");

@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.ultimatestacker.UltimateStacker;
@@ -66,7 +67,7 @@ public class InteractListeners implements Listener {
             }
             entity.setMetadata("inLove", new FixedMetadataValue(plugin, true));
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            SchedulerUtils.runEntityTask(plugin, entity, () -> {
                 if (entity.isDead()) return;
                 entity.removeMetadata("inLove", plugin);
             }, 20 * 20);

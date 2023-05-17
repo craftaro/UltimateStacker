@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.listeners.entity;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.ultimatestacker.UltimateStacker;
 import com.songoda.ultimatestacker.settings.Settings;
@@ -89,7 +90,7 @@ public class EntityListeners implements Listener {
         if (plugin.getEntityStackManager().isStackedEntity(entity)
                 && Settings.DISABLE_KNOCKBACK.getBoolean()
                 && ((Player) event.getDamager()).getItemInHand().getEnchantmentLevel(Enchantment.KNOCKBACK) == 0) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            SchedulerUtils.runEntityTask(plugin, entity, () -> {
                 event.getEntity().setVelocity(new Vector());
             }, 0L);
         }

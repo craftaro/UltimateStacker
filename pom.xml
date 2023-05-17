@@ -112,17 +112,17 @@
     </repositories>
 
     <dependencies>
+
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
-            <version>2.6.21</version>
+            <version>2.6.22</version>
             <scope>compile</scope>
         </dependency>
 
@@ -141,16 +141,23 @@
         </dependency>
 
         <dependency>
-            <groupId>me.minebuilders</groupId>
-            <artifactId>Clearlag</artifactId>
-            <version>3.0.6</version>
+            <groupId>io.lumine</groupId>
+            <artifactId>Mythic-Dist</artifactId>
+            <version>5.2.0</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>io.lumine</groupId>
-            <artifactId>Mythic-Dist</artifactId>
-            <version>5.2.0</version>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.19.4-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

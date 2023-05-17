@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.listeners;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.ultimatestacker.UltimateStacker;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -17,7 +18,7 @@ public class BreedListeners implements Listener {
 
     @EventHandler
     public void onBread(EntityBreedEvent event) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+        SchedulerUtils.runEntityTask(plugin, event.getEntity(), () -> {
             event.getFather().removeMetadata("breedCooldown", plugin);
             event.getMother().removeMetadata("breedCooldown", plugin);
         }, 5 * 20 * 60);

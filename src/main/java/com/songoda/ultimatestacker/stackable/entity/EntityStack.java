@@ -1,5 +1,6 @@
 package com.songoda.ultimatestacker.stackable.entity;
 
+import com.songoda.SchedulerUtils;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
 import com.songoda.core.lootables.loot.DropUtils;
@@ -62,15 +63,26 @@ public class EntityStack extends StackedEntity {
             event.setDroppedExp(droppedExp * getAmount());
         }
 
-
         if (plugin.getCustomEntityManager().getCustomEntity(killed) == null) {
             Async.run(() -> {
-                drops.removeIf(it -> it.getItemStack() != null
-                        && it.getItemStack().isSimilar(killed.getEquipment().getItemInHand()));
-                for (ItemStack item : killed.getEquipment().getArmorContents()) {
-                    drops.removeIf(it -> it.getItemStack() != null && it.getItemStack().isSimilar(item));
+                if (ServerVersion.isFolia()) {
+                    killed.getScheduler().run(plugin, scheduledTask -> {
+                        drops.removeIf(it -> it.getItemStack() != null
+                                && it.getItemStack().isSimilar(killed.getEquipment().getItemInHand()));
+
+                        for (ItemStack item : killed.getEquipment().getArmorContents()) {
+                            drops.removeIf(it -> it.getItemStack() != null && it.getItemStack().isSimilar(item));
+                        }
+                    }, () -> DropUtils.processStackedDrop(killed, plugin.getLootablesManager().getDrops(killed, getAmount()), event));
+                } else {
+                    drops.removeIf(it -> it.getItemStack() != null
+                            && it.getItemStack().isSimilar(killed.getEquipment().getItemInHand()));
+
+                    for (ItemStack item : killed.getEquipment().getArmorContents()) {
+                        drops.removeIf(it -> it.getItemStack() != null && it.getItemStack().isSimilar(item));
+                    }
+                    DropUtils.processStackedDrop(killed, plugin.getLootablesManager().getDrops(killed, getAmount()), event);
                 }
-                DropUtils.processStackedDrop(killed, plugin.getLootablesManager().getDrops(killed, getAmount()), event);
             });
         }
 
@@ -155,7 +167,7 @@ public class EntityStack extends StackedEntity {
 
     public synchronized void destroy() {
         if (hostEntity == null) return;
-        Bukkit.getScheduler().runTask(plugin, hostEntity::remove);
+        SchedulerUtils.runEntityTask(plugin, hostEntity, hostEntity::remove);
         hostEntity = null;
     }
 

@@ -32,7 +32,6 @@ import com.songoda.ultimatestacker.hook.StackerHook;
 import com.songoda.ultimatestacker.hook.hooks.JobsHook;
 import com.songoda.ultimatestacker.listeners.BlockListeners;
 import com.songoda.ultimatestacker.listeners.BreedListeners;
-import com.songoda.ultimatestacker.listeners.ClearLagListeners;
 import com.songoda.ultimatestacker.listeners.DeathListeners;
 import com.songoda.ultimatestacker.listeners.InteractListeners;
 import com.songoda.ultimatestacker.listeners.ShearListeners;
@@ -57,7 +56,7 @@ import com.songoda.ultimatestacker.stackable.spawner.SpawnerStackManager;
 import com.songoda.ultimatestacker.tasks.StackingTask;
 import com.songoda.ultimatestacker.utils.Async;
 import com.songoda.ultimatestacker.utils.Methods;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -210,8 +209,8 @@ public class UltimateStacker extends SongodaPlugin {
         pluginManager.registerEvents(new SpawnerListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
 
-        if (Settings.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
-            pluginManager.registerEvents(new ClearLagListeners(this), this);
+//        if (Settings.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
+//            pluginManager.registerEvents(new ClearLagListeners(this), this);
 
         // Register Hooks
         if (pluginManager.isPluginEnabled("Jobs"))

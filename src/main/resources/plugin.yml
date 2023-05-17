@@ -6,6 +6,7 @@ loadbefore: [WorldGuard]
 main: com.songoda.ultimatestacker.UltimateStacker
 author: songoda
 api-version: 1.13
+folia-supported: true
 commands:
   us:
     description: Reloads the configuration file

@@ -4,6 +4,7 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
+import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
@@ -70,8 +71,12 @@ public class EntityListeners implements Listener {
         int amount = (stack.getAmount() - 1) + item.getAmount();
         if (amount < 1) return;
         item.setAmount(Math.min(amount, item.getMaxStackSize()));
-        if (amount > item.getMaxStackSize())
-            UltimateStacker.updateItemAmount(event.getEntity(), amount);
+        if (amount > item.getMaxStackSize()) {
+            StackedItem stackedItem = UltimateStackerAPI.getStackedItemManager().getStackedItem(event.getEntity());
+            if (stackedItem != null) {
+                stackedItem.setAmount(amount - item.getMaxStackSize());
+            }
+        }
         event.getEntity().setItemStack(item);
     }
 

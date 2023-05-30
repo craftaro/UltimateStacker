@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
+import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.songoda.core.compatibility.CompatibleSound;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -13,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemLegacyListener implements Listener {
 
+    //TODO Do we need this?
+
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;
@@ -21,7 +24,7 @@ public class ItemLegacyListener implements Listener {
 
         Item item = event.getItem();
         ItemStack stack = item.getItemStack();
-        int amount = UltimateStacker.getActualItemAmount(item);
+        int amount = UltimateStackerAPI.getStackedItemManager().getActualItemAmount(item);
         if (amount < (stack.getMaxStackSize() / 2)) return;
         event.setCancelled(true);
 

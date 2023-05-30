@@ -5,7 +5,6 @@ import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.stackable.entity.EntityStackManagerImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -54,7 +53,7 @@ public class CommandRemoveAll extends AbstractCommand {
                     stack.destroy();
                     amountRemoved++;
                 } else if (entityO.getType() == EntityType.DROPPED_ITEM && type.equalsIgnoreCase("items")) {
-                    if (!UltimateStacker.hasCustomAmount((Item)entityO) && !all)
+                    if (!UltimateStacker.getInstance().getStackedItemManager().isStackedItem((Item)entityO) && !all)
                         continue;
                     entityO.remove();
                     amountRemoved++;

@@ -5,7 +5,7 @@ import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
-import com.craftaro.ultimatestacker.api.stack.item.ItemStackManager;
+import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import com.craftaro.ultimatestacker.commands.CommandConvert;
@@ -32,10 +32,9 @@ import com.craftaro.ultimatestacker.lootables.LootablesManager;
 import com.craftaro.ultimatestacker.stackable.block.BlockStackImpl;
 import com.craftaro.ultimatestacker.stackable.entity.EntityStackManagerImpl;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntityManager;
-import com.craftaro.ultimatestacker.stackable.item.ItemStackManagerImpl;
+import com.craftaro.ultimatestacker.stackable.item.StackedItemManagerImpl;
 import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
 import com.craftaro.ultimatestacker.utils.Async;
-import com.craftaro.ultimatestacker.utils.Methods;
 import com.songoda.core.SongodaCore;
 import com.songoda.core.SongodaPlugin;
 import com.songoda.core.commands.CommandManager;
@@ -67,14 +66,10 @@ import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackManagerImpl;
 import com.craftaro.ultimatestacker.tasks.StackingTask;
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.ArrayList;
@@ -98,7 +93,7 @@ public class UltimateStacker extends SongodaPlugin {
     private EntityStackManager entityStackManager;
     private SpawnerStackManager spawnerStackManager;
     private BlockStackManager blockStackManager;
-    private ItemStackManager itemStackManager;
+    private StackedItemManager stackedItemManager;
     private LootablesManager lootablesManager;
     private CommandManager commandManager;
     private CustomEntityManager customEntityManager;
@@ -195,7 +190,7 @@ public class UltimateStacker extends SongodaPlugin {
         this.spawnerStackManager = new SpawnerStackManagerImpl();
         this.entityStackManager = new EntityStackManagerImpl(this);
         this.blockStackManager = new BlockStackManagerImpl();
-        this.itemStackManager = new ItemStackManagerImpl();
+        this.stackedItemManager = new StackedItemManagerImpl();
         this.customEntityManager = new CustomEntityManager();
 
         guiManager.init();
@@ -212,21 +207,24 @@ public class UltimateStacker extends SongodaPlugin {
         pluginManager.registerEvents(new EntityListeners(this), this);
         pluginManager.registerEvents(new ItemListeners(this), this);
 
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12))
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
             pluginManager.registerEvents(new ItemCurrentListener(), this);
-        else
+        } else {
             pluginManager.registerEvents(new ItemLegacyListener(), this);
+        }
 
         pluginManager.registerEvents(new TameListeners(this), this);
         pluginManager.registerEvents(new SpawnerListeners(this), this);
         pluginManager.registerEvents(new SheepDyeListeners(this), this);
 
-        if (Settings.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag"))
+        if (Settings.CLEAR_LAG.getBoolean() && pluginManager.isPluginEnabled("ClearLag")) {
             pluginManager.registerEvents(new ClearLagListeners(this), this);
+        }
 
         // Register Hooks
-        if (pluginManager.isPluginEnabled("Jobs"))
+        if (pluginManager.isPluginEnabled("Jobs")) {
             stackerHooks.add(new JobsHook());
+        }
 
         HologramManager.load(this);
         EntityStackerManager.load();
@@ -261,7 +259,7 @@ public class UltimateStacker extends SongodaPlugin {
                 new _6_RemoveStackedEntityTable());
         this.dataMigrationManager.runMigrations();
 
-        API = new UltimateStackerAPI(entityStackManager, itemStackManager, spawnerStackManager, blockStackManager);
+        API = new UltimateStackerAPI(entityStackManager, stackedItemManager, spawnerStackManager, blockStackManager);
     }
 
     @Override
@@ -384,8 +382,8 @@ public class UltimateStacker extends SongodaPlugin {
         return entityStackManager;
     }
 
-    public ItemStackManager getItemStackManager() {
-        return itemStackManager;
+    public StackedItemManager getStackedItemManager() {
+        return stackedItemManager;
     }
 
     public SpawnerStackManager getSpawnerStackManager() {
@@ -419,118 +417,6 @@ public class UltimateStacker extends SongodaPlugin {
     }
 
     //////// Convenient API //////////
-
-    /**
-     * Spawn a stacked item at a location
-     *
-     * @param item     The item to spawn
-     * @param amount   The amount of items to spawn
-     * @param location The location to spawn the item
-     */
-    public static void spawnStackedItem(ItemStack item, int amount, Location location) {
-        if (item.getType() == Material.AIR) return;
-        World world = location.getWorld();
-        if (world == null) return;
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {
-            world.dropItem(location, item, dropped -> {
-                if (dropped.getItemStack().getType() == Material.AIR) return;
-                updateItemMeta(dropped, item, amount);
-            });
-        } else {
-            Item dropped = world.dropItem(location, item);
-            if (dropped.getItemStack().getType() == Material.AIR) return;
-            updateItemMeta(dropped, item, amount);
-        }
-    }
-
-    /**
-     * Change the stacked amount for this item
-     *
-     * @param item      item entity to update
-     * @param newAmount number of items this item represents
-     */
-    public static void updateItemAmount(Item item, int newAmount) {
-        updateItemAmount(item, item.getItemStack(), newAmount);
-    }
-
-    /**
-     * Change the stacked amount for this item
-     *
-     * @param item      item entity to update
-     * @param itemStack ItemStack that will represent this item
-     * @param newAmount number of items this item represents
-     */
-    public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
-        boolean blacklisted = isMaterialBlacklisted(itemStack);
-
-        if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted)
-            itemStack.setAmount(Math.max(1, itemStack.getMaxStackSize() / 2));
-        else
-            itemStack.setAmount(newAmount);
-
-        // If amount is 0, Minecraft change the type to AIR
-        if (itemStack.getType() == Material.AIR)
-            return;
-
-        updateItemMeta(item, itemStack, newAmount);
-    }
-
-    public static void updateItemMeta(Item item, ItemStack itemStack, int newAmount) {
-        Material material = itemStack.getType();
-        if (material == Material.AIR)
-            return;
-
-        String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
-
-        boolean blacklisted = isMaterialBlacklisted(itemStack);
-
-        if (newAmount > (itemStack.getMaxStackSize() / 2) && !blacklisted) {
-            item.setMetadata("US_AMT", new FixedMetadataValue(INSTANCE, newAmount));
-        } else {
-            item.removeMetadata("US_AMT", INSTANCE);
-        }
-        item.setItemStack(itemStack);
-
-        if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
-                || !INSTANCE.getItemFile().getBoolean("Items." + material + ".Has Hologram")
-                || !Settings.ITEM_HOLOGRAMS.getBoolean()
-                || newAmount < Settings.ITEM_MIN_HOLOGRAM_SIZE.getInt())
-            return;
-
-        item.setCustomName(name);
-        item.setCustomNameVisible(true);
-    }
-
-    /**
-     * Lookup the stacked size of this item
-     *
-     * @param item item to check
-     * @return stacker-corrected value for the stack size
-     */
-    public static int getActualItemAmount(Item item) {
-        ItemStack itemStack = item.getItemStack();
-        int amount = itemStack.getAmount();
-        if (/*amount >= (itemStack.getMaxStackSize() / 2) && */item.hasMetadata("US_AMT")) {
-            return item.getMetadata("US_AMT").get(0).asInt();
-        } else {
-            return amount;
-        }
-    }
-
-    /**
-     * Check to see if the amount stored in this itemstack is not the stacked
-     * amount
-     *
-     * @param item item to check
-     * @return true if Item.getItemStack().getAmount() is different from the
-     * stacked amount
-     */
-    public static boolean hasCustomAmount(Item item) {
-        if (item.hasMetadata("US_AMT")) {
-            return item.getItemStack().getAmount() != item.getMetadata("US_AMT").get(0).asInt();
-        }
-        return false;
-    }
 
     /**
      * Check to see if this material is not permitted to stack

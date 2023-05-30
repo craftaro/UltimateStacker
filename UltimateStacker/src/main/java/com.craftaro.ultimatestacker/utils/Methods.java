@@ -1,5 +1,7 @@
 package com.craftaro.ultimatestacker.utils;
 
+import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.core.utils.TextUtils;
@@ -22,7 +24,8 @@ import java.util.Map;
 public class Methods {
 
     public static void updateInventory(Item item, Inventory inventory) {
-        int amount = UltimateStacker.getActualItemAmount(item);
+        StackedItem stackedItem = UltimateStackerAPI.getStackedItemManager().getStackedItem(item);
+        int amount = stackedItem.getAmount();
         ItemStack itemStack = item.getItemStack();
         final int maxStack = itemStack.getMaxStackSize();
 
@@ -38,46 +41,11 @@ public class Methods {
             }
         }
 
-        if (amount <= 0)
+        if (amount <= 0) {
             item.remove();
-        else
-            UltimateStacker.updateItemAmount(item, itemStack, amount);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static boolean isMaterialBlacklisted(Material type) {
-        return UltimateStacker.isMaterialBlacklisted(type);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static boolean isMaterialBlacklisted(Material type, byte data) {
-        return UltimateStacker.isMaterialBlacklisted(type, data);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static void updateItemAmount(Item item, int newAmount) {
-        UltimateStacker.updateItemAmount(item, newAmount);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static void updateItemAmount(Item item, ItemStack itemStack, int newAmount) {
-        UltimateStacker.updateItemAmount(item, itemStack, newAmount);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static int getActualItemAmount(Item item) {
-        return UltimateStacker.getActualItemAmount(item);
-    }
-
-    // Do not touch! API for older plugins
-    @Deprecated
-    public static boolean hasCustomAmount(Item item) {
-        return UltimateStacker.hasCustomAmount(item);
+        } else {
+            stackedItem.setAmount(amount);
+        }
     }
 
     public static String compileItemName(ItemStack item, int amount) {

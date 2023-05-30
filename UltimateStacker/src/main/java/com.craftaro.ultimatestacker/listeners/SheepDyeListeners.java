@@ -4,7 +4,6 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.settings.Settings;
-import com.craftaro.ultimatestacker.stackable.entity.EntityStackManagerImpl;
 import com.craftaro.ultimatestacker.stackable.entity.Split;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;

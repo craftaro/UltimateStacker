@@ -1,15 +1,14 @@
 package com.craftaro.ultimatestacker.utils;
 
+import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
+import com.craftaro.ultimatestacker.settings.Settings;
+import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.core.utils.TextUtils;
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.settings.Settings;
-import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;

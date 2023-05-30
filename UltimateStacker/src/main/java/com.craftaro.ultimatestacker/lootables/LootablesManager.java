@@ -1,5 +1,7 @@
 package com.craftaro.ultimatestacker.lootables;
 
+import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.settings.Settings;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.Lootables;
@@ -9,8 +11,6 @@ import com.songoda.core.lootables.loot.Loot;
 import com.songoda.core.lootables.loot.LootBuilder;
 import com.songoda.core.lootables.loot.LootManager;
 import com.songoda.core.lootables.loot.Lootable;
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.settings.Settings;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;

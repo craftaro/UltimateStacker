@@ -1,9 +1,8 @@
 package com.craftaro.ultimatestacker.hook.hooks;
 
-import com.bgsoftware.wildstacker.api.objects.StackedEntity;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
-import com.songoda.core.hooks.jobs.JobsPlayerHandler;
 import com.craftaro.ultimatestacker.hook.StackerHook;
+import com.songoda.core.hooks.jobs.JobsPlayerHandler;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

@@ -1,9 +1,9 @@
 package com.craftaro.ultimatestacker.commands;
 
+import com.craftaro.ultimatestacker.UltimateStacker;
 import com.songoda.core.commands.AbstractCommand;
 import com.songoda.core.configuration.editor.PluginConfigGui;
 import com.songoda.core.gui.GuiManager;
-import com.craftaro.ultimatestacker.UltimateStacker;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

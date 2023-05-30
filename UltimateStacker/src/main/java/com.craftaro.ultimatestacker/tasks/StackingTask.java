@@ -5,7 +5,6 @@ import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
-import com.craftaro.ultimatestacker.stackable.entity.EntityStackManagerImpl;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
 import com.songoda.core.compatibility.CompatibleMaterial;
@@ -62,7 +61,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static com.craftaro.ultimatestacker.stackable.entity.Check.*;
+import static com.craftaro.ultimatestacker.stackable.entity.Check.getChecks;
 
 public class StackingTask extends TimerTask {
 

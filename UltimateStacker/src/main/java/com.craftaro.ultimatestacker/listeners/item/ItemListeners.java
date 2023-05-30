@@ -1,23 +1,16 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
-import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
-import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
-import com.songoda.core.nms.NmsManager;
 import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
-import org.apache.commons.lang.StringUtils;
+import com.songoda.core.nms.NmsManager;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ItemMergeEvent;
-import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
 
 public class ItemListeners implements Listener {
 

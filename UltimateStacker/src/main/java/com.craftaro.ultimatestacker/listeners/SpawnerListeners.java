@@ -1,16 +1,16 @@
 package com.craftaro.ultimatestacker.listeners;
 
+import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
+import com.craftaro.ultimatestacker.settings.Settings;
+import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
 import com.songoda.core.compatibility.CompatibleHand;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.nms.NmsManager;
 import com.songoda.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.songoda.core.utils.EntityUtils;
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.settings.Settings;
-import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

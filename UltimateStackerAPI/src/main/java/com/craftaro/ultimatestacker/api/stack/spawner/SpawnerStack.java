@@ -6,10 +6,8 @@ import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.nms.world.SpawnedEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 
-import java.util.Random;
 import java.util.Set;
 
 public interface SpawnerStack extends Stackable, Hologramable {

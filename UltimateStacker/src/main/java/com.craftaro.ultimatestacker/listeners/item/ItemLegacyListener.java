@@ -1,10 +1,9 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
-import com.songoda.core.compatibility.CompatibleSound;
-import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
+import com.songoda.core.compatibility.CompatibleSound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;

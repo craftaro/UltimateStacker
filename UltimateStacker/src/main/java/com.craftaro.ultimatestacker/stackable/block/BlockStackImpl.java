@@ -2,9 +2,9 @@ package com.craftaro.ultimatestacker.stackable.block;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
+import com.craftaro.ultimatestacker.settings.Settings;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.utils.TextUtils;
-import com.craftaro.ultimatestacker.settings.Settings;
 import org.bukkit.Location;
 
 import java.util.UUID;

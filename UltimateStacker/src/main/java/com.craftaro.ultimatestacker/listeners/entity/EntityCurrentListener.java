@@ -3,7 +3,6 @@ package com.craftaro.ultimatestacker.listeners.entity;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
-import com.craftaro.ultimatestacker.stackable.entity.EntityStackManagerImpl;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

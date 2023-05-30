@@ -1,10 +1,8 @@
 package com.craftaro.ultimatestacker.api.stack.entity;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.UUID;
 

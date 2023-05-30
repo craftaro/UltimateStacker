@@ -1,11 +1,11 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
-import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
+import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.events.entity.EntityStackKillEvent;
+import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
+import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.settings.Settings;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.lootables.loot.Drop;
 import com.songoda.core.lootables.loot.DropUtils;

@@ -129,7 +129,7 @@ public class BlockListeners implements Listener {
                 }
                 //update hologram
                 plugin.updateHologram(stack);
-                plugin.getDataManager().updateBlock(stack);
+                plugin.getPluginDataManager().save(stack);
                 return;
             } else {
                 if (isSneaking) return;
@@ -143,7 +143,7 @@ public class BlockListeners implements Listener {
                     hand.takeItem(player, 1);
                 }
                 BlockStack newStack = blockStackManager.createBlock(block);
-                plugin.getDataManager().createBlock(newStack);
+                plugin.getPluginDataManager().save(newStack);
                 plugin.updateHologram(newStack);
             }
             return;
@@ -232,7 +232,7 @@ public class BlockListeners implements Listener {
         }
 
         SpawnerStack stack = UltimateStackerAPI.getSpawnerStackManager().addSpawner(new SpawnerStackImpl(block.getLocation(), amount));
-        plugin.getDataManager().createSpawner(stack);
+        plugin.getPluginDataManager().save(stack);
 
         cs.setSpawnedType(cs2.getSpawnedType());
         cs.update();
@@ -279,7 +279,7 @@ public class BlockListeners implements Listener {
             event.setCancelled(false);
             plugin.removeHologram(stack);
             SpawnerStack spawnerStack = UltimateStackerAPI.getSpawnerStackManager().removeSpawner(block.getLocation());
-            plugin.getDataManager().deleteSpawner(spawnerStack);
+            plugin.getPluginDataManager().delete(spawnerStack);
         } else {
             stack.setAmount(stack.getAmount() - 1);
             plugin.updateHologram(stack);

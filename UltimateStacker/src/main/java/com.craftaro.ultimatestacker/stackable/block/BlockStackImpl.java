@@ -4,9 +4,13 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.database.Data;
+import com.songoda.core.database.SerializedLocation;
 import com.songoda.core.utils.TextUtils;
 import org.bukkit.Location;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class BlockStackImpl implements BlockStack {
@@ -20,8 +24,8 @@ public class BlockStackImpl implements BlockStack {
     private int id;
 
     private int amount = 1;
-    private final CompatibleMaterial material;
-    private final Location location;
+    private CompatibleMaterial material;
+    private Location location;
 
     public BlockStackImpl(CompatibleMaterial material, Location location) {
         this.material = material;
@@ -37,6 +41,30 @@ public class BlockStackImpl implements BlockStack {
     @Override
     public int getId() {
         return id;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("amount", amount);
+        map.put("material", material.name());
+        map.putAll(SerializedLocation.of(location));
+        return map;
+    }
+
+    @Override
+    public Data deserialize(Map<String, Object> map) {
+        id = (int) map.get("id");
+        amount = (int) map.get("amount");
+        material = CompatibleMaterial.valueOf((String) map.get("material"));
+        location = SerializedLocation.of(map);
+        return this;
+    }
+
+    @Override
+    public String getTableName() {
+        return "blocks";
     }
 
     public void setId(int id) {
@@ -78,7 +106,7 @@ public class BlockStackImpl implements BlockStack {
         UltimateStacker plugin = UltimateStacker.getInstance();
         plugin.getBlockStackManager().removeBlock(location);
         plugin.removeHologram(this);
-        plugin.getDataManager().deleteBlock(this);
+        plugin.getPluginDataManager().delete(this);
     }
 
     @Override

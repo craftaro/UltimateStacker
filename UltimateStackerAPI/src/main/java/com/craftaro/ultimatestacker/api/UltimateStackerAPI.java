@@ -4,28 +4,42 @@ import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
+import com.songoda.core.hooks.stackers.UltimateStacker;
+import org.bukkit.plugin.Plugin;
 
 public final class UltimateStackerAPI {
 
+    private static Plugin plugin;
     private static EntityStackManager entityStackManager;
     private static StackedItemManager stackedItemManager;
     private static SpawnerStackManager spawnerStackManager;
     private static BlockStackManager blockStackManager;
+    private static Settings settings;
     private static UltimateStackerAPI instance;
 
-    public UltimateStackerAPI(EntityStackManager entityStackManager, StackedItemManager itemStackManager, SpawnerStackManager spawnerStackManager, BlockStackManager blockStackManager) {
-        if (UltimateStackerAPI.entityStackManager != null || UltimateStackerAPI.stackedItemManager != null || UltimateStackerAPI.spawnerStackManager != null || UltimateStackerAPI.blockStackManager != null) {
+    public UltimateStackerAPI(Plugin plugin, EntityStackManager entityStackManager, StackedItemManager itemStackManager, SpawnerStackManager spawnerStackManager, BlockStackManager blockStackManager, Settings settings) {
+        if (UltimateStackerAPI.plugin != null || UltimateStackerAPI.entityStackManager != null || UltimateStackerAPI.stackedItemManager != null || UltimateStackerAPI.spawnerStackManager != null || UltimateStackerAPI.blockStackManager != null || UltimateStackerAPI.settings != null) {
             throw new IllegalStateException("UltimateStackerAPI has already been initialized!");
         }
+        UltimateStackerAPI.plugin = plugin;
         UltimateStackerAPI.entityStackManager = entityStackManager;
         UltimateStackerAPI.stackedItemManager = itemStackManager;
         UltimateStackerAPI.spawnerStackManager = spawnerStackManager;
         UltimateStackerAPI.blockStackManager = blockStackManager;
+        UltimateStackerAPI.settings = settings;
         instance = this;
     }
 
     public static UltimateStackerAPI getInstance() {
         return instance;
+    }
+
+    /**
+     * Used to interact with the plugin
+     * @return The plugin
+     */
+    public static Plugin getPlugin() {
+        return plugin;
     }
 
     /**
@@ -58,6 +72,14 @@ public final class UltimateStackerAPI {
      */
     public static BlockStackManager getBlockStackManager() {
         return blockStackManager;
+    }
+
+    /**
+     * Used to interact with the plugin's settings
+     * @return The Settings
+     */
+    public static Settings getSettings() {
+        return settings;
     }
 
 }

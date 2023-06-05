@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.Future;
+
 
 public interface StackedItemManager {
 
@@ -41,6 +43,23 @@ public interface StackedItemManager {
      * @return The StackedItem for the given Item or null if it could not be created
      */
     @Nullable StackedItem createStack(Item item, int amount);
+
+    /**
+     * Create a new StackedItem for the given item in the main thread
+     * @param item The ItemStack to create the stack for
+     * @param amount The amount of items in the stack
+     * @param location The location to spawn the stack
+     * @return The StackedItem for the given Item or null if it could not be created
+     */
+    @Nullable Future<StackedItem> createStackSync(ItemStack item, Location location, int amount);
+
+    /**
+     * Create a new StackedItem for the given item in the main thread
+     * @param item The item to create the stack for
+     * @param amount The amount of items in the stack
+     * @return The StackedItem for the given Item or null if it could not be created
+     */
+    @Nullable Future<StackedItem> createStackSync(Item item, int amount);
 
     /**
      * Get the actual amount of the given item

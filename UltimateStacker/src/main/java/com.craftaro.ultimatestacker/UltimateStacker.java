@@ -16,7 +16,6 @@ import com.craftaro.ultimatestacker.commands.CommandReload;
 import com.craftaro.ultimatestacker.commands.CommandRemoveAll;
 import com.craftaro.ultimatestacker.commands.CommandSettings;
 import com.craftaro.ultimatestacker.commands.CommandSpawn;
-import com.craftaro.ultimatestacker.database.DataManager;
 import com.craftaro.ultimatestacker.database.migrations._1_InitialMigration;
 import com.craftaro.ultimatestacker.database.migrations._2_EntityStacks;
 import com.craftaro.ultimatestacker.database.migrations._3_BlockStacks;
@@ -54,10 +53,7 @@ import com.songoda.core.commands.CommandManager;
 import com.songoda.core.compatibility.CompatibleMaterial;
 import com.songoda.core.compatibility.ServerVersion;
 import com.songoda.core.configuration.Config;
-import com.songoda.core.database.DataMigrationManager;
-import com.songoda.core.database.DatabaseConnector;
-import com.songoda.core.database.MySQLConnector;
-import com.songoda.core.database.SQLiteConnector;
+import com.songoda.core.database.DataManager;
 import com.songoda.core.gui.GuiManager;
 import com.songoda.core.hooks.EntityStackerManager;
 import com.songoda.core.hooks.HologramManager;
@@ -98,10 +94,6 @@ public class UltimateStacker extends SongodaPlugin {
     private CommandManager commandManager;
     private CustomEntityManager customEntityManager;
     private StackingTask stackingTask;
-
-    private DatabaseConnector databaseConnector;
-    private DataMigrationManager dataMigrationManager;
-    private DataManager dataManager;
     private UltimateStackerAPI API;
 
     public static UltimateStacker getInstance() {
@@ -120,8 +112,8 @@ public class UltimateStacker extends SongodaPlugin {
     public void onPluginDisable() {
         this.stackingTask.stop();
         this.stackingTask = null;
-        this.dataManager.bulkUpdateSpawners(this.spawnerStackManager.getStacks());
-        this.dataManager.bulkUpdateBlocks(this.blockStackManager.getStacks());
+        this.dataManager.saveBatch(this.spawnerStackManager.getStacksData());
+        this.dataManager.saveBatch(this.blockStackManager.getStacksData());
         HologramManager.removeAllHolograms();
         Async.shutdown();
     }
@@ -229,37 +221,9 @@ public class UltimateStacker extends SongodaPlugin {
         HologramManager.load(this);
         EntityStackerManager.load();
 
-        // Database stuff, go!
-        try {
-            if (Settings.MYSQL_ENABLED.getBoolean()) {
-                String hostname = Settings.MYSQL_HOSTNAME.getString();
-                int port = Settings.MYSQL_PORT.getInt();
-                String database = Settings.MYSQL_DATABASE.getString();
-                String username = Settings.MYSQL_USERNAME.getString();
-                String password = Settings.MYSQL_PASSWORD.getString();
-                boolean useSSL = Settings.MYSQL_USE_SSL.getBoolean();
-                int poolSize = Settings.MYSQL_POOL_SIZE.getInt();
+        initDatabase(Arrays.asList(new _1_InitialMigration(), new _2_EntityStacks(), new _3_BlockStacks(), new _6_RemoveStackedEntityTable()));
 
-                this.databaseConnector = new MySQLConnector(this, hostname, port, database, username, password, useSSL, poolSize);
-                this.getLogger().info("Data handler connected using MySQL.");
-            } else {
-                this.databaseConnector = new SQLiteConnector(this);
-                this.getLogger().info("Data handler connected using SQLite.");
-            }
-        } catch (Exception ex) {
-            this.getLogger().severe("Fatal error trying to connect to database. Please make sure all your connection settings are correct and try again. Plugin has been disabled.");
-            Bukkit.getPluginManager().disablePlugin(this);
-        }
-
-        this.dataManager = new DataManager(this.databaseConnector, this);
-        this.dataMigrationManager = new DataMigrationManager(this.databaseConnector, this.dataManager,
-                new _1_InitialMigration(),
-                new _2_EntityStacks(),
-                new _3_BlockStacks(),
-                new _6_RemoveStackedEntityTable());
-        this.dataMigrationManager.runMigrations();
-
-        API = new UltimateStackerAPI(entityStackManager, stackedItemManager, spawnerStackManager, blockStackManager);
+        API = new UltimateStackerAPI(this, entityStackManager, stackedItemManager, spawnerStackManager, blockStackManager, new Settings());
     }
 
     @Override
@@ -270,30 +234,27 @@ public class UltimateStacker extends SongodaPlugin {
 
         // Load current data.
         final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
-        this.dataManager.getSpawners((spawners) -> {
-            this.spawnerStackManager.addSpawners(spawners);
+        this.dataManager.loadBatch(SpawnerStackImpl.class, "spawners").forEach((data) -> {
+            SpawnerStack spawner = (SpawnerStack) data;
+            this.spawnerStackManager.addSpawner(spawner);
             if (useSpawnerHolo) {
-                if (spawners.isEmpty()) return;
-
-                for (SpawnerStack spawner : spawners.values()) {
-                    if (spawner.getLocation().getWorld() != null) {
-                        updateHologram(spawner);
-                    }
+                if (spawner == null) return;
+                if (spawner.getLocation() == null) return;
+                if (spawner.getLocation().getWorld() != null) {
+                    updateHologram(spawner);
                 }
             }
         });
 
         this.stackingTask = new StackingTask(this);
         final boolean useBlockHolo = Settings.BLOCK_HOLOGRAMS.getBoolean();
-        this.dataManager.getBlocks((blocks) -> {
-            this.blockStackManager.addBlocks(blocks);
+        this.dataManager.loadBatch(BlockStackImpl.class, "blocks").forEach((data) -> {
+            BlockStack blockStack = (BlockStack) data;
+            this.blockStackManager.addBlock(blockStack);
             if (useBlockHolo) {
-                if (blocks.isEmpty()) return;
-
-                for (BlockStack stack : blocks.values()) {
-                    if (stack.getLocation().getWorld() != null) {
-                        updateHologram(stack);
-                    }
+                if (blockStack == null) return;
+                if (blockStack.getLocation().getWorld() != null) {
+                    updateHologram(blockStack);
                 }
             }
         });
@@ -362,11 +323,7 @@ public class UltimateStacker extends SongodaPlugin {
         return spawnerFile;
     }
 
-    public DatabaseConnector getDatabaseConnector() {
-        return databaseConnector;
-    }
-
-    public DataManager getDataManager() {
+    public DataManager getPluginDataManager() {
         return dataManager;
     }
 

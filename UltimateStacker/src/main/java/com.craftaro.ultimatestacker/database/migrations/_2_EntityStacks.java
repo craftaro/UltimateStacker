@@ -2,6 +2,7 @@ package com.craftaro.ultimatestacker.database.migrations;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.songoda.core.database.DataMigration;
+import com.songoda.core.database.DatabaseConnector;
 import com.songoda.core.database.MySQLConnector;
 
 import java.sql.Connection;
@@ -15,11 +16,11 @@ public class _2_EntityStacks extends DataMigration {
     }
 
     @Override
-    public void migrate(Connection connection, String tablePrefix) throws SQLException {
-        String autoIncrement = UltimateStacker.getInstance().getDatabaseConnector() instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
+    public void migrate(DatabaseConnector connector, String tablePrefix) throws SQLException {
+        String autoIncrement = connector instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
 
         // Create host entities table
-        try (Statement statement = connection.createStatement()) {
+        try (Statement statement = connector.getConnection().createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "host_entities (" +
                     "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
                     "uuid VARCHAR(36) NOT NULL," +

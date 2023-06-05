@@ -6,6 +6,8 @@ import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.database.Data;
+import com.songoda.core.database.SerializedLocation;
 import com.songoda.core.nms.world.SpawnedEntity;
 import com.songoda.core.world.SSpawner;
 import org.bukkit.Location;
@@ -13,6 +15,8 @@ import org.bukkit.World;
 import org.bukkit.block.CreatureSpawner;
 import org.bukkit.entity.EntityType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -48,7 +52,7 @@ public class SpawnerStackImpl extends SSpawner implements SpawnerStack {
     @Override
     public void setAmount(int amount) {
         this.amount = amount;
-        plugin.getDataManager().updateSpawner(this);
+        plugin.getPluginDataManager().save(this);
     }
 
     @Override
@@ -84,6 +88,28 @@ public class SpawnerStackImpl extends SSpawner implements SpawnerStack {
 
     public int getId() {
         return this.id;
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("amount", amount);
+        map.putAll(new SerializedLocation(location).asMap());
+        return map;
+    }
+
+    @Override
+    public Data deserialize(Map<String, Object> map) {
+        this.id = (int) map.get("id");
+        this.amount = (int) map.get("amount");
+        this.initFromData(map);
+        return this;
+    }
+
+    @Override
+    public String getTableName() {
+        return "spawners";
     }
 
     public void setId(int id) {

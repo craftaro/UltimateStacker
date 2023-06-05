@@ -1,6 +1,7 @@
 package com.craftaro.ultimatestacker.api.stack.block;
 
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.database.Data;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -28,6 +29,8 @@ public interface BlockStackManager {
     boolean isBlock(Location location);
 
     Collection<BlockStack> getStacks();
+
+    Collection<Data> getStacksData();
 
     /**
      * Check to see if this material is not permitted to stack

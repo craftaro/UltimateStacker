@@ -6,12 +6,13 @@
     <parent>
         <groupId>com.craftaro</groupId>
         <artifactId>UltimateStackerParent</artifactId>
-        <version>${revision}</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>Bootstrap</artifactId>
 
     <build>
+        <finalName>UltimateStacker-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -57,7 +58,7 @@
         <dependency>
             <groupId>com.craftaro</groupId>
             <artifactId>UltimateStacker</artifactId>
-            <version>${revision}</version>
+            <version>3.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

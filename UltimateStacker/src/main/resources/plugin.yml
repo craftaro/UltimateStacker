@@ -3,8 +3,8 @@ description: UltimateStacker
 version: maven-version-number
 softdepend: [MythicMobs, HolographicDisplays, Holograms, DecentHolograms, CMI, WorldGuard, EpicSpawners, mcMMO, WildStacker, StackMob, BentoBox, ViaVersion]
 loadbefore: [WorldGuard]
-main: com.songoda.ultimatestacker.UltimateStacker
-author: songoda
+main: com.craftaro.ultimatestacker.UltimateStacker
+author: craftaro
 api-version: 1.13
 commands:
   us:

@@ -4,6 +4,7 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.songoda.core.compatibility.CompatibleMaterial;
+import com.songoda.core.database.Data;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -61,6 +62,11 @@ public class BlockStackManagerImpl implements BlockStackManager {
 
     @Override
     public Collection<BlockStack> getStacks() {
+        return Collections.unmodifiableCollection(this.registeredBlocks.values());
+    }
+
+    @Override
+    public Collection<Data> getStacksData() {
         return Collections.unmodifiableCollection(this.registeredBlocks.values());
     }
 

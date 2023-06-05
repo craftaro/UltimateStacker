@@ -1,4 +1,0 @@
-name: UltimateStackerAPI
-version: '${project.version}'
-main: com.craftaro.ultimatestacker.api.UltimateStackerAPI
-api-version: 1.18

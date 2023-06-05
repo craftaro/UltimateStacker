@@ -1,6 +1,7 @@
 package com.craftaro.ultimatestacker.database.migrations;
 
 import com.songoda.core.database.DataMigration;
+import com.songoda.core.database.DatabaseConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,9 +14,9 @@ public class _6_RemoveStackedEntityTable extends DataMigration {
     }
 
     @Override
-    public void migrate(Connection connection, String tablePrefix) {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE " + tablePrefix + "stacked_entities");
+    public void migrate(DatabaseConnector connector, String tablePrefix) {
+        try (Statement statement = connector.getConnection().createStatement()) {
+            statement.execute("DROP TABLE IF EXISTS " + tablePrefix + "stacked_entities");
         } catch (SQLException e) {
             e.printStackTrace();
         }

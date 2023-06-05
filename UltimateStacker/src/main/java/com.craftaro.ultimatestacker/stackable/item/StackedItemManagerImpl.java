@@ -6,6 +6,7 @@ import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.songoda.core.compatibility.ServerVersion;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,7 +16,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class StackedItemManagerImpl implements StackedItemManager {
 
@@ -54,6 +59,16 @@ public class StackedItemManagerImpl implements StackedItemManager {
     @Override
     public @Nullable StackedItem createStack(Item item, int amount) {
         return null;
+    }
+
+    @Override
+    public @Nullable Future<StackedItem> createStackSync(ItemStack item, Location location, int amount) {
+        return Bukkit.getScheduler().callSyncMethod(UltimateStacker.getInstance(), () -> createStack(item, location, amount));
+    }
+
+    @Override
+    public @Nullable Future<StackedItem> createStackSync(Item item, int amount) {
+        return Bukkit.getScheduler().callSyncMethod(UltimateStacker.getInstance(), () -> createStack(item, amount));
     }
 
     @Override

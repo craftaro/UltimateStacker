@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.craftaro</groupId>
     <artifactId>UltimateStackerParent</artifactId>
-    <version>${revision}</version>
+    <version>3.0.0-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -13,10 +13,9 @@
     </modules>
 
     <properties>
-        <revision>3.0.0-SNAPSHOT</revision>
         <java.version>1.8</java.version>
         <java.release>8</java.release>
-
+        <core.version>2.6.23-SNAPSHOT</core.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 

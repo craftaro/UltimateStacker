@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.craftaro</groupId>
         <artifactId>UltimateStackerParent</artifactId>
-        <version>${revision}</version>
+        <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>UltimateStacker</artifactId>
 
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>com.songoda</groupId>
             <artifactId>SongodaCore</artifactId>
-            <version>2.6.21</version>
+            <version>2.6.23-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

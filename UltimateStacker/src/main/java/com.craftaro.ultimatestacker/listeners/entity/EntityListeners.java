@@ -138,7 +138,7 @@ public class EntityListeners implements Listener {
                     spawnLocation.getWorld().dropItemNaturally(spawnLocation.clone().add(.5, 0, .5), item);
 
                     SpawnerStack spawnerStack = UltimateStackerAPI.getSpawnerStackManager().removeSpawner(spawnLocation);
-                    plugin.getDataManager().deleteSpawner(spawnerStack);
+                    plugin.getPluginDataManager().delete(spawnerStack);
                     plugin.removeHologram(spawnerStack);
                 }
             }

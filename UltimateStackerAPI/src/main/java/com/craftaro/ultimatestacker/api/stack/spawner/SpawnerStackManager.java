@@ -1,13 +1,15 @@
 package com.craftaro.ultimatestacker.api.stack.spawner;
 
+import com.songoda.core.database.Data;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface SpawnerStackManager {
-    void addSpawners(Map<Location, SpawnerStack> spawners);
+    void addSpawners(List<SpawnerStack> spawners);
 
     SpawnerStack addSpawner(SpawnerStack spawnerStack);
 
@@ -20,4 +22,6 @@ public interface SpawnerStackManager {
     SpawnerStack removeSpawner(Location location);
 
     Collection<SpawnerStack> getStacks();
+
+    Collection<Data> getStacksData();
 }

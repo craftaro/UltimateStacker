@@ -40,12 +40,12 @@ public class EntityStackImpl implements EntityStack {
         if (!UltimateStacker.getInstance().getEntityStackManager().isStackedEntity(entity)) {
             entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
             this.amount = 1;
-            updateNameTag();
         } else {
             //get the amount from the entity
-            this.amount = UltimateStacker.getInstance().getEntityStackManager().getStackedEntity(entity).getAmount();
+            this.amount = entity.getMetadata("US_AMOUNT").get(0).asInt();
         }
         this.hostEntity = entity;
+        updateNameTag();
     }
 
     /**

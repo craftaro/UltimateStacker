@@ -12,7 +12,7 @@
 
     <build>
         <defaultGoal>clean install</defaultGoal>
-        <finalName>UltimateStacker-${revision}</finalName>
+        <finalName>UltimateStacker-${project.version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

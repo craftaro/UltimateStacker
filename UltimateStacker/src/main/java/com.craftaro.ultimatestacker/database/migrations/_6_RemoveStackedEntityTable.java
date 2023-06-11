@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.database.migrations;
 
-import com.songoda.core.database.DataMigration;
-import com.songoda.core.database.DatabaseConnector;
+import com.craftaro.core.database.DataMigration;
+import com.craftaro.core.database.DatabaseConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;

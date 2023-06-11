@@ -4,7 +4,7 @@ import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
-import com.songoda.core.hooks.stackers.UltimateStacker;
+import com.craftaro.core.hooks.stackers.UltimateStacker;
 import org.bukkit.plugin.Plugin;
 
 public final class UltimateStackerAPI {

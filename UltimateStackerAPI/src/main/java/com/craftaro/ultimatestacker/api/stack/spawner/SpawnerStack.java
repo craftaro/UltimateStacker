@@ -2,9 +2,9 @@ package com.craftaro.ultimatestacker.api.stack.spawner;
 
 import com.craftaro.ultimatestacker.api.utils.Hologramable;
 import com.craftaro.ultimatestacker.api.utils.Stackable;
-import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.database.Data;
-import com.songoda.core.nms.world.SpawnedEntity;
+import com.craftaro.core.compatibility.CompatibleMaterial;
+import com.craftaro.core.database.Data;
+import com.craftaro.core.nms.world.SpawnedEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;

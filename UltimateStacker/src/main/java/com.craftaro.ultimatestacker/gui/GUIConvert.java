@@ -2,9 +2,9 @@ package com.craftaro.ultimatestacker.gui;
 
 import com.craftaro.ultimatestacker.convert.StackMobConvert;
 import com.craftaro.ultimatestacker.convert.WildStackerConvert;
-import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.gui.Gui;
-import com.songoda.core.gui.GuiUtils;
+import com.craftaro.core.compatibility.CompatibleMaterial;
+import com.craftaro.core.gui.Gui;
+import com.craftaro.core.gui.GuiUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 

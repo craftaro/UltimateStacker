@@ -3,10 +3,10 @@ package com.craftaro.ultimatestacker.stackable.block;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.settings.Settings;
-import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.database.Data;
-import com.songoda.core.database.SerializedLocation;
-import com.songoda.core.utils.TextUtils;
+import com.craftaro.core.compatibility.CompatibleMaterial;
+import com.craftaro.core.database.Data;
+import com.craftaro.core.database.SerializedLocation;
+import com.craftaro.core.utils.TextUtils;
 import org.bukkit.Location;
 
 import java.util.HashMap;

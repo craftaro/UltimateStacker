@@ -1,8 +1,8 @@
 package com.craftaro.ultimatestacker.commands;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.songoda.core.commands.AbstractCommand;
-import com.songoda.core.lootables.gui.GuiEditor;
+import com.craftaro.core.commands.AbstractCommand;
+import com.craftaro.core.lootables.gui.GuiEditor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

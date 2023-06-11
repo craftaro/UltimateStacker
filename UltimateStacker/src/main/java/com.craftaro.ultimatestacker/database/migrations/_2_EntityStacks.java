@@ -1,9 +1,9 @@
 package com.craftaro.ultimatestacker.database.migrations;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.songoda.core.database.DataMigration;
-import com.songoda.core.database.DatabaseConnector;
-import com.songoda.core.database.MySQLConnector;
+import com.craftaro.core.database.DataMigration;
+import com.craftaro.core.database.DatabaseConnector;
+import com.craftaro.core.database.MySQLConnector;
 
 import java.sql.Connection;
 import java.sql.SQLException;

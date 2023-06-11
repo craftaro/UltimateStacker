@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.api.stack.block;
 
-import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.database.Data;
+import com.craftaro.core.compatibility.CompatibleMaterial;
+import com.craftaro.core.database.Data;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

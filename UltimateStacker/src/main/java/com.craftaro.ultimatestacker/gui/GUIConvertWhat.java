@@ -1,10 +1,10 @@
 package com.craftaro.ultimatestacker.gui;
 
 import com.craftaro.ultimatestacker.convert.Convert;
-import com.songoda.core.compatibility.CompatibleMaterial;
-import com.songoda.core.gui.Gui;
-import com.songoda.core.gui.GuiUtils;
-import com.songoda.core.utils.TextUtils;
+import com.craftaro.core.compatibility.CompatibleMaterial;
+import com.craftaro.core.gui.Gui;
+import com.craftaro.core.gui.GuiUtils;
+import com.craftaro.core.utils.TextUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 

@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.hook.hooks;
 
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.hook.StackerHook;
-import com.songoda.core.hooks.jobs.JobsPlayerHandler;
+import com.craftaro.core.hooks.jobs.JobsPlayerHandler;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -14,7 +14,7 @@ public class JobsHook implements StackerHook {
         if (player.getGameMode().equals(GameMode.CREATIVE) || entityStack.getHostEntity() == null)
             return;
 
-        JobsPlayerHandler jPlayer = com.songoda.core.hooks.JobsHook.getPlayer(player);
+        JobsPlayerHandler jPlayer = com.craftaro.core.hooks.JobsHook.getPlayer(player);
         if (jPlayer == null)
             return;
 

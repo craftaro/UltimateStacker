@@ -7,5 +7,7 @@ public interface Settings {
      */
     int getMaxItemStackSize();
 
+    boolean killWholeStackOnDeath();
+
 
 }

@@ -297,4 +297,9 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
     public int getMaxItemStackSize() {
         return MAX_STACK_ITEMS.getInt();
     }
+
+    @Override
+    public boolean killWholeStackOnDeath() {
+        return KILL_WHOLE_STACK_ON_DEATH.getBoolean();
+    }
 }

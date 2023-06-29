@@ -32,6 +32,9 @@ public class SpawnerStackImpl implements SpawnerStack {
 
     private SSpawner sSpawner;
 
+    public SpawnerStackImpl() {
+    }
+
     public SpawnerStackImpl(Location location, int amount) {
         this.location = location;
         this.amount = amount;

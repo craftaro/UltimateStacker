@@ -114,8 +114,9 @@ public class UltimateStacker extends SongodaPlugin {
     public void onPluginDisable() {
         this.stackingTask.stop();
         this.stackingTask = null;
-        this.dataManager.saveBatch(this.spawnerStackManager.getStacksData());
-        this.dataManager.saveBatch(this.blockStackManager.getStacksData());
+        this.dataManager.saveBatchSync(this.spawnerStackManager.getStacksData());
+        this.dataManager.saveBatchSync(this.blockStackManager.getStacksData());
+        this.dataManager.shutdownNow();
         HologramManager.removeAllHolograms();
         Async.shutdown();
     }

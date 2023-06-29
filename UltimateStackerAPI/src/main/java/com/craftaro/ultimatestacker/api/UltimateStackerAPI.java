@@ -7,6 +7,11 @@ import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import com.craftaro.core.hooks.stackers.UltimateStacker;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * The main class of the API
+ * <p>
+ * <b>!! {@link UltimateStackerAPI#getVersion()} value is automatically replaced by maven don't change it !!</b>
+ */
 public final class UltimateStackerAPI {
 
     private static Plugin plugin;
@@ -82,4 +87,11 @@ public final class UltimateStackerAPI {
         return settings;
     }
 
+    /**
+     * Used to get the version of the plugin
+     * @return The version of the plugin
+     */
+    public static String getVersion() {
+        return "UKNOWN_VERSION";
+    }
 }

@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.tasks;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
@@ -282,7 +283,7 @@ public class StackingTask extends TimerTask {
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     if (baseEntity.isLeashed()) {
-                        baseEntity.getWorld().dropItemNaturally(baseEntity.getLocation(), CompatibleMaterial.LEAD.getItem());
+                        baseEntity.getWorld().dropItemNaturally(baseEntity.getLocation(), XMaterial.LEAD.parseItem());
                     }
                     baseEntity.remove();
                 });

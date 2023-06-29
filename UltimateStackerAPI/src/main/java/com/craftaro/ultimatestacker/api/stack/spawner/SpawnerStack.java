@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.api.stack.spawner;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.api.utils.Hologramable;
 import com.craftaro.ultimatestacker.api.utils.Stackable;
 import com.craftaro.core.compatibility.CompatibleMaterial;
@@ -43,5 +44,5 @@ public interface SpawnerStack extends Stackable, Hologramable, Data {
 
     int spawn(int amountToSpawn, EntityType... types);
 
-    int spawn(int amountToSpawn, String particle, Set<CompatibleMaterial> canSpawnOn, SpawnedEntity spawned, EntityType... types);
+    int spawn(int amountToSpawn, String particle, Set<XMaterial> canSpawnOn, SpawnedEntity spawned, EntityType... types);
 }

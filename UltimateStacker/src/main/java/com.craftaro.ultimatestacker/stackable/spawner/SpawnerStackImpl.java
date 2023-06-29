@@ -4,6 +4,7 @@ import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.database.Data;
 import com.craftaro.core.database.SerializedLocation;
 import com.craftaro.core.nms.world.SpawnedEntity;
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.world.SSpawner;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
@@ -17,6 +18,7 @@ import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +46,7 @@ public class SpawnerStackImpl implements SpawnerStack {
 
     @Override
     public boolean isValid() {
-        return CompatibleMaterial.getMaterial(this.location.getBlock()) == CompatibleMaterial.SPAWNER;
+        return XMaterial.matchXMaterial(this.location.getBlock().getType().name()).filter(material -> material == XMaterial.SPAWNER).isPresent();
     }
 
     @Override
@@ -76,11 +78,13 @@ public class SpawnerStackImpl implements SpawnerStack {
         return count;
     }
 
+    @Override
     public int spawn(int amountToSpawn, EntityType... types) {
         return this.sSpawner.spawn(amountToSpawn, types);
     }
 
-    public int spawn(int amountToSpawn, String particle, Set<CompatibleMaterial> canSpawnOn, SpawnedEntity spawned, EntityType... types) {
+    @Override
+    public int spawn(int amountToSpawn, String particle, Set<XMaterial> canSpawnOn, SpawnedEntity spawned, EntityType... types) {
         return this.sSpawner.spawn(amountToSpawn, particle, canSpawnOn, spawned, types);
     }
 

@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.stackable.block;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
@@ -41,18 +42,18 @@ public class BlockStackManagerImpl implements BlockStackManager {
     }
 
     @Override
-    public BlockStack getBlock(Block block, CompatibleMaterial material) {
+    public BlockStack getBlock(Block block, XMaterial material) {
         return this.getBlock(block.getLocation());
     }
 
     @Override
-    public BlockStack createBlock(Location location, CompatibleMaterial material) {
+    public BlockStack createBlock(Location location, XMaterial material) {
         return this.registeredBlocks.computeIfAbsent(location, b -> new BlockStackImpl(material, location));
     }
 
     @Override
     public BlockStack createBlock(Block block) {
-        return this.createBlock(block.getLocation(), CompatibleMaterial.getMaterial(block));
+        return this.createBlock(block.getLocation(), XMaterial.matchXMaterial(block.getType().name()).get());
     }
 
     @Override

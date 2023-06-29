@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.gui;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.convert.StackMobConvert;
 import com.craftaro.ultimatestacker.convert.WildStackerConvert;
 import com.craftaro.core.compatibility.CompatibleMaterial;
@@ -15,12 +16,12 @@ public class GUIConvert extends Gui {
         setRows(1);
         int current = 0;
         if (Bukkit.getPluginManager().isPluginEnabled("WildStacker")) {
-            this.setButton(current++, GuiUtils.createButtonItem(CompatibleMaterial.STONE, ChatColor.GRAY + "WildStacker"),
+            this.setButton(current++, GuiUtils.createButtonItem(XMaterial.STONE, ChatColor.GRAY + "WildStacker"),
                     (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new WildStackerConvert(), this)));
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("StackMob")) {
-            this.setButton(current++, GuiUtils.createButtonItem(CompatibleMaterial.STONE, ChatColor.GRAY + "StackMob"),
+            this.setButton(current++, GuiUtils.createButtonItem(XMaterial.STONE, ChatColor.GRAY + "StackMob"),
                     (event) -> event.manager.showGUI(event.player, new GUIConvertWhat(new StackMobConvert(), this)));
         }
 

@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.gui;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.convert.Convert;
 import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.gui.Gui;
@@ -22,20 +23,20 @@ public class GUIConvertWhat extends Gui {
         this.convertFrom = convertFrom;
 
         if (convertFrom.canEntities()) {
-            this.setButton(0, GuiUtils.createButtonItem(CompatibleMaterial.STONE,
+            this.setButton(0, GuiUtils.createButtonItem(XMaterial.STONE,
                     ChatColor.GRAY + "Stacked Entities",
                     entities ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
                     (event) -> toggleEntities());
         }
 
         if (convertFrom.canSpawners()) {
-            this.setButton(1, GuiUtils.createButtonItem(CompatibleMaterial.STONE,
+            this.setButton(1, GuiUtils.createButtonItem(XMaterial.STONE,
                     ChatColor.GRAY + "Stacked Spawners",
                     spawners ? ChatColor.GREEN + "Yes" : ChatColor.RED + "No"),
                     (event) -> toggleSpawners());
         }
 
-        this.setButton(8, GuiUtils.createButtonItem(CompatibleMaterial.GREEN_WOOL, ChatColor.GREEN + "Run"),
+        this.setButton(8, GuiUtils.createButtonItem(XMaterial.GREEN_WOOL, ChatColor.GREEN + "Run"),
                 (event) -> run(event.player));
 
     }

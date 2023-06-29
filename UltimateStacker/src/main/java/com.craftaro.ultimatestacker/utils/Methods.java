@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.utils;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
@@ -96,7 +97,7 @@ public class Methods {
     }
 
     public static ItemStack getSpawnerItem(EntityType entityType, int amount) {
-        ItemStack item = CompatibleMaterial.SPAWNER.getItem();
+        ItemStack item = XMaterial.SPAWNER.parseItem();
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(Methods.compileSpawnerName(entityType, amount));
         CreatureSpawner cs = (CreatureSpawner) ((BlockStateMeta) meta).getBlockState();

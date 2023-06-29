@@ -2,6 +2,7 @@ package com.craftaro.ultimatestacker.api.stack.block;
 
 import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.database.Data;
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,9 +21,9 @@ public interface BlockStackManager {
 
     BlockStack getBlock(Location location);
 
-    BlockStack getBlock(Block block, CompatibleMaterial material);
+    BlockStack getBlock(Block block, XMaterial material);
 
-    BlockStack createBlock(Location location, CompatibleMaterial material);
+    BlockStack createBlock(Location location, XMaterial material);
 
     BlockStack createBlock(Block block);
 

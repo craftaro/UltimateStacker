@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.listeners;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
@@ -88,17 +89,17 @@ public class ShearListeners implements Listener {
 
         switch (entity.getType()) {
             case SHEEP:
-                itemStack = new ItemStack(CompatibleMaterial.WHITE_WOOL.getMaterial());
+                itemStack = new ItemStack(XMaterial.WHITE_WOOL.parseMaterial());
                 if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
                     itemStack.setType(Material.valueOf(((Sheep) entity).getColor() + "_WOOL"));
                 else
                     itemStack.setDurability((short) ((Sheep) entity).getColor().getWoolData());
                 break;
             case MUSHROOM_COW:
-                itemStack = new ItemStack(CompatibleMaterial.RED_MUSHROOM.getMaterial(), 5);
+                itemStack = new ItemStack(XMaterial.RED_MUSHROOM.parseMaterial(), 5);
                 if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)
                         && ((MushroomCow) entity).getVariant() == MushroomCow.Variant.BROWN)
-                    itemStack.setType(CompatibleMaterial.BROWN_MUSHROOM.getMaterial());
+                    itemStack.setType(XMaterial.BROWN_MUSHROOM.parseMaterial());
                 break;
         }
         return itemStack;

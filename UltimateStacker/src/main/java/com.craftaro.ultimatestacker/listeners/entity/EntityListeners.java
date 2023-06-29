@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.entity;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
@@ -114,7 +115,7 @@ public class EntityListeners implements Listener {
         List<Block> toCancel = new ArrayList<>();
         while (it.hasNext()) {
             Block block = it.next();
-            if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial())
+            if (block.getType() != XMaterial.SPAWNER.parseMaterial())
                 continue;
 
             Location spawnLocation = block.getLocation();

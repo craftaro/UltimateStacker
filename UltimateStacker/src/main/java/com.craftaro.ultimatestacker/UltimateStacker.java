@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
@@ -72,6 +73,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class UltimateStacker extends SongodaPlugin {
@@ -122,7 +124,7 @@ public class UltimateStacker extends SongodaPlugin {
     public void onPluginEnable() {
         // Run Songoda Updater
         Async.start();
-        SongodaCore.registerPlugin(this, 16, CompatibleMaterial.IRON_INGOT);
+        SongodaCore.registerPlugin(this, 16, XMaterial.IRON_INGOT);
         // Setup Config
         Settings.setupConfig();
         this.setLocale(Settings.LANGUGE_MODE.getString(), false);
@@ -382,16 +384,11 @@ public class UltimateStacker extends SongodaPlugin {
      * @return true if this material will not stack
      */
     public static boolean isMaterialBlacklisted(ItemStack item) {
-        CompatibleMaterial mat = CompatibleMaterial.getMaterial(item);
-        if (mat == null) {
-            // this shouldn't happen, but just in case?
-            return item == null ? false : (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                    ? isMaterialBlacklisted(item.getType()) : isMaterialBlacklisted(item.getType(), item.getData().getData()));
-        } else if (mat.usesData()) {
-            return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial(), mat.getData());
-        } else {
-            return isMaterialBlacklisted(mat.name()) || isMaterialBlacklisted(mat.getMaterial());
-        }
+        Optional<XMaterial> mat = XMaterial.matchXMaterial(item.getType().name());
+        // this shouldn't happen, but just in case?
+        return mat.map(xMaterial -> isMaterialBlacklisted(xMaterial.name()) || isMaterialBlacklisted(xMaterial.parseMaterial()))
+                .orElseGet(() -> ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) ?
+                        isMaterialBlacklisted(item.getType()) : isMaterialBlacklisted(item.getType(), item.getData().getData()));
     }
 
     /**

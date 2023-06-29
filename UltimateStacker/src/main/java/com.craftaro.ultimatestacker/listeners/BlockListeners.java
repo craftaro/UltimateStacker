@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.listeners;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
 import com.craftaro.ultimatestacker.api.events.spawner.SpawnerBreakEvent;
@@ -35,6 +36,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BlockListeners implements Listener {
 
@@ -67,11 +69,13 @@ public class BlockListeners implements Listener {
         //Stacking blocks
         if (Settings.STACK_BLOCKS.getBoolean()
                 && Settings.STACKABLE_BLOCKS.getStringList().contains(block.getType().name()) //Is block stackable
-                && !block.getType().equals(CompatibleMaterial.SPAWNER.getMaterial()) //Don't stack spawners here
+                && !block.getType().equals(XMaterial.SPAWNER.parseMaterial()) //Don't stack spawners here
                 ) {
 
-            CompatibleMaterial blockType = CompatibleMaterial.getMaterial(block);
-            if (blockType == null) return;
+            Optional<XMaterial> xBlockType = XMaterial.matchXMaterial(block.getType().name());
+            if (!xBlockType.isPresent()) return;
+            XMaterial blockType = xBlockType.get();
+
 
             BlockStackManager blockStackManager = plugin.getBlockStackManager();
             boolean isStacked = blockStackManager.isBlock(block.getLocation());
@@ -83,7 +87,7 @@ public class BlockListeners implements Listener {
                 //Add to stack
                 if (clickAction == Action.RIGHT_CLICK_BLOCK) {
                     if (inHand.getType().equals(Material.AIR)) return;
-                    if(!blockType.equals(CompatibleMaterial.getMaterial(inHand))) return;
+                    if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
                     //Add all held items to stack
                     if (Settings.ALWAYS_ADD_ALL.getBoolean() || isSneaking) {
                         stack.add(inHandAmount);
@@ -104,7 +108,7 @@ public class BlockListeners implements Listener {
                     if (isSneaking) {
                         //Remove all items from stack
                         int amountToRemove = Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount());
-                        ItemStack removed = stack.getMaterial().getItem();
+                        ItemStack removed = stack.getMaterial().parseItem();
                         removed.setAmount(amountToRemove);
                         stack.take(amountToRemove);
                         if (Settings.ADD_TO_INVENTORY.getBoolean()) {
@@ -116,9 +120,9 @@ public class BlockListeners implements Listener {
                         //Remove one item from stack
                         stack.take(1);
                         if (Settings.ADD_TO_INVENTORY.getBoolean()) {
-                            player.getInventory().addItem(stack.getMaterial().getItem());
+                            player.getInventory().addItem(stack.getMaterial().parseItem());
                         } else {
-                            player.getWorld().dropItemNaturally(block.getLocation(), stack.getMaterial().getItem());
+                            player.getWorld().dropItemNaturally(block.getLocation(), stack.getMaterial().parseItem());
                         }
                     }
                     if (stack.getAmount() == 0) {
@@ -135,7 +139,7 @@ public class BlockListeners implements Listener {
                 if (isSneaking) return;
                 //Check if player clicked the same type as the clicked block
                 if (inHand.getType().equals(Material.AIR)) return;
-                if(!blockType.equals(CompatibleMaterial.getMaterial(inHand))) return;
+                if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
                 if (clickAction != Action.RIGHT_CLICK_BLOCK) return;
                 //Create new stack
                 event.setCancelled(true);
@@ -150,8 +154,8 @@ public class BlockListeners implements Listener {
         }
 
         //Stacking spawners
-        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
-                || inHand.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+        if (block.getType() != XMaterial.SPAWNER.parseMaterial()
+                || inHand.getType() != XMaterial.SPAWNER.parseMaterial()
                 || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
@@ -215,7 +219,7 @@ public class BlockListeners implements Listener {
         Block block = event.getBlock();
         Player player = event.getPlayer();
 
-        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()
+        if (block.getType() != XMaterial.SPAWNER.parseMaterial()
                 || !(block.getState() instanceof CreatureSpawner) // Needed for a DataPack
                 || !plugin.spawnersEnabled())
             return;
@@ -244,7 +248,7 @@ public class BlockListeners implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.isCancelled()) return;
         Block block = event.getBlock();
-        if (block.getType() != CompatibleMaterial.SPAWNER.getMaterial()) return;
+        if (block.getType() != XMaterial.SPAWNER.parseMaterial()) return;
 
         if (!plugin.spawnersEnabled()) return;
         event.setExpToDrop(0);

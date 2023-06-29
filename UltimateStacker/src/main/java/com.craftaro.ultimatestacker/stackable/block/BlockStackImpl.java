@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.stackable.block;
 
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -24,15 +25,15 @@ public class BlockStackImpl implements BlockStack {
     private int id;
 
     private int amount = 1;
-    private CompatibleMaterial material;
+    private XMaterial material;
     private Location location;
 
-    public BlockStackImpl(CompatibleMaterial material, Location location) {
+    public BlockStackImpl(XMaterial material, Location location) {
         this.material = material;
         this.location = location;
     }
 
-    public BlockStackImpl(CompatibleMaterial material, Location location, int amount) {
+    public BlockStackImpl(XMaterial material, Location location, int amount) {
         this.amount = amount;
         this.material = material;
         this.location = location;
@@ -57,7 +58,7 @@ public class BlockStackImpl implements BlockStack {
     public Data deserialize(Map<String, Object> map) {
         id = (int) map.get("id");
         amount = (int) map.get("amount");
-        material = CompatibleMaterial.valueOf((String) map.get("material"));
+        material = XMaterial.valueOf((String) map.get("material"));
         location = SerializedLocation.of(map);
         return this;
     }
@@ -87,7 +88,7 @@ public class BlockStackImpl implements BlockStack {
 
     @Override
     public boolean isValid() {
-        return CompatibleMaterial.getMaterial(location.getBlock()) == material;
+        return XMaterial.matchXMaterial(location.getBlock().getType().name()).get() == material;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class BlockStackImpl implements BlockStack {
     }
 
     @Override
-    public CompatibleMaterial getMaterial() {
+    public XMaterial getMaterial() {
         return material;
     }
 

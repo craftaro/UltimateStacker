@@ -12,7 +12,6 @@
     <modules>
         <module>UltimateStackerAPI</module>
         <module>UltimateStacker</module>
-        <module>Bootstrap</module>
     </modules>
 
     <name>UltimateStacker</name>

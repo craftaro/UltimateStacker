@@ -1,35 +1,45 @@
-<p align="center">
-<img src="https://proxy.songoda.com/200/https://cdn2.songoda.com/products/ultimatestacker/nRwViNsrG1Zgz5pLHxSsMyhSfIdZGAndGwmW7U3A.png" alt="UltimateStacker" />
-</p>
-<h1 align="center">UltimateStacker</h1>
+<!--suppress HtmlDeprecatedAttribute -->
+<div align="center">
+<img src="https://craftaro.com/images/products/373/icons/nRwViNsrG1Zgz5pLHxSsMyhSfIdZGAndGwmW7U3A.png" width="128px">
 
-<p align="center">
-  <b>The simple yet powerful stacking plugin built to meet all your stacking needs.</b>
+# UltimateStacker
+**The simple yet powerful stacking plugin built to meet all your stacking needs.**
 
-<p align="center">
-<img alt="Discord" src="https://img.shields.io/discord/293212540723396608?color=7289DA&label=Discord&logo=discord&logoColor=7289DA&link=https://discord.gg/songoda"> <img alt="Patreon" src="https://img.shields.io/badge/-Support_on_Patreon-F96854.svg?logo=patreon&style=flat&logoColor=white&link=https://wwww.patreon.com/songoda">  <br/> <img alt="Latest" src="https://img.shields.io/badge/-ver_2.0.5-4078C0.svg?logo=github&style=flat&logoColor-white&color=blue&label=Latest&labelColor=black"> <img alt="quality" src="https://img.shields.io/codacy/grade/162f7c8c224e4e819fbcb5d90da0f9e0"> <img alt="Last Updated" src="https://img.shields.io/github/last-commit/songoda/UltimateStacker"> <br/> <img alt="Servers" src="https://img.shields.io/bstats/servers/4187"> <img alt="Maintained" src="https://img.shields.io/maintenance/yes/2020"> 
 
-<br />
+[![Discord][Discord shield]][Discord invite]
+[![Patreon][Patreon shield]][Patreon page]
+<br>
+[![Latest version][Latest version shield]][Marketplace page]
+[![bStats Servers][bStats shield]][bStats page]
+</div>
 
-## Table of Contents 
 
-* [Introduction](#introduction)
-* [Marketplace](#marketplace)
-* [Documentation](#documentation)
-* [Support](#support)
-* [Suggestions](#suggestions)
-
-## Introduction
-Ultimatestacker is a simple yet powerful stacking plugin for Minecraft that allows you to stack mobs, items, spawners and blocks on your server all in a single. This allows for the reduction of lag from large amounts of mobs walking around and in mob grinders, items floating on the ground, large amounts of placed spawners in grinders, and also allows you to remove randomly placed block towers in your builds and turn them in to a single block. The plugin stores all the mobs, items, spawners and blocks, and displays a single entity along with a hologram above the entity that allows you to see how many entities are in that particular stack. This functionality is sure to keep your players coming back because of the high entity caps with reduced lag. 
-
-## Marketplace
-You can visit [our marketplace](https://songoda.com/marketplace/product/ultimatestacker-the-simple-to-use-stacker.16) to download ultimatestacker as well as take a look at many other fantastic plugins which are sure to catch your eye.
+## Download (Marketplace)
+You can visit [our marketplace][Marketplace page] to download UltimateStacker as well as take a
+look at many other fantastic plugins which are sure to catch your eye.
 
 ## Documentation
-You can find all the information about the plugin, including dependencies, commands, permissions, incompatible plugins on [our wiki](https://wiki.songoda.com/Ultimate_Stacker). Feel free to also contribute to the wiki as a way to help others in the community with using the plugin.
-  
+You can find all the information about UltimateStacker, including dependencies, commands, permissions and incompatible
+plugins on [our wiki][Plugin wiki].
+
+Feel free to also contribute to the wiki as a way to help others in the community with using the plugin.
+
 ## Support
-If you encounter any issues while using the plugin, feel free to create a ticket on [our support desk](https://support.songoda.com).
+If you encounter any issues while using the plugin, feel free to contact us on
+[our Discord server][Discord invite].
 
 ## Suggestions
-For suggestions about features you think should be added to the plugin to increase its functionality, feel free to create a thread over on [our feedback site](https://feedback.songoda.com).
+For suggestions about features you think should be added to the plugin to increase its functionality, feel free to
+create a thread over on [our Discord server][Discord invite].
+
+
+[Marketplace page]: https://craftaro.com/marketplace/product/16
+[Plugin wiki]: https://wiki.craftaro.com/index.php/Ultimate_Stacker
+[Patreon page]: https://www.patreon.com/join/songoda
+[Discord invite]: https://discord.gg/craftaro
+[bStats page]: https://bstats.org/plugin/bukkit/UltimateStacker/4187
+
+[Patreon shield]: https://img.shields.io/badge/-Support_us_on_Patreon-F96854.svg?logo=patreon&style=flat&logoColor=white
+[Discord shield]: https://img.shields.io/discord/293212540723396608?color=5865F2&label=Discord&logo=discord&logoColor=5865F2
+[bStats shield]: https://img.shields.io/bstats/servers/4187?label=Servers
+[Latest version shield]: https://img.shields.io/badge/dynamic/xml?style=flat&color=blue&logo=github&logoColor=white&label=Latest&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcraftaro%2FUltimateStacker%2Fmaster%2Fpom.xml&query=%2F*%5Blocal-name()%3D'project'%5D%2F*%5Blocal-name()%3D'version'%5D

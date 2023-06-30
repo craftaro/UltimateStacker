@@ -1,4 +1,4 @@
-name: ${project.name}
+name: ${project.parent.name}
 description: ${project.description}
 version: ${project.version}
 api-version: 1.13
@@ -21,7 +21,7 @@ loadbefore:
   - WorldGuard
 
 author: Craftaro
-website: ${project.url}
+website: ${project.parent.url}
 
 commands:
   us:

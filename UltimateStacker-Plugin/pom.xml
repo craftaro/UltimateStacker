@@ -15,19 +15,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-
-                    <release>${java.release}</release>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.4.1</version>
 
@@ -39,7 +26,7 @@
                         </goals>
 
                         <configuration>
-                            <finalName>${project.name}-${project.version}</finalName>
+                            <finalName>${project.parent.name}-${project.version}</finalName>
 
                             <shadedArtifactAttached>false</shadedArtifactAttached>
                             <useDependencyReducedPomInJar>true</useDependencyReducedPomInJar>
@@ -86,26 +73,48 @@
         </resources>
     </build>
 
+    <repositories>
+        <repository>
+            <id>bg-repo</id>
+            <url>https://repo.bg-software.com/repository/api/</url>
+        </repository>
+
+        <repository>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+
+        <repository>
+            <id>lumine-repo</id>
+            <url>https://mvn.lumine.io/repository/maven-public/</url>
+        </repository>
+
+        <repository>
+            <id>songoda-public</id>
+            <url>https://repo.craftaro.com/repository/public/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.18-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>com.craftaro</groupId>
+            <artifactId>UltimateStacker-API</artifactId>
+            <version>${craftaro.ultimateStackerApiVersion}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>com.craftaro</groupId>
             <artifactId>CraftaroCore</artifactId>
-            <version>${core.version}</version>
+            <version>${craftaro.coreVersion}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.craftaro</groupId>
-            <artifactId>UltimateStackerAPI</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.18-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

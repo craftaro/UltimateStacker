@@ -10,22 +10,10 @@
         <version>3.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>UltimateStacker-API</artifactId>
-    <version>1.0.0</version>
+    <version>${craftaro.ultimateStackerApiVersion}</version>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-
-                    <release>${java.release}</release>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>de.m3y.maven</groupId>
                 <artifactId>inject-maven-plugin</artifactId>
@@ -55,16 +43,16 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <groupId>com.craftaro</groupId>
+            <artifactId>CraftaroCore</artifactId>
+            <version>${craftaro.coreVersion}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>com.craftaro</groupId>
-            <artifactId>CraftaroCore</artifactId>
-            <version>3.0.0-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 

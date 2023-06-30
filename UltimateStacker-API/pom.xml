@@ -6,10 +6,10 @@
 
     <parent>
         <groupId>com.craftaro</groupId>
-        <artifactId>UltimateStackerParent</artifactId>
+        <artifactId>UltimateStacker-Parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>UltimateStackerAPI</artifactId>
+    <artifactId>UltimateStacker-API</artifactId>
     <version>1.0.0</version>
 
     <build>

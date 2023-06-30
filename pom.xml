@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.craftaro</groupId>
-    <artifactId>UltimateStackerParent</artifactId>
+    <artifactId>UltimateStacker-Parent</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
-        <module>UltimateStackerAPI</module>
+        <module>UltimateStacker-API</module>
         <module>UltimateStacker</module>
     </modules>
 

@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.events.spawner.SpawnerBreakEvent;
 import com.craftaro.ultimatestacker.api.events.spawner.SpawnerPlaceEvent;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
@@ -12,7 +12,6 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
 import com.craftaro.ultimatestacker.utils.Methods;
 import com.craftaro.core.compatibility.CompatibleHand;
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.hooks.ProtectionManager;
 import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import org.apache.commons.lang.math.NumberUtils;
@@ -180,7 +179,7 @@ public class BlockListeners implements Listener {
         event.setCancelled(true);
 
         if (itemType == blockType) {
-            SpawnerStack stack = UltimateStackerAPI.getSpawnerStackManager().getSpawner(block);
+            SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
             if (player.isSneaking()) return;
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (stack.getAmount() == maxStackSize) return;
@@ -235,7 +234,7 @@ public class BlockListeners implements Listener {
             return;
         }
 
-        SpawnerStack stack = UltimateStackerAPI.getSpawnerStackManager().addSpawner(new SpawnerStackImpl(block.getLocation(), amount));
+        SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().addSpawner(new SpawnerStackImpl(block.getLocation(), amount));
         plugin.getPluginDataManager().save(stack);
 
         cs.setSpawnedType(cs2.getSpawnedType());
@@ -260,7 +259,7 @@ public class BlockListeners implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInHand();
 
-        SpawnerStack stack = UltimateStackerAPI.getSpawnerStackManager().getSpawner(block);
+        SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
 
         event.setCancelled(true);
 
@@ -282,7 +281,7 @@ public class BlockListeners implements Listener {
         if (remove) {
             event.setCancelled(false);
             plugin.removeHologram(stack);
-            SpawnerStack spawnerStack = UltimateStackerAPI.getSpawnerStackManager().removeSpawner(block.getLocation());
+            SpawnerStack spawnerStack = UltimateStackerApi.getSpawnerStackManager().removeSpawner(block.getLocation());
             plugin.getPluginDataManager().delete(spawnerStack);
         } else {
             stack.setAmount(stack.getAmount() - 1);

@@ -45,7 +45,7 @@
                     <injections>
                         <injection>
                             <value>${project.version}</value>
-                            <pointCut>com.craftaro.ultimatestacker.api.UltimateStackerAPI.getVersion</pointCut>
+                            <pointCut>com.craftaro.ultimatestacker.api.UltimateStackerApi.getVersion</pointCut>
                         </injection>
                     </injections>
                 </configuration>

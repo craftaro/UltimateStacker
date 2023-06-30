@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
@@ -20,7 +20,7 @@ public class ItemCurrentListener implements Listener {
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve
         // ie there is x64 diamonds blocks (so 32), the player pick 8 items so the amount is 8 and not 32
 
-        StackedItem stackedItem = UltimateStackerAPI.getStackedItemManager().getStackedItem(event.getItem());
+        StackedItem stackedItem = UltimateStackerApi.getStackedItemManager().getStackedItem(event.getItem());
         if (stackedItem == null) return;
         ItemStack stack = stackedItem.getItem().getItemStack();
         int amount = stackedItem.getAmount();

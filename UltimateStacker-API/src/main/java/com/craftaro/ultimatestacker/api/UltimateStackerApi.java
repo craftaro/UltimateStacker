@@ -4,15 +4,14 @@ import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
-import com.craftaro.core.hooks.stackers.UltimateStacker;
 import org.bukkit.plugin.Plugin;
 
 /**
  * The main class of the API
  * <p>
- * <b>!! {@link UltimateStackerAPI#getVersion()} value is automatically replaced by maven don't change it !!</b>
+ * <b>!! {@link UltimateStackerApi#getVersion()} value is automatically replaced by maven don't change it !!</b>
  */
-public final class UltimateStackerAPI {
+public final class UltimateStackerApi {
 
     private static Plugin plugin;
     private static EntityStackManager entityStackManager;
@@ -20,22 +19,22 @@ public final class UltimateStackerAPI {
     private static SpawnerStackManager spawnerStackManager;
     private static BlockStackManager blockStackManager;
     private static Settings settings;
-    private static UltimateStackerAPI instance;
+    private static UltimateStackerApi instance;
 
-    public UltimateStackerAPI(Plugin plugin, EntityStackManager entityStackManager, StackedItemManager itemStackManager, SpawnerStackManager spawnerStackManager, BlockStackManager blockStackManager, Settings settings) {
-        if (UltimateStackerAPI.plugin != null || UltimateStackerAPI.entityStackManager != null || UltimateStackerAPI.stackedItemManager != null || UltimateStackerAPI.spawnerStackManager != null || UltimateStackerAPI.blockStackManager != null || UltimateStackerAPI.settings != null) {
+    public UltimateStackerApi(Plugin plugin, EntityStackManager entityStackManager, StackedItemManager itemStackManager, SpawnerStackManager spawnerStackManager, BlockStackManager blockStackManager, Settings settings) {
+        if (UltimateStackerApi.plugin != null || UltimateStackerApi.entityStackManager != null || UltimateStackerApi.stackedItemManager != null || UltimateStackerApi.spawnerStackManager != null || UltimateStackerApi.blockStackManager != null || UltimateStackerApi.settings != null) {
             throw new IllegalStateException("UltimateStackerAPI has already been initialized!");
         }
-        UltimateStackerAPI.plugin = plugin;
-        UltimateStackerAPI.entityStackManager = entityStackManager;
-        UltimateStackerAPI.stackedItemManager = itemStackManager;
-        UltimateStackerAPI.spawnerStackManager = spawnerStackManager;
-        UltimateStackerAPI.blockStackManager = blockStackManager;
-        UltimateStackerAPI.settings = settings;
+        UltimateStackerApi.plugin = plugin;
+        UltimateStackerApi.entityStackManager = entityStackManager;
+        UltimateStackerApi.stackedItemManager = itemStackManager;
+        UltimateStackerApi.spawnerStackManager = spawnerStackManager;
+        UltimateStackerApi.blockStackManager = blockStackManager;
+        UltimateStackerApi.settings = settings;
         instance = this;
     }
 
-    public static UltimateStackerAPI getInstance() {
+    public static UltimateStackerApi getInstance() {
         return instance;
     }
 

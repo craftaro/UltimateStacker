@@ -2,11 +2,10 @@ package com.craftaro.ultimatestacker.utils;
 
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.craftaro.core.utils.TextUtils;
 import org.bukkit.ChatColor;
@@ -24,7 +23,7 @@ import java.util.Map;
 public class Methods {
 
     public static void updateInventory(Item item, Inventory inventory) {
-        StackedItem stackedItem = UltimateStackerAPI.getStackedItemManager().getStackedItem(item);
+        StackedItem stackedItem = UltimateStackerApi.getStackedItemManager().getStackedItem(item);
         int amount = stackedItem.getAmount();
         ItemStack itemStack = item.getItemStack();
         final int maxStack = itemStack.getMaxStackSize();

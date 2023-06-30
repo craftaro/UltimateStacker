@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker;
 
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
@@ -51,7 +51,6 @@ import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.core.SongodaCore;
 import com.craftaro.core.SongodaPlugin;
 import com.craftaro.core.commands.CommandManager;
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.configuration.Config;
 import com.craftaro.core.database.DataManager;
@@ -96,7 +95,7 @@ public class UltimateStacker extends SongodaPlugin {
     private CommandManager commandManager;
     private CustomEntityManager customEntityManager;
     private StackingTask stackingTask;
-    private UltimateStackerAPI API;
+    private UltimateStackerApi API;
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
@@ -226,7 +225,7 @@ public class UltimateStacker extends SongodaPlugin {
 
         initDatabase(Arrays.asList(new _1_InitialMigration(), new _2_EntityStacks(), new _3_BlockStacks(), new _6_RemoveStackedEntityTable()));
 
-        API = new UltimateStackerAPI(this, entityStackManager, stackedItemManager, spawnerStackManager, blockStackManager, new Settings());
+        API = new UltimateStackerApi(this, entityStackManager, stackedItemManager, spawnerStackManager, blockStackManager, new Settings());
     }
 
     @Override
@@ -263,7 +262,7 @@ public class UltimateStacker extends SongodaPlugin {
         });
     }
 
-    public UltimateStackerAPI getAPI() {
+    public UltimateStackerApi getAPI() {
         return API;
     }
 

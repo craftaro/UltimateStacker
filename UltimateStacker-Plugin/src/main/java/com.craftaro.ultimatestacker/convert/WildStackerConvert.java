@@ -3,7 +3,7 @@ package com.craftaro.ultimatestacker.convert;
 import com.bgsoftware.wildstacker.api.WildStackerAPI;
 import com.bgsoftware.wildstacker.api.objects.StackedSpawner;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import org.bukkit.Bukkit;
 import org.bukkit.block.CreatureSpawner;
@@ -42,7 +42,7 @@ public class WildStackerConvert implements Convert {
     @Override
     public void convertSpawners() {
         for (StackedSpawner spawner : WildStackerAPI.getWildStacker().getSystemManager().getStackedSpawners()) {
-            SpawnerStack stack = UltimateStackerAPI.getSpawnerStackManager().getSpawner(spawner.getLocation());
+            SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(spawner.getLocation());
 
             stack.setAmount(WildStackerAPI
                     .getSpawnersAmount((CreatureSpawner) spawner.getLocation().getBlock().getState()));

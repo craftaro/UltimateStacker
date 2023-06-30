@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
 import com.craftaro.core.compatibility.CompatibleSound;
@@ -23,7 +23,7 @@ public class ItemLegacyListener implements Listener {
 
         Item item = event.getItem();
         ItemStack stack = item.getItemStack();
-        int amount = UltimateStackerAPI.getStackedItemManager().getActualItemAmount(item);
+        int amount = UltimateStackerApi.getStackedItemManager().getActualItemAmount(item);
         if (amount < (stack.getMaxStackSize() / 2)) return;
         event.setCancelled(true);
 

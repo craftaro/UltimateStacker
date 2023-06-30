@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -44,7 +44,7 @@ public class SpawnerListeners implements Listener {
         if (!plugin.spawnersEnabled()
                 || plugin.getStackingTask().isWorldDisabled(event.getLocation().getWorld())) return;
 
-        SpawnerStackManager spawnerStackManager = UltimateStackerAPI.getSpawnerStackManager();
+        SpawnerStackManager spawnerStackManager = UltimateStackerApi.getSpawnerStackManager();
         if (!spawnerStackManager.isSpawner(event.getSpawner().getLocation())) return;
 
         Entity entity = event.getEntity();
@@ -110,7 +110,7 @@ public class SpawnerListeners implements Listener {
             return;
         }
 
-        SpawnerStackManager manager = UltimateStackerAPI.getSpawnerStackManager();
+        SpawnerStackManager manager = UltimateStackerApi.getSpawnerStackManager();
 
         SpawnerStack spawner = manager.isSpawner(block.getLocation())
                 ? manager.getSpawner(block) : manager.addSpawner(new SpawnerStackImpl(block.getLocation(), 1));

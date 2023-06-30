@@ -2,14 +2,13 @@ package com.craftaro.ultimatestacker.listeners.entity;
 
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -73,7 +72,7 @@ public class EntityListeners implements Listener {
         if (amount < 1) return;
         item.setAmount(Math.min(amount, item.getMaxStackSize()));
         if (amount > item.getMaxStackSize()) {
-            StackedItem stackedItem = UltimateStackerAPI.getStackedItemManager().getStackedItem(event.getEntity());
+            StackedItem stackedItem = UltimateStackerApi.getStackedItemManager().getStackedItem(event.getEntity());
             if (stackedItem != null) {
                 stackedItem.setAmount(amount - item.getMaxStackSize());
             }
@@ -105,7 +104,7 @@ public class EntityListeners implements Listener {
     public void onSpawn(CreatureSpawnEvent event) {
         event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(plugin, event.getSpawnReason().name()));
     }
-    
+
     @EventHandler
     public void onBlow(EntityExplodeEvent event) {
         if (!plugin.spawnersEnabled()) return;
@@ -120,7 +119,7 @@ public class EntityListeners implements Listener {
 
             Location spawnLocation = block.getLocation();
 
-            SpawnerStack spawner = UltimateStackerAPI.getSpawnerStackManager().getSpawner(block);
+            SpawnerStack spawner = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
 
             if (Settings.SPAWNERS_DONT_EXPLODE.getBoolean())
                 toCancel.add(block);
@@ -138,7 +137,7 @@ public class EntityListeners implements Listener {
                     ItemStack item = Methods.getSpawnerItem(blockType, spawner.getAmount());
                     spawnLocation.getWorld().dropItemNaturally(spawnLocation.clone().add(.5, 0, .5), item);
 
-                    SpawnerStack spawnerStack = UltimateStackerAPI.getSpawnerStackManager().removeSpawner(spawnLocation);
+                    SpawnerStack spawnerStack = UltimateStackerApi.getSpawnerStackManager().removeSpawner(spawnLocation);
                     plugin.getPluginDataManager().delete(spawnerStack);
                     plugin.removeHologram(spawnerStack);
                 }

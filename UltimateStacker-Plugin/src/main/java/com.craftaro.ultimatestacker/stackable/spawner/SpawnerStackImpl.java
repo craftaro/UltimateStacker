@@ -1,13 +1,12 @@
 package com.craftaro.ultimatestacker.stackable.spawner;
 
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.database.Data;
 import com.craftaro.core.database.SerializedLocation;
 import com.craftaro.core.nms.world.SpawnedEntity;
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.world.SSpawner;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerAPI;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
@@ -18,7 +17,6 @@ import org.bukkit.entity.EntityType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -129,7 +127,7 @@ public class SpawnerStackImpl implements SpawnerStack {
     @Override
     public String getHologramName() {
         if (!(this.location.getBlock().getState() instanceof CreatureSpawner)) {
-            UltimateStackerAPI.getSpawnerStackManager().removeSpawner(this.location);
+            UltimateStackerApi.getSpawnerStackManager().removeSpawner(this.location);
             return null;
         }
         CreatureSpawner creatureSpawner = (CreatureSpawner) this.location.getBlock().getState();

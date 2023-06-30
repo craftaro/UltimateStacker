@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.commands;
 
-import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.core.commands.AbstractCommand;
+import com.craftaro.ultimatestacker.UltimateStacker;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

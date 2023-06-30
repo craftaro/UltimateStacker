@@ -1,13 +1,13 @@
 package com.craftaro.ultimatestacker.listeners;
 
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
-import com.craftaro.ultimatestacker.settings.Settings;
-import com.craftaro.ultimatestacker.stackable.entity.EntityStackImpl;
 import com.craftaro.core.compatibility.ServerProject;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.lootables.loot.Drop;
 import com.craftaro.core.lootables.loot.DropUtils;
+import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
+import com.craftaro.ultimatestacker.settings.Settings;
+import com.craftaro.ultimatestacker.stackable.entity.EntityStackImpl;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;

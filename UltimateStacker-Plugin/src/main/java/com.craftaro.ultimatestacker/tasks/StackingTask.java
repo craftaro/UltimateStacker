@@ -1,6 +1,9 @@
 package com.craftaro.ultimatestacker.tasks;
 
+import com.craftaro.core.compatibility.ServerVersion;
+import com.craftaro.core.hooks.WorldGuardHook;
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.core.world.SWorld;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
@@ -8,10 +11,6 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
-import com.craftaro.core.compatibility.CompatibleMaterial;
-import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.core.hooks.WorldGuardHook;
-import com.craftaro.core.world.SWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

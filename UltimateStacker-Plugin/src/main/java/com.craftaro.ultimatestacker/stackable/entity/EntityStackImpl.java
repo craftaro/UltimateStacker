@@ -1,15 +1,15 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
+import com.craftaro.core.compatibility.ServerVersion;
+import com.craftaro.core.lootables.loot.Drop;
+import com.craftaro.core.lootables.loot.DropUtils;
+import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.events.entity.EntityStackKillEvent;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
-import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.core.lootables.loot.Drop;
-import com.craftaro.core.lootables.loot.DropUtils;
-import com.craftaro.core.utils.EntityUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;

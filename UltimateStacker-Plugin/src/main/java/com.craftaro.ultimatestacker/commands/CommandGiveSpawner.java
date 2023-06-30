@@ -1,9 +1,9 @@
 package com.craftaro.ultimatestacker.commands;
 
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.utils.Methods;
 import com.craftaro.core.commands.AbstractCommand;
 import com.craftaro.core.utils.TextUtils;
+import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;

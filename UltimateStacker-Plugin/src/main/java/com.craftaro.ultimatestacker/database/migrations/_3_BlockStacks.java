@@ -1,11 +1,9 @@
 package com.craftaro.ultimatestacker.database.migrations;
 
-import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.core.database.DataMigration;
 import com.craftaro.core.database.DatabaseConnector;
 import com.craftaro.core.database.MySQLConnector;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 

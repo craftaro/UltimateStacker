@@ -1,8 +1,8 @@
 package com.craftaro.ultimatestacker.hook.hooks;
 
+import com.craftaro.core.hooks.jobs.JobsPlayerHandler;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.hook.StackerHook;
-import com.craftaro.core.hooks.jobs.JobsPlayerHandler;
 import org.bukkit.GameMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

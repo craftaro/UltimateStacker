@@ -1,16 +1,16 @@
 package com.craftaro.ultimatestacker.listeners;
 
+import com.craftaro.core.compatibility.CompatibleHand;
+import com.craftaro.core.compatibility.ServerVersion;
+import com.craftaro.core.nms.NmsManager;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
+import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
-import com.craftaro.core.compatibility.CompatibleHand;
-import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.core.nms.NmsManager;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
-import com.craftaro.core.utils.EntityUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

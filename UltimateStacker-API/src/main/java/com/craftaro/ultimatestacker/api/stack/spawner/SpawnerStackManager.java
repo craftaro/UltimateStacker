@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public interface SpawnerStackManager {
     void addSpawners(List<SpawnerStack> spawners);

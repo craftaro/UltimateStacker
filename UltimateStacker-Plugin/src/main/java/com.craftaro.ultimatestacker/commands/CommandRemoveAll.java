@@ -1,10 +1,10 @@
 package com.craftaro.ultimatestacker.commands;
 
+import com.craftaro.core.commands.AbstractCommand;
+import com.craftaro.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
-import com.craftaro.core.commands.AbstractCommand;
-import com.craftaro.core.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;

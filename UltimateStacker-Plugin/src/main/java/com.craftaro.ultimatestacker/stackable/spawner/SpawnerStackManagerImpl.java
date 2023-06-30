@@ -1,9 +1,9 @@
 package com.craftaro.ultimatestacker.stackable.spawner;
 
+import com.craftaro.core.database.Data;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
-import com.craftaro.core.database.Data;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 

@@ -1,11 +1,10 @@
 package com.craftaro.ultimatestacker.api.stack.spawner;
 
+import com.craftaro.core.database.Data;
+import com.craftaro.core.nms.world.SpawnedEntity;
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.api.utils.Hologramable;
 import com.craftaro.ultimatestacker.api.utils.Stackable;
-import com.craftaro.core.compatibility.CompatibleMaterial;
-import com.craftaro.core.database.Data;
-import com.craftaro.core.nms.world.SpawnedEntity;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
@@ -39,7 +38,7 @@ public interface SpawnerStack extends Stackable, Hologramable, Data {
     int getZ();
 
     World getWorld();
-    
+
     String getHologramId();
 
     int spawn(int amountToSpawn, EntityType... types);

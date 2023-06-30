@@ -1,10 +1,10 @@
 package com.craftaro.ultimatestacker.settings;
 
+import com.craftaro.core.configuration.Config;
+import com.craftaro.core.configuration.ConfigSetting;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.Split;
-import com.craftaro.core.configuration.Config;
-import com.craftaro.core.configuration.ConfigSetting;
 
 import java.util.Arrays;
 import java.util.Collections;

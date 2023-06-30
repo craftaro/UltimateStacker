@@ -1,9 +1,5 @@
 package com.craftaro.ultimatestacker.lootables;
 
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
-import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.settings.Settings;
-import com.craftaro.core.compatibility.CompatibleMaterial;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.lootables.Lootables;
 import com.craftaro.core.lootables.Modify;
@@ -12,6 +8,9 @@ import com.craftaro.core.lootables.loot.Loot;
 import com.craftaro.core.lootables.loot.LootBuilder;
 import com.craftaro.core.lootables.loot.LootManager;
 import com.craftaro.core.lootables.loot.Lootable;
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.settings.Settings;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Creeper;

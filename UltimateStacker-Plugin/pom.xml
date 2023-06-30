@@ -99,7 +99,7 @@
         <dependency>
             <groupId>com.craftaro</groupId>
             <artifactId>UltimateStacker-API</artifactId>
-            <version>${craftaro.ultimateStackerApiVersion}</version>
+            <version>1.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

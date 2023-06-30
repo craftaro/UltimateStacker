@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.core.compatibility.CompatibleSound;
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XSound;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
@@ -27,7 +27,7 @@ public class ItemLegacyListener implements Listener {
         if (amount < (stack.getMaxStackSize() / 2)) return;
         event.setCancelled(true);
 
-        event.getPlayer().playSound(event.getPlayer().getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
+        XSound.ENTITY_ITEM_PICKUP.play(event.getPlayer(), .2f, (float) (1 + Math.random()));
 
         Methods.updateInventory(event.getItem(), event.getPlayer().getInventory());
     }

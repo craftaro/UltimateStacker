@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.core.compatibility.CompatibleSound;
+import com.craftaro.core.third_party.com.cryptomorin.xseries.XSound;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -29,7 +29,7 @@ public class ItemCurrentListener implements Listener {
             if (amount < (stack.getMaxStackSize() / 2)) return;
             event.setCancelled(true);
             Player player = (Player) event.getEntity();
-            player.playSound(player.getLocation(), CompatibleSound.ENTITY_ITEM_PICKUP.getSound(), .2f, (float) (1 + Math.random()));
+            XSound.ENTITY_ITEM_PICKUP.play(player, .2f, (float) (1 + Math.random()));
             Methods.updateInventory(event.getItem(), player.getInventory());
         } else {
             stackedItem.setAmount(amount - 1);

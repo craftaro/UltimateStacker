@@ -93,6 +93,11 @@
             <id>songoda-public</id>
             <url>https://repo.craftaro.com/repository/public/</url>
         </repository>
+
+        <repository>
+            <id>bg-repo-public-libs</id>
+            <url>https://repo.bg-software.com/repository/public-libs/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -134,7 +139,7 @@
         <dependency>
             <groupId>me.minebuilders</groupId>
             <artifactId>Clearlag</artifactId>
-            <version>3.0.6</version>
+            <version>latest</version>
             <scope>provided</scope>
         </dependency>
 

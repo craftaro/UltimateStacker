@@ -11,7 +11,7 @@
 
     <modules>
         <module>UltimateStacker-API</module>
-        <module>UltimateStacker</module>
+        <module>UltimateStacker-Plugin</module>
     </modules>
 
     <name>UltimateStacker</name>

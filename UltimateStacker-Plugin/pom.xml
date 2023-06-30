@@ -9,7 +9,7 @@
         <artifactId>UltimateStacker-Parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>UltimateStacker</artifactId>
+    <artifactId>UltimateStacker-Plugin</artifactId>
 
     <build>
         <plugins>

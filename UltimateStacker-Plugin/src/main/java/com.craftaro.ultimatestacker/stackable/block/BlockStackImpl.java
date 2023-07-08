@@ -111,7 +111,7 @@ public class BlockStackImpl implements BlockStack {
 
     @Override
     public Location getLocation() {
-        return location;
+        return this.location.clone();
     }
 
     @Override

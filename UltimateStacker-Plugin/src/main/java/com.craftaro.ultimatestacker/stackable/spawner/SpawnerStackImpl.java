@@ -4,6 +4,7 @@ import com.craftaro.core.database.Data;
 import com.craftaro.core.database.SerializedLocation;
 import com.craftaro.core.nms.world.SpawnedEntity;
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.core.world.SSpawner;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
@@ -22,8 +23,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class SpawnerStackImpl implements SpawnerStack {
-    private final UUID uniqueHologramId = UUID.randomUUID();
 
+    private final UUID uniqueHologramId = UUID.randomUUID();
     private int id;
     private Location location;
     private int amount;
@@ -66,8 +67,9 @@ public class SpawnerStackImpl implements SpawnerStack {
         this.amount -= amount;
     }
 
-    public int calculateSpawnCount(EntityType type) {
-        if (!UltimateStacker.getInstance().getMobFile().getBoolean("Mobs." + type.name() + ".Enabled")) {
+    @Override
+    public int calculateSpawnCount(EntityType type, boolean ignoreRestrictions) {
+        if (!UltimateStacker.getInstance().getMobFile().getBoolean("Mobs." + type.name() + ".Enabled") && !ignoreRestrictions) {
             return 0;
         }
 
@@ -77,6 +79,31 @@ public class SpawnerStackImpl implements SpawnerStack {
             count += random.nextInt(3) + 1;
         }
         return count;
+    }
+
+    @Override
+    public int spawn() {
+        return spawn(-1, false);
+    }
+
+    @Override
+    public int spawn(boolean noAI) {
+        return spawn(-1, noAI);
+    }
+
+    @Override
+    public int spawn(int toSpawn, boolean noAI) {
+        CreatureSpawner creatureSpawner = (CreatureSpawner) this.location.getBlock().getState();
+        if (toSpawn <= 0) toSpawn = calculateSpawnCount(creatureSpawner.getSpawnedType(), false);
+        int finalToSpawn = toSpawn;
+        return spawn(toSpawn, "EXPLOSION_NORMAL", null, (e) -> {
+            if (noAI) {
+                EntityUtils.setUnaware(e);
+            }
+
+            UltimateStacker.getInstance().getEntityStackManager().createStackedEntity(e, finalToSpawn);
+            return true;
+        }, creatureSpawner.getSpawnedType());
     }
 
     @Override

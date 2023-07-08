@@ -1,9 +1,9 @@
 package com.craftaro.ultimatestacker.api.stack.item;
 
-import com.craftaro.ultimatestacker.api.utils.StackableEntity;
+import com.craftaro.ultimatestacker.api.utils.Stackable;
 import org.bukkit.entity.Item;
 
-public interface StackedItem extends StackableEntity {
+public interface StackedItem extends Stackable {
 
     /**
      * Get the Item entity for this StackedItem

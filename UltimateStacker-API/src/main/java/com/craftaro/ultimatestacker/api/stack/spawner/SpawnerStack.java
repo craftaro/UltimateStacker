@@ -11,37 +11,55 @@ import org.bukkit.entity.EntityType;
 
 import java.util.Set;
 
+/**
+ * Represents a stack of spawners
+ */
 public interface SpawnerStack extends Stackable, Hologramable, Data {
 
-    int getAmount();
-
-    boolean isValid();
-
-    void setAmount(int amount);
-
-    int calculateSpawnCount(EntityType type);
-
+    /**
+     * Get the id of this stack
+     * @return The id of this stack
+     */
     int getId();
 
-    void setId(int id);
+    /**
+     * Calculate the amount of entities that will spawn from this stack
+     * @param type The type of entity to calculate for
+     * @param ignoreRestrictions Weather or not to ignore max stack size and if the entity is stackable
+     * @return The calculated amount
+     */
+    int calculateSpawnCount(EntityType type, boolean ignoreRestrictions);
 
-    Location getLocation();
+    /**
+     * Spawn the entities for this SpawnerStack
+     * @return The amount of entities that spawned
+     */
+    int spawn();
 
-    String getHologramName();
+    /**
+     * Spawn the entities for this SpawnerStack
+     * @param noAI Weather or not to spawn the entities with no AI
+     * @return The amount of entities that spawned
+     */
+    int spawn(boolean noAI);
 
-    boolean areHologramsEnabled();
+    /**
+     * Spawn the entities for this SpawnerStack
+     * @param amount The amount of entities to spawn
+     * @param noAI Weather or not to spawn the entities with no AI
+     * @return The amount of entities that spawned
+     */
+    int spawn(int amount, boolean noAI);
 
-    int getX();
-
-    int getY();
-
-    int getZ();
-
-    World getWorld();
-
-    String getHologramId();
-
+    /**
+     * Spawn the entities for this stack
+     * @return The amount of entities that spawned
+     */
     int spawn(int amountToSpawn, EntityType... types);
 
+    /**
+     * Spawn the entities for this stack
+     * @return The location of this stack
+     */
     int spawn(int amountToSpawn, String particle, Set<XMaterial> canSpawnOn, SpawnedEntity spawned, EntityType... types);
 }

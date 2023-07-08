@@ -6,6 +6,8 @@ import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +33,7 @@ public class SpawnerStackManagerImpl implements SpawnerStackManager {
     }
 
     @Override
-    public SpawnerStack removeSpawner(Location location) {
+    public @Nullable SpawnerStack removeSpawner(Location location) {
         return registeredSpawners.remove(roundLocation(location));
     }
 
@@ -46,6 +48,11 @@ public class SpawnerStackManagerImpl implements SpawnerStackManager {
     }
 
     @Override
+    public boolean isSpawner(Block block) {
+        return isSpawner(block.getLocation());
+    }
+
+    @Override
     public SpawnerStack getSpawner(Block block) {
         return this.getSpawner(block.getLocation());
     }
@@ -56,12 +63,12 @@ public class SpawnerStackManagerImpl implements SpawnerStackManager {
     }
 
     @Override
-    public Collection<SpawnerStack> getStacks() {
+    public @NotNull Collection<SpawnerStack> getStacks() {
         return Collections.unmodifiableCollection(this.registeredSpawners.values());
     }
 
     @Override
-    public Collection<Data> getStacksData() {
+    public @NotNull Collection<Data> getStacksData() {
         return Collections.unmodifiableCollection(this.registeredSpawners.values());
     }
 

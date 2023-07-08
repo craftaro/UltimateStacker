@@ -7,15 +7,14 @@ import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemLegacyListener implements Listener {
 
-    //TODO Do we need this?
-
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(PlayerPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve

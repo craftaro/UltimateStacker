@@ -65,7 +65,7 @@ public class SpawnerListeners implements Listener {
 
         SpawnerStack spawnerStack = spawnerStackManager.getSpawner(location);
 
-        int amountToSpawn = Settings.STACK_ENTITIES.getBoolean() ? spawnerStack.calculateSpawnCount(entity.getType()) : 1;
+        int amountToSpawn = Settings.STACK_ENTITIES.getBoolean() ? spawnerStack.calculateSpawnCount(entity.getType(), false) : 1;
         if (amountToSpawn <= 0) return;
         entity.remove();
 

@@ -5,6 +5,7 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +17,9 @@ public class StackedItemImpl implements StackedItem {
 
     public StackedItemImpl(Item item) {
         this.item = item;
+        if (!item.hasMetadata("US_AMT")) {
+            item.setMetadata("US_AMT", new FixedMetadataValue(UltimateStacker.getInstance(), item.getItemStack().getAmount()));
+        }
     }
 
     public StackedItemImpl(Item item, int amount) {
@@ -25,12 +29,10 @@ public class StackedItemImpl implements StackedItem {
 
     @Override
     public int getAmount() {
-        ItemStack itemStack = item.getItemStack();
-        int amount = itemStack.getAmount();
         if (item.hasMetadata("US_AMT")) {
             return item.getMetadata("US_AMT").get(0).asInt();
         } else {
-            return amount;
+            return item.getItemStack().getAmount();
         }
     }
 
@@ -52,6 +54,16 @@ public class StackedItemImpl implements StackedItem {
         }
 
         updateItemAmount(item, getAmount() - amount);
+    }
+
+    @Override
+    public Location getLocation() {
+        return item.getLocation();
+    }
+
+    @Override
+    public boolean isValid() {
+        return item.isValid();
     }
 
     private void updateItemAmount(Item item, int newAmount) {
@@ -84,8 +96,7 @@ public class StackedItemImpl implements StackedItem {
 
     private void updateItemMeta(Item item, ItemStack itemStack, int newAmount) {
         Material material = itemStack.getType();
-        if (material == Material.AIR)
-            return;
+        if (material == Material.AIR) return;
 
         String name = TextUtils.convertToInvisibleString("IS") + Methods.compileItemName(itemStack, newAmount);
 
@@ -101,8 +112,9 @@ public class StackedItemImpl implements StackedItem {
         if ((blacklisted && !Settings.ITEM_HOLOGRAM_BLACKLIST.getBoolean())
                 || !UltimateStacker.getInstance().getItemFile().getBoolean("Items." + material + ".Has Hologram")
                 || !Settings.ITEM_HOLOGRAMS.getBoolean()
-                || newAmount < Settings.ITEM_MIN_HOLOGRAM_SIZE.getInt())
+                || newAmount < Settings.ITEM_MIN_HOLOGRAM_SIZE.getInt()) {
             return;
+        }
 
         item.setCustomName(name);
         item.setCustomNameVisible(true);
@@ -119,5 +131,13 @@ public class StackedItemImpl implements StackedItem {
         item.setCustomName(null);
         item.setCustomNameVisible(true);
         return item;
+    }
+
+    @Override
+    public String toString() {
+        return "StackedItemImpl{" +
+                "ItemStack=" + item.getItemStack() +
+                ", us_amount=" + getAmount() +
+                '}';
     }
 }

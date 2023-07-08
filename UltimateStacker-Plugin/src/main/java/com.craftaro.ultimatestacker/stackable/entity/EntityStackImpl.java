@@ -89,6 +89,16 @@ public class EntityStackImpl implements EntityStack {
     }
 
     @Override
+    public Location getLocation() {
+        return hostEntity.getLocation();
+    }
+
+    @Override
+    public boolean isValid() {
+        return hostEntity.isValid();
+    }
+
+    @Override
     public UUID getUuid() {
         return hostEntity.getUniqueId();
     }

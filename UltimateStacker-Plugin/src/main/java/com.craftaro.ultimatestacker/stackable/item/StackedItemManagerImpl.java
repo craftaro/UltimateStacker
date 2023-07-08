@@ -22,16 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class StackedItemManagerImpl implements StackedItemManager {
 
     @Override
-    public @Nullable StackedItem getStackedItem(Item item) {
-        if (item.hasMetadata("US_AMT")) {
-            return new StackedItemImpl(item);
-        }
-        return null;
-    }
-
-    @Override
-    public @NotNull StackedItem getStackedItem(Item item, boolean create) {
-        return null;
+    public @NotNull StackedItem getStackedItem(Item item) {
+        return new StackedItemImpl(item);
     }
 
     @Override
@@ -39,23 +31,21 @@ public class StackedItemManagerImpl implements StackedItemManager {
         if (item.getType() == Material.AIR) return null;
         World world = location.getWorld();
         if (world == null) return null;
-        AtomicReference<StackedItem> stack = new AtomicReference<>(null);
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)) {
-            world.dropItem(location, item, dropped -> {
-                if (dropped.getItemStack().getType() == Material.AIR) return;
-                stack.set(new StackedItemImpl(dropped, amount));
-            });
-        } else {
-            Item dropped = world.dropItem(location, item);
-            if (dropped.getItemStack().getType() == Material.AIR) return null;
-            stack.set(new StackedItemImpl(dropped, amount));
-        }
-        return stack.get();
+        Item dropped = world.dropItem(location, item);
+        if (dropped.getItemStack().getType() == Material.AIR) return null;
+        return new StackedItemImpl(dropped, amount);
     }
 
     @Override
-    public @Nullable StackedItem createStack(Item item, int amount) {
-        return null;
+    public @NotNull StackedItem createStack(Item item, int amount) {
+        return new StackedItemImpl(item, amount);
+    }
+
+    @Override
+    public @NotNull StackedItem updateStack(Item item, int newAmount) {
+        StackedItem stackedItem = getStackedItem(item);
+        stackedItem.setAmount(newAmount);
+        return stackedItem;
     }
 
     @Override
@@ -64,8 +54,13 @@ public class StackedItemManagerImpl implements StackedItemManager {
     }
 
     @Override
-    public @Nullable Future<StackedItem> createStackSync(Item item, int amount) {
+    public @NotNull Future<StackedItem> createStackSync(Item item, int amount) {
         return Bukkit.getScheduler().callSyncMethod(UltimateStacker.getInstance(), () -> createStack(item, amount));
+    }
+
+    @Override
+    public @NotNull Future<StackedItem> updateStackSync(Item item, int newAmount) {
+        return Bukkit.getScheduler().callSyncMethod(UltimateStacker.getInstance(), () -> updateStack(item, newAmount));
     }
 
     @Override
@@ -86,12 +81,12 @@ public class StackedItemManagerImpl implements StackedItemManager {
     }
 
     @Override
-    public StackedItem merge(Item from, Item to, boolean ignoreRestrictions) {
+    public @Nullable StackedItem merge(Item from, Item to, boolean ignoreRestrictions) {
         return merge(from, to, ignoreRestrictions, null);
     }
 
     @Override
-    public StackedItem merge(Item from, Item to, boolean ignoreRestrictions, ItemMergeCallback<Item, Item, StackedItem> callback) {
+    public @Nullable StackedItem merge(Item from, Item to, boolean ignoreRestrictions, ItemMergeCallback<Item, Item, StackedItem> callback) {
 
         if (!ignoreRestrictions) {
             if (!Settings.STACK_ITEMS.getBoolean()) return null;
@@ -111,11 +106,18 @@ public class StackedItemManagerImpl implements StackedItemManager {
 
         int maxSize = UltimateStacker.getInstance().getItemFile().getInt("Items." + fromItemStack.getType().name() + ".Max Stack Size");
 
+        if (maxSize <= 0) {
+            maxSize = maxItemStackSize;
+        } else {
+            maxSize = Math.min(maxSize, maxItemStackSize);
+        }
+
         int fromAmount = getActualItemAmount(from);
         int toAmount = getActualItemAmount(to);
 
         if (fromAmount + toAmount > maxSize) {
             if (callback != null) callback.accept(from, to, null);
+
             //merge was unsuccessful
             return null;
         } else {

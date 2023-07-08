@@ -14,21 +14,22 @@ public interface StackedItemManager {
 
     /**
      * Get the StackedItem for the given Item
+     * Creates a new StackedItem if it does not exist
      * @param item The Item to get the stack for
-     * @return The StackedItem for the given Item or null if not stacked
+     * @return The StackedItem for the given Item
      */
-    @Nullable StackedItem getStackedItem(Item item);
-
-    /**
-     * Get the StackedItem for the given Item
-     * @param item The Item to get the stack for
-     * @param create If true, will create a new stack if one does not exist
-     * @return The StackedItem for the given Item or null if not stacked
-     */
-    @NotNull StackedItem getStackedItem(Item item, boolean create);
+    @NotNull StackedItem getStackedItem(Item item);
 
     /**
      * Create a new StackedItem for the given item
+     * @param item The item to create the stack for
+     * @param amount The amount of items in the stack
+     * @return The StackedItem for the given Item
+     */
+    @NotNull StackedItem createStack(Item item, int amount);
+
+    /**
+     * Create a new StackedItem for the given ItemStack
      * @param item The ItemStack to create the stack for
      * @param amount The amount of items in the stack
      * @param location The location to spawn the stack
@@ -37,12 +38,12 @@ public interface StackedItemManager {
     @Nullable StackedItem createStack(ItemStack item, Location location, int amount);
 
     /**
-     * Create a new StackedItem for the given item
-     * @param item The item to create the stack for
-     * @param amount The amount of items in the stack
-     * @return The StackedItem for the given Item or null if it could not be created
+     * Update the stack for the given item
+     * @param item The Item to update
+     * @param newAmount The new amount of the stack
+     * @return The StackedItem for the given Item
      */
-    @Nullable StackedItem createStack(Item item, int amount);
+    @NotNull StackedItem updateStack(Item item, int newAmount);
 
     /**
      * Create a new StackedItem for the given item in the main thread
@@ -57,9 +58,17 @@ public interface StackedItemManager {
      * Create a new StackedItem for the given item in the main thread
      * @param item The item to create the stack for
      * @param amount The amount of items in the stack
-     * @return The StackedItem for the given Item or null if it could not be created
+     * @return The StackedItem for the given Item
      */
-    @Nullable Future<StackedItem> createStackSync(Item item, int amount);
+    @NotNull Future<StackedItem> createStackSync(Item item, int amount);
+
+    /**
+     * Update the stack for the given item in the main thread
+     * @param item The Item to update
+     * @param newAmount The new amount of the stack
+     * @return The StackedItem for the given Item
+     */
+    @NotNull Future<StackedItem> updateStackSync(Item item, int newAmount);
 
     /**
      * Get the actual amount of the given item
@@ -83,7 +92,7 @@ public interface StackedItemManager {
      * @param ignoreRestrictions ignore ignoreRestrictions such as max stack size, or blacklist
      * @return The merged item or null if they merge was unsuccessful
      */
-    StackedItem merge(Item from, Item to, boolean ignoreRestrictions);
+    @Nullable StackedItem merge(Item from, Item to, boolean ignoreRestrictions);
 
     /**
      * Merge two items together if they are the same type
@@ -93,7 +102,7 @@ public interface StackedItemManager {
      * @param callback callback to be called when the merge is successful see {@link  ItemMergeCallback#accept(Item, Item, StackedItem)}
      * @return The merged item or null if they merge was unsuccessful
      */
-    StackedItem merge(Item from, Item to, boolean ignoreRestrictions, ItemMergeCallback<Item, Item, StackedItem> callback);
+    @Nullable StackedItem merge(Item from, Item to, boolean ignoreRestrictions, ItemMergeCallback<Item, Item, StackedItem> callback);
 
     /**
      * Check to see if this material is not permitted to stack

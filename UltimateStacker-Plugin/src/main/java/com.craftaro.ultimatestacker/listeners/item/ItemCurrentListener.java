@@ -8,20 +8,20 @@ import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemCurrentListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPickup(EntityPickupItemEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean() || event.getItem() instanceof Arrow) return;
         // Amount here is not the total amount of item (32 if more than 32) but the amount of item the player can retrieve
         // ie there is x64 diamonds blocks (so 32), the player pick 8 items so the amount is 8 and not 32
 
         StackedItem stackedItem = UltimateStackerApi.getStackedItemManager().getStackedItem(event.getItem());
-        if (stackedItem == null) return;
         ItemStack stack = stackedItem.getItem().getItemStack();
         int amount = stackedItem.getAmount();
 

@@ -34,7 +34,7 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
             "The distance entities must be to each other in order to stack.");
 
     public static final ConfigSetting MAX_STACK_ENTITIES = new ConfigSetting(config, "Entities.Max Stack Size", 15,
-            "The max amount of entities in a single stack.");
+            "The max amount of entities in a single stack. Max value is 2000000000");
 
     // Note: this setting is also referenced in EpicSpawners
     public static final ConfigSetting MIN_STACK_ENTITIES = new ConfigSetting(config, "Entities.Min Stack Amount", 5,
@@ -183,7 +183,7 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
             "Should items that are blacklisted display holograms?");
 
     public static final ConfigSetting MAX_STACK_ITEMS = new ConfigSetting(config, "Items.Max Stack Size", 512,
-            "The max stack size for items.");
+            "The max stack size for items. Max value is 1500000000");
 
     public static final ConfigSetting NAME_FORMAT_ITEM = new ConfigSetting(config, "Items.Name Format", "&f{TYPE} &r[&6{AMT}x]",
             "The text displayed above a dropped item.");

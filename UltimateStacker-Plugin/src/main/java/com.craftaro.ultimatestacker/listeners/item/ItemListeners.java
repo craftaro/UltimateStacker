@@ -56,8 +56,6 @@ public class ItemListeners implements Listener {
         }
     }
 
-    //Do we need this?
-
     @EventHandler
     public void onExist(ItemSpawnEvent event) {
         if (!Settings.STACK_ITEMS.getBoolean()) return;
@@ -72,16 +70,7 @@ public class ItemListeners implements Listener {
                 StringUtils.substring(itemStack.getItemMeta().getDisplayName(), 0, 3).equals("***")) {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
-
-        StackedItemManager itemStackManager = UltimateStackerApi.getStackedItemManager();
-
-        if (itemStackManager.isStackedItem(event.getEntity())) {
-            StackedItem stackedItem = UltimateStacker.getInstance().getStackedItemManager().getStackedItem(event.getEntity());
-            stackedItem.setAmount(stackedItem.getAmount() + itemStack.getAmount());
-            UltimateStackerApi.getStackedItemManager().createStack(event.getEntity(), UltimateStackerApi.getStackedItemManager().getActualItemAmount(event.getEntity()) + itemStack.getAmount());
-        } else {
-            UltimateStackerApi.getStackedItemManager().createStack(event.getEntity(), itemStack.getAmount());
-        }
-
+        
+        UltimateStackerApi.getStackedItemManager().createStack(event.getEntity(), itemStack.getAmount());
     }
 }

@@ -1,10 +1,12 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
+import com.craftaro.core.SongodaCore;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.lootables.loot.Drop;
 import com.craftaro.core.lootables.loot.DropUtils;
 import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.events.entity.EntityStackKillEvent;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -12,6 +14,7 @@ import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
@@ -21,6 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;

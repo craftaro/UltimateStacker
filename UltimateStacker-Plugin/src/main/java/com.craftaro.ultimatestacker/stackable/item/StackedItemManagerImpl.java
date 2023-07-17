@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class StackedItemManagerImpl implements StackedItemManager {
 
+    private final static int MAX_INT = 1500000000;
+
     @Override
     public @NotNull StackedItem getStackedItem(Item item) {
         return new StackedItemImpl(item);
@@ -97,6 +99,7 @@ public class StackedItemManagerImpl implements StackedItemManager {
         }
 
         int maxItemStackSize = Settings.MAX_STACK_ITEMS.getInt();
+        if (maxItemStackSize > MAX_INT) maxItemStackSize = MAX_INT;
 
         ItemStack fromItemStack = from.getItemStack();
         ItemStack toItemStack = to.getItemStack();
@@ -104,7 +107,7 @@ public class StackedItemManagerImpl implements StackedItemManager {
         if (fromItemStack.getType() != toItemStack.getType()) return null;
         if (!ignoreRestrictions && UltimateStacker.isMaterialBlacklisted(fromItemStack)) return null;
 
-        int maxSize = UltimateStacker.getInstance().getItemFile().getInt("Items." + fromItemStack.getType().name() + ".Max Stack Size");
+        long maxSize = UltimateStacker.getInstance().getItemFile().getInt("Items." + fromItemStack.getType().name() + ".Max Stack Size");
 
         if (maxSize <= 0) {
             maxSize = maxItemStackSize;
@@ -112,8 +115,8 @@ public class StackedItemManagerImpl implements StackedItemManager {
             maxSize = Math.min(maxSize, maxItemStackSize);
         }
 
-        int fromAmount = getActualItemAmount(from);
-        int toAmount = getActualItemAmount(to);
+        long fromAmount = getActualItemAmount(from);
+        long toAmount = getActualItemAmount(to);
 
         if (fromAmount + toAmount > maxSize) {
             if (callback != null) callback.accept(from, to, null);
@@ -121,7 +124,7 @@ public class StackedItemManagerImpl implements StackedItemManager {
             //merge was unsuccessful
             return null;
         } else {
-            StackedItem merged = new StackedItemImpl(to, fromAmount + toAmount);
+            StackedItem merged = new StackedItemImpl(to, (int) (fromAmount + toAmount));
             if (callback != null) callback.accept(null, to, merged);
             return merged;
         }

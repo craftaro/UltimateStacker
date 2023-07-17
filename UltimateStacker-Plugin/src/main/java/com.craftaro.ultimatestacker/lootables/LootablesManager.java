@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class LootablesManager {
@@ -36,6 +37,7 @@ public class LootablesManager {
     private final LootManager lootManager;
 
     private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + File.separator + "lootables";
+    private final static int MAX_INT = Integer.MAX_VALUE/2;
 
     public LootablesManager() {
         this.lootables = new Lootables(lootablesDir);
@@ -121,7 +123,6 @@ public class LootablesManager {
 
         double extraChance = looting / (looting + 1.0);
 
-        Random random = new Random();
         boolean isCharged = entity instanceof Creeper && ((Creeper) entity).isPowered();
 
         //Run main loot
@@ -130,38 +131,56 @@ public class LootablesManager {
             if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
             int finalLooting = loot.isAllowLootingEnchant() ? looting : 0;
 
-            int max = (int) (((loot.getMax() + finalLooting) * times) * (loot.getChance()/100));
-            int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
+            long max = (long) (((long) (loot.getMax() + finalLooting) * times) * (loot.getChance()/100 + (loot.isAllowLootingEnchant() ? extraChance : 0)));
+            long min = (long) ((loot.getMin()) * times * (loot.getChance()/100));
 
-            int amount = random.nextInt((max - min) + 1) + min;
+            long amount = ThreadLocalRandom.current().nextLong((max - min) + 1) + min;
 
             if (amount > 0) {
                 ItemStack item = entity.getFireTicks() > 0
                         ? loot.getBurnedMaterial() != null ? loot.getBurnedMaterial().parseItem() : loot.getMaterial().parseItem()
-                        : loot.getMaterial().parseItem().clone();
-                item.setAmount(amount);
+                        : loot.getMaterial().parseItem();
+                if (amount > MAX_INT) {
+                    while (amount > MAX_INT) {
+                        ItemStack loop = item.clone();
+                        loop.setAmount(MAX_INT);
+                        amount -= MAX_INT;
+                        toDrop.add(new Drop(loop));
+                    }
+                }
+                //Leftover
+                item.setAmount((int) amount);
                 toDrop.add(new Drop(item));
             }
-        }
-        //Run child loot
-        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() == null).collect(Collectors.toList())) {
+
+            //Run child loot //TODO: remove duplicated code
             for (Loot child : loot.getChildLoot()) {
                 if (child.isRequireCharged() && !isCharged) continue;
-                if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+                if (child.getOnlyDropFor().size() != 0 && child.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
 
-                int finalLooting = child.isAllowLootingEnchant() ? looting : 0;
+                int choildFinalLooting = child.isAllowLootingEnchant() ? looting : 0;
 
-                int max = (int) (((loot.getMax() + finalLooting) * times * (loot.getChance()/100)));
-                int min = (int) ((loot.getMin()) * times * (loot.getChance()/100));
-                min = (int) (min - min*0.90);
+                long childMax = (long) (((long) (child.getMax() + finalLooting) * times) * (child.getChance()/100 + (child.isAllowLootingEnchant() ? extraChance : 0)));
+                long childmin = (long) ((child.getMin()) * times * (child.getChance()/100));
+                childmin = (long) (childmin - childmin*0.90);
 
-                int amount = random.nextInt((max - min) + 1) + min;
 
-                if (amount > 0) {
+                long childamount = ThreadLocalRandom.current().nextLong((childMax - childmin) + 1) + childmin;
+
+                if (childamount > 0) {
                     ItemStack item = entity.getFireTicks() > 0
                             ? child.getBurnedMaterial() != null ? child.getBurnedMaterial().parseItem() : child.getMaterial().parseItem()
-                            : child.getMaterial().parseItem().clone();
-                    item.setAmount(amount);
+                            : child.getMaterial().parseItem();
+                    if (childamount > MAX_INT) {
+                        while (childamount > MAX_INT) {
+                            ItemStack loop = item.clone();
+                            loop.setAmount(MAX_INT);
+                            childamount -= MAX_INT;
+                            toDrop.add(new Drop(loop));
+                        }
+                    }
+                    //Leftover
+                    item.setAmount((int) childamount);
                     toDrop.add(new Drop(item));
                 }
             }

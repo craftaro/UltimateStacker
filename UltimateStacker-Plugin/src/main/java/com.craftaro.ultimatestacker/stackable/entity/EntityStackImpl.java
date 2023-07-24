@@ -86,11 +86,13 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public void add(int amount) {
         this.amount += amount;
+        setAmount(this.amount);
     }
 
     @Override
     public void take(int amount) {
         this.amount -= amount;
+        setAmount(this.amount);
     }
 
     @Override

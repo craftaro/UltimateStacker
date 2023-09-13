@@ -4,6 +4,7 @@ import com.craftaro.core.database.DataMigration;
 import com.craftaro.core.database.DatabaseConnector;
 import com.craftaro.core.database.MySQLConnector;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -14,13 +15,12 @@ public class _1_InitialMigration extends DataMigration {
     }
 
     @Override
-    public void migrate(DatabaseConnector connector, String tablePrefix) throws SQLException {
-        String autoIncrement = connector instanceof MySQLConnector ? " AUTO_INCREMENT" : "";
+    public void migrate(Connection connection, String tablePrefix) throws SQLException {
 
         // Create spawners table
-        try (Statement statement = connector.getConnection().createStatement()) {
+        try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS " + tablePrefix + "spawners (" +
-                    "id INTEGER PRIMARY KEY" + autoIncrement + ", " +
+                    "id INTEGER PRIMARY KEY AUTO_INCREMENT, " +
                     "amount INTEGER NOT NULL," +
                     "world TEXT NOT NULL, " +
                     "x DOUBLE NOT NULL, " +

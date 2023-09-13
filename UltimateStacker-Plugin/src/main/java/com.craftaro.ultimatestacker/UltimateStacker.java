@@ -111,8 +111,9 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onPluginDisable() {
-        this.stackingTask.stop();
-        this.stackingTask = null;
+        if (this.stackingTask != null) {
+            this.stackingTask.stop();
+        }
         this.dataManager.saveBatchSync(this.spawnerStackManager.getStacksData());
         this.dataManager.saveBatchSync(this.blockStackManager.getStacksData());
         this.dataManager.shutdownNow();
@@ -355,11 +356,14 @@ public class UltimateStacker extends SongodaPlugin {
 
     public void updateHologram(Hologramable stack) {
         // Is this stack invalid?
-        if (!stack.isValid())
-            if (stack instanceof BlockStackImpl)
+        if (!stack.isValid()) {
+            if (stack instanceof BlockStackImpl) {
                 blockStackManager.removeBlock(stack.getLocation());
-            else if (stack instanceof SpawnerStackImpl)
+            } else if (stack instanceof SpawnerStackImpl) {
                 spawnerStackManager.removeSpawner(stack.getLocation());
+            }
+            return;
+        }
         // are holograms enabled?
         if (!stack.areHologramsEnabled() && !HologramManager.getManager().isEnabled()) return;
         // update the hologram

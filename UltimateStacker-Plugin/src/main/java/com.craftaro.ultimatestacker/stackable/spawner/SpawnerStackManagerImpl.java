@@ -5,6 +5,7 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,27 +40,22 @@ public class SpawnerStackManagerImpl implements SpawnerStackManager {
 
     @Override
     public SpawnerStack getSpawner(Location location) {
-        if (!this.registeredSpawners.containsKey(roundLocation(location))) {
-            SpawnerStack spawnerStack = addSpawner(new SpawnerStackImpl(roundLocation(location), 1));
-            UltimateStacker.getInstance().getPluginDataManager().save(spawnerStack);
-            return spawnerStack;
-        }
-        return this.registeredSpawners.get(location);
+        return this.registeredSpawners.get(roundLocation(location));
     }
 
     @Override
     public boolean isSpawner(Block block) {
-        return isSpawner(block.getLocation());
+        return isSpawner(roundLocation(block.getLocation()));
     }
 
     @Override
     public SpawnerStack getSpawner(Block block) {
-        return this.getSpawner(block.getLocation());
+        return this.getSpawner(roundLocation(block.getLocation()));
     }
 
     @Override
     public boolean isSpawner(Location location) {
-        return this.registeredSpawners.get(location) != null;
+        return this.registeredSpawners.get(roundLocation(location)) != null;
     }
 
     @Override

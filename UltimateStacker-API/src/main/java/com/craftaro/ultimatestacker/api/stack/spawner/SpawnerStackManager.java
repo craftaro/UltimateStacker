@@ -32,14 +32,14 @@ public interface SpawnerStackManager {
      * @param block The block to get the spawner for
      * @return The spawner for the given block
      */
-    SpawnerStack getSpawner(Block block);
+    @Nullable SpawnerStack getSpawner(Block block);
 
     /**
      * Get the spawner for the given location
      * @param location The location to get the spawner for
      * @return The spawner for the given location
      */
-    SpawnerStack getSpawner(Location location);
+    @Nullable SpawnerStack getSpawner(Location location);
 
     /**
      * Check if the given block is a SpawnerStack

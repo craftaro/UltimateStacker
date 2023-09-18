@@ -9,8 +9,10 @@ import com.craftaro.core.database.DataManager;
 import com.craftaro.core.gui.GuiManager;
 import com.craftaro.core.hooks.EntityStackerManager;
 import com.craftaro.core.hooks.HologramManager;
+import com.craftaro.core.hooks.HookManager;
 import com.craftaro.core.hooks.ProtectionManager;
 import com.craftaro.core.hooks.WorldGuardHook;
+import com.craftaro.core.hooks.holograms.DecentHologramsHolograms;
 import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
@@ -359,20 +361,33 @@ public class UltimateStacker extends SongodaPlugin {
         if (!stack.isValid()) {
             if (stack instanceof BlockStackImpl) {
                 blockStackManager.removeBlock(stack.getLocation());
+                BlockStackImpl blockStack = (BlockStackImpl) stack;
+                dataManager.delete(blockStack);
             } else if (stack instanceof SpawnerStackImpl) {
                 spawnerStackManager.removeSpawner(stack.getLocation());
+                SpawnerStackImpl spawnerStack = (SpawnerStackImpl) stack;
+                dataManager.delete(spawnerStack);
             }
-            return;
+        } else {
+            // are holograms enabled?
+            if (!stack.areHologramsEnabled() && !HologramManager.getManager().isEnabled()) return;
+            // update the hologram
+            if (stack.getHologramName() == null) {
+                if (stack instanceof BlockStackImpl) {
+                    BlockStackImpl blockStack = (BlockStackImpl) stack;
+                    getLogger().warning("Hologram name is null for BlocStack at " + blockStack.getLocation());
+                } else {
+                    SpawnerStackImpl spawnerStack = (SpawnerStackImpl) stack;
+                    getLogger().warning("Hologram name is null for SpawnerStack at " + spawnerStack.getLocation());
+                }
+                return;
+            }
+            if (!HologramManager.isHologramLoaded(stack.getHologramId())) {
+                HologramManager.createHologram(stack.getHologramId(), stack.getLocation(), stack.getHologramName());
+                return;
+            }
+            HologramManager.updateHologram(stack.getHologramId(), stack.getHologramName());
         }
-        // are holograms enabled?
-        if (!stack.areHologramsEnabled() && !HologramManager.getManager().isEnabled()) return;
-        // update the hologram
-        if (!HologramManager.isHologramLoaded(stack.getHologramId())) {
-            HologramManager.createHologram(stack.getHologramId(), stack.getLocation(), stack.getHologramName());
-            return;
-        }
-
-        HologramManager.updateHologram(stack.getHologramId(), stack.getHologramName());
     }
 
     public void removeHologram(Hologramable stack) {

@@ -180,6 +180,7 @@ public class BlockListeners implements Listener {
 
         if (itemType == blockType) {
             SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
+            if (stack == null) return;
             if (player.isSneaking()) return;
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (stack.getAmount() == maxStackSize) return;
@@ -206,6 +207,7 @@ public class BlockListeners implements Listener {
 
                 stack.setAmount(stack.getAmount() + itemAmount);
                 plugin.updateHologram(stack);
+                plugin.getDataManager().save(stack);
                 if (player.getGameMode() != GameMode.CREATIVE)
                     hand.takeItem(player);
             }
@@ -235,6 +237,7 @@ public class BlockListeners implements Listener {
         }
 
         SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().addSpawner(new SpawnerStackImpl(block.getLocation(), amount));
+        plugin.getSpawnerStackManager().addSpawner(stack);
         plugin.getPluginDataManager().save(stack);
 
         cs.setSpawnedType(cs2.getSpawnedType());
@@ -285,6 +288,7 @@ public class BlockListeners implements Listener {
             plugin.getPluginDataManager().delete(spawnerStack);
         } else {
             stack.setAmount(stack.getAmount() - 1);
+            plugin.getDataManager().save(stack);
             plugin.updateHologram(stack);
         }
 

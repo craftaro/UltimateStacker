@@ -35,6 +35,7 @@ public class SpawnerStackImpl implements SpawnerStack {
     }
 
     public SpawnerStackImpl(Location location, int amount) {
+        this.id = UltimateStacker.getInstance().getDataManager().getNextId("spawners");
         this.location = location;
         this.amount = amount;
 
@@ -54,7 +55,6 @@ public class SpawnerStackImpl implements SpawnerStack {
     @Override
     public void setAmount(int amount) {
         this.amount = amount;
-        UltimateStacker.getInstance().getPluginDataManager().save(this);
     }
 
     @Override

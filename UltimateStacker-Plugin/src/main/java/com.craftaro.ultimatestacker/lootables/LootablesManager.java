@@ -126,9 +126,9 @@ public class LootablesManager {
         boolean isCharged = entity instanceof Creeper && ((Creeper) entity).isPowered();
 
         //Run main loot
-        for (Loot loot : lootable.getRegisteredLoot().stream().filter(loot -> loot.getMaterial() != null).collect(Collectors.toList())) {
+        for (Loot loot : lootable.getRegisteredLoot()) {
             if (loot.isRequireCharged() && !isCharged) continue;
-            if (loot.getOnlyDropFor().size() != 0 && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
+            if (!loot.getOnlyDropFor().isEmpty() && loot.getOnlyDropFor().stream().noneMatch(type -> entity.getKiller() != null && type == entity.getKiller().getType())) continue;
             int finalLooting = loot.isAllowLootingEnchant() ? looting : 0;
 
             long max = (long) (((long) (loot.getMax() + finalLooting) * times) * (loot.getChance()/100 + (loot.isAllowLootingEnchant() ? extraChance : 0)));
@@ -136,7 +136,7 @@ public class LootablesManager {
 
             long amount = ThreadLocalRandom.current().nextLong((max - min) + 1) + min;
 
-            if (amount > 0) {
+            if (loot.getMaterial() != null && amount > 0) {
                 ItemStack item = entity.getFireTicks() > 0
                         ? loot.getBurnedMaterial() != null ? loot.getBurnedMaterial().parseItem() : loot.getMaterial().parseItem()
                         : loot.getMaterial().parseItem();
@@ -152,6 +152,7 @@ public class LootablesManager {
                 item.setAmount((int) amount);
                 toDrop.add(new Drop(item));
             }
+
 
             //Run child loot //TODO: remove duplicated code
             for (Loot child : loot.getChildLoot()) {

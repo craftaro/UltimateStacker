@@ -50,7 +50,6 @@ public class EntityStackImpl implements EntityStack {
             this.amount = entity.getMetadata("US_AMOUNT").get(0).asInt();
         }
         this.hostEntity = entity;
-        updateNameTag();
     }
 
     /**
@@ -226,7 +225,7 @@ public class EntityStackImpl implements EntityStack {
         hostEntity = null;
     }
 
-    private void updateNameTag() {
+    public void updateNameTag() {
         if (hostEntity == null) {
             return;
         }

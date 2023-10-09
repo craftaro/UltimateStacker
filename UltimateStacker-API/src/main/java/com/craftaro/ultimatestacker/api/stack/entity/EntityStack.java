@@ -21,4 +21,6 @@ public interface EntityStack extends Stackable {
     void releaseHost();
 
     void destroy();
+
+    void updateNameTag();
 }

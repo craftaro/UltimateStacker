@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import uk.antiperson.stackmob.api.StackedEntity;
 
 import java.util.UUID;
 
@@ -21,7 +22,9 @@ public class EntityStackManagerImpl implements EntityStackManager {
 
     @Override
     public EntityStack createStackedEntity(LivingEntity entity, int amount) {
-        return new EntityStackImpl(entity, amount);
+        EntityStackImpl stackedEntity = new EntityStackImpl(entity, amount);
+        stackedEntity.updateNameTag();
+        return stackedEntity;
     }
 
     @Override
@@ -74,6 +77,7 @@ public class EntityStackManagerImpl implements EntityStackManager {
         EntityStack stack = getStackedEntity(oldEntity);
         if (stack == null) return null;
         EntityStack newStack = new EntityStackImpl(newEntity, takeOne ? stack.getAmount()-1 : stack.getAmount());
+        newStack.updateNameTag();
         stack.destroy();
         return newStack;
     }

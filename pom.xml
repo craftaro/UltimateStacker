@@ -7,7 +7,7 @@
     <groupId>com.craftaro</groupId>
     <artifactId>UltimateStacker-Parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-b1-SNAPSHOT</version>
+    <version>3.0.0-b2-SNAPSHOT</version>
 
     <modules>
         <module>UltimateStacker-API</module>

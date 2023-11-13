@@ -27,15 +27,16 @@ public class BlockStackImpl implements BlockStack {
     private XMaterial material;
     private Location location;
 
+    /**
+     * Required for deserialization
+     */
+    public BlockStackImpl() {
+    }
+
     public BlockStackImpl(XMaterial material, Location location) {
         this.material = material;
         this.location = location;
-    }
-
-    public BlockStackImpl(XMaterial material, Location location, int amount) {
-        this.amount = amount;
-        this.material = material;
-        this.location = location;
+        this.id = UltimateStacker.getInstance().getDataManager().getNextId("blocks");
     }
 
     @Override

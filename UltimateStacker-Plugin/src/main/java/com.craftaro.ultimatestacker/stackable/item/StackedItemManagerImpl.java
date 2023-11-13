@@ -2,6 +2,7 @@ package com.craftaro.ultimatestacker.stackable.item;
 
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.api.events.entity.StackedItemSpawnEvent;
 import com.craftaro.ultimatestacker.api.stack.item.ItemMergeCallback;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
@@ -33,6 +34,10 @@ public class StackedItemManagerImpl implements StackedItemManager {
         if (item.getType() == Material.AIR) return null;
         World world = location.getWorld();
         if (world == null) return null;
+        StackedItemSpawnEvent event = new StackedItemSpawnEvent(item, amount);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return null;
+
         Item dropped = world.dropItem(location, item);
         if (dropped.getItemStack().getType() == Material.AIR) return null;
         return new StackedItemImpl(dropped, amount);

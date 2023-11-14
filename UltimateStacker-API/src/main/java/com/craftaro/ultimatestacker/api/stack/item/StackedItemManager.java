@@ -24,9 +24,11 @@ public interface StackedItemManager {
      * Create a new StackedItem for the given item
      * @param item The item to create the stack for
      * @param amount The amount of items in the stack
-     * @return The StackedItem for the given Item
+     * @return The StackedItem for the given Item or
+     *         null if it could not be created or a
+     *         plugin cancelled the event
      */
-    @NotNull StackedItem createStack(Item item, int amount);
+    @Nullable StackedItem createStack(Item item, int amount);
 
     /**
      * Create a new StackedItem for the given ItemStack

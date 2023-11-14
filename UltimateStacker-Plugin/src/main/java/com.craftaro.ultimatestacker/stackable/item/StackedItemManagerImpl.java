@@ -34,7 +34,7 @@ public class StackedItemManagerImpl implements StackedItemManager {
         if (item.getType() == Material.AIR) return null;
         World world = location.getWorld();
         if (world == null) return null;
-        StackedItemSpawnEvent event = new StackedItemSpawnEvent(item, amount);
+        StackedItemSpawnEvent event = new StackedItemSpawnEvent(null, item, amount);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled()) return null;
 
@@ -44,7 +44,10 @@ public class StackedItemManagerImpl implements StackedItemManager {
     }
 
     @Override
-    public @NotNull StackedItem createStack(Item item, int amount) {
+    public StackedItem createStack(Item item, int amount) {
+        StackedItemSpawnEvent event = new StackedItemSpawnEvent(item, item.getItemStack(), amount);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return null;
         return new StackedItemImpl(item, amount);
     }
 

@@ -69,7 +69,6 @@ public class BlockListeners implements Listener {
         if (Settings.STACK_BLOCKS.getBoolean()
                 && Settings.STACKABLE_BLOCKS.getStringList().contains(block.getType().name()) //Is block stackable
                 && !block.getType().equals(XMaterial.SPAWNER.parseMaterial()) //Don't stack spawners here
-                && !player.hasPermission("ultimatestacker.block.nostack") //Permission for turning off stacking
             ) {
 
             Optional<XMaterial> xBlockType = XMaterial.matchXMaterial(block.getType().name());
@@ -85,7 +84,7 @@ public class BlockListeners implements Listener {
             if (isStacked) {
                 event.setCancelled(true);
                 //Add to stack
-                if (clickAction == Action.RIGHT_CLICK_BLOCK) {
+                if (clickAction == Action.RIGHT_CLICK_BLOCK  && !player.hasPermission("ultimatestacker.block.nostack")) {
                     if (inHand.getType().equals(Material.AIR)) return;
                     if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
                     //Add all held items to stack
@@ -136,7 +135,7 @@ public class BlockListeners implements Listener {
                 plugin.getPluginDataManager().save(stack);
                 return;
             } else {
-                if (isSneaking) return;
+                if (isSneaking || player.hasPermission("ultimatestacker.block.nostack")) return;
                 //Check if player clicked the same type as the clicked block
                 if (inHand.getType().equals(Material.AIR)) return;
                 if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
@@ -156,8 +155,7 @@ public class BlockListeners implements Listener {
         //Stacking spawners
         if (block.getType() != XMaterial.SPAWNER.parseMaterial()
                 || inHand.getType() != XMaterial.SPAWNER.parseMaterial()
-                || event.getAction() == Action.LEFT_CLICK_BLOCK
-                || player.hasPermission("ultimatestacker.spawner.nostack")) return;
+                || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
 
         List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr)))
@@ -184,6 +182,10 @@ public class BlockListeners implements Listener {
             SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
             if (stack == null) return;
             if (player.isSneaking()) return;
+            if (player.hasPermission("ultimatestacker.spawner.nostack")) {
+                event.setCancelled(false);
+                return;
+            }
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 if (stack.getAmount() == maxStackSize) return;
 

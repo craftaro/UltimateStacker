@@ -140,6 +140,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.bgsoftware</groupId>
+            <artifactId>SuperiorSkyblockAPI</artifactId>
+            <version>2023.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>uk.antiperson</groupId>
             <artifactId>stackmob</artifactId>
             <version>4-0-2</version>

@@ -38,6 +38,7 @@ import com.craftaro.ultimatestacker.database.migrations._3_BlockStacks;
 import com.craftaro.ultimatestacker.database.migrations._6_RemoveStackedEntityTable;
 import com.craftaro.ultimatestacker.hook.StackerHook;
 import com.craftaro.ultimatestacker.hook.hooks.JobsHook;
+import com.craftaro.ultimatestacker.hook.hooks.SuperiorSkyblock2Hook;
 import com.craftaro.ultimatestacker.listeners.BlockListeners;
 import com.craftaro.ultimatestacker.listeners.BreedListeners;
 import com.craftaro.ultimatestacker.listeners.ClearLagListeners;
@@ -99,6 +100,7 @@ public class UltimateStacker extends SongodaPlugin {
     private CustomEntityManager customEntityManager;
     private StackingTask stackingTask;
     private UltimateStackerApi API;
+    private SuperiorSkyblock2Hook superiorSkyblock2Hook;
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
@@ -106,6 +108,7 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     protected Set<Dependency> getDependencies() {
+        return new HashSet<>();
     }
 
     @Override
@@ -153,7 +156,10 @@ public class UltimateStacker extends SongodaPlugin {
                         new CommandConvert( guiManager)
                 );
 
-        this.lootablesManager = new LootablesManager();
+        PluginManager pluginManager = Bukkit.getPluginManager();
+        this.superiorSkyblock2Hook = new SuperiorSkyblock2Hook(pluginManager.isPluginEnabled("SuperiorSkyblock2"));
+
+        this.lootablesManager = new LootablesManager(superiorSkyblock2Hook);
         this.lootablesManager.createDefaultLootables();
         this.getLootablesManager().getLootManager().loadLootables();
 
@@ -196,7 +202,7 @@ public class UltimateStacker extends SongodaPlugin {
         this.customEntityManager = new CustomEntityManager();
 
         guiManager.init();
-        PluginManager pluginManager = Bukkit.getPluginManager();
+
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_10))
             pluginManager.registerEvents(new BreedListeners(this), this);
         pluginManager.registerEvents(new BlockListeners(this), this);
@@ -397,6 +403,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     public void removeHologram(Hologramable stack) {
         HologramManager.removeHologram(stack.getHologramId());
+    }
+
+    public SuperiorSkyblock2Hook getSuperiorSkyblock2Hook() {
+        return superiorSkyblock2Hook;
     }
 
     //////// Convenient API //////////

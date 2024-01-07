@@ -39,10 +39,12 @@ public class LootablesManager {
 
     private final String lootablesDir = UltimateStacker.getInstance().getDataFolder() + File.separator + "lootables";
     private final static int MAX_INT = Integer.MAX_VALUE/2;
+    private final SuperiorSkyblock2Hook superiorSkyblock2Hook;
 
-    public LootablesManager() {
+    public LootablesManager(SuperiorSkyblock2Hook superiorSkyblock2Hook) {
         this.lootables = new Lootables(lootablesDir);
         this.lootManager = new LootManager(lootables);
+        this.superiorSkyblock2Hook = superiorSkyblock2Hook;
     }
 
     public List<Drop> getDrops(LivingEntity entity) {
@@ -61,6 +63,13 @@ public class LootablesManager {
 
         for (Loot loot : lootable.getRegisteredLoot())
             toDrop.addAll(runLoot(entity, loot, rerollChance, looting));
+
+        //Apply SuperiorSkyblock2 mob-drops multiplier if present
+        if (superiorSkyblock2Hook.isEnabled()) {
+            for (Drop drop : toDrop) {
+                drop.getItemStack().setAmount(superiorSkyblock2Hook.getDropMultiplier(entity.getLocation()) * drop.getItemStack().getAmount());
+            }
+        }
 
         return toDrop;
     }

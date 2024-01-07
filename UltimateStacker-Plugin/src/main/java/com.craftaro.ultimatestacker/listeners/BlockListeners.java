@@ -69,7 +69,8 @@ public class BlockListeners implements Listener {
         if (Settings.STACK_BLOCKS.getBoolean()
                 && Settings.STACKABLE_BLOCKS.getStringList().contains(block.getType().name()) //Is block stackable
                 && !block.getType().equals(XMaterial.SPAWNER.parseMaterial()) //Don't stack spawners here
-                ) {
+                && !player.hasPermission("ultimatestacker.block.nostack") //Permission for turning off stacking
+            ) {
 
             Optional<XMaterial> xBlockType = XMaterial.matchXMaterial(block.getType().name());
             if (!xBlockType.isPresent()) return;
@@ -155,7 +156,8 @@ public class BlockListeners implements Listener {
         //Stacking spawners
         if (block.getType() != XMaterial.SPAWNER.parseMaterial()
                 || inHand.getType() != XMaterial.SPAWNER.parseMaterial()
-                || event.getAction() == Action.LEFT_CLICK_BLOCK) return;
+                || event.getAction() == Action.LEFT_CLICK_BLOCK
+                || player.hasPermission("ultimatestacker.spawner.nostack")) return;
 
         List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList();
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getPlayer().getWorld().getName().equalsIgnoreCase(worldStr)))

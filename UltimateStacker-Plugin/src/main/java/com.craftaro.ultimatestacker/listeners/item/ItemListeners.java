@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
 import com.craftaro.core.nms.NmsManager;
-import com.craftaro.core.third_party.org.apache.commons.lang3.StringUtils;
+import com.craftaro.third_party.org.apache.commons.lang3.StringUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;

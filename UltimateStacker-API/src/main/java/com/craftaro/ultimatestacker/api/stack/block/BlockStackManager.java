@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.api.stack.block;
 
 import com.craftaro.core.database.Data;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

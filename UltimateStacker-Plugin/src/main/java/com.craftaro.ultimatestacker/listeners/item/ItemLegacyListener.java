@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XSound;
+import com.craftaro.third_party.com.cryptomorin.xseries.XSound;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;

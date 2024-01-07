@@ -6,6 +6,7 @@ import com.craftaro.core.commands.CommandManager;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.configuration.Config;
 import com.craftaro.core.database.DataManager;
+import com.craftaro.core.dependency.Dependency;
 import com.craftaro.core.gui.GuiManager;
 import com.craftaro.core.hooks.EntityStackerManager;
 import com.craftaro.core.hooks.HologramManager;
@@ -13,7 +14,7 @@ import com.craftaro.core.hooks.HookManager;
 import com.craftaro.core.hooks.ProtectionManager;
 import com.craftaro.core.hooks.WorldGuardHook;
 import com.craftaro.core.hooks.holograms.DecentHologramsHolograms;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
@@ -101,6 +102,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    protected Set<Dependency> getDependencies() {
     }
 
     @Override

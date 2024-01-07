@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.utils;
 
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.craftaro.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;

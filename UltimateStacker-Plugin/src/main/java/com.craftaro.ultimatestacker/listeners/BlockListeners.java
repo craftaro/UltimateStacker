@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.core.compatibility.CompatibleHand;
 import com.craftaro.core.hooks.ProtectionManager;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;

@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.api.stack.spawner;
 
 import com.craftaro.core.database.Data;
 import com.craftaro.core.nms.world.SpawnedEntity;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.api.utils.Hologramable;
 import com.craftaro.ultimatestacker.api.utils.Stackable;
 import org.bukkit.Location;

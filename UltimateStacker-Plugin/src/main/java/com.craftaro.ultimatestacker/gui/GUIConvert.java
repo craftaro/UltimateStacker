@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.gui;
 
 import com.craftaro.core.gui.Gui;
 import com.craftaro.core.gui.GuiUtils;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.convert.StackMobConvert;
 import com.craftaro.ultimatestacker.convert.WildStackerConvert;
 import org.bukkit.Bukkit;

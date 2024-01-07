@@ -1,7 +1,7 @@
 package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;

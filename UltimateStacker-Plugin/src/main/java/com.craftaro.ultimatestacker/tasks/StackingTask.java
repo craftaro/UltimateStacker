@@ -2,7 +2,7 @@ package com.craftaro.ultimatestacker.tasks;
 
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.hooks.WorldGuardHook;
-import com.craftaro.core.third_party.com.cryptomorin.xseries.XMaterial;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.world.SWorld;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;

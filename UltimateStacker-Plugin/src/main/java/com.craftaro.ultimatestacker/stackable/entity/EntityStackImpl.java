@@ -196,7 +196,7 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
         if (amount <= 0) return null;
-        LivingEntity entity = Objects.requireNonNull(location.getWorld()).spawn(location, hostEntity.getClass());
+        LivingEntity entity = (LivingEntity) Objects.requireNonNull(location.getWorld()).spawnEntity(location, hostEntity.getType());
         if (Settings.NO_AI.getBoolean()) {
             EntityUtils.setUnaware(entity);
         }

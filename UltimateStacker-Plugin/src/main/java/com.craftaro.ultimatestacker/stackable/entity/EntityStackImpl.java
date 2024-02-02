@@ -15,6 +15,7 @@ import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
@@ -22,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 import java.math.BigDecimal;
@@ -33,6 +36,7 @@ import java.util.UUID;
 public class EntityStackImpl implements EntityStack {
 
     private final UltimateStacker plugin = UltimateStacker.getInstance();
+    private final NamespacedKey STACKED_ENTITY_KEY = new NamespacedKey(plugin, "US_AMOUNT");
     private int amount;
     private LivingEntity hostEntity;
 
@@ -43,13 +47,40 @@ public class EntityStackImpl implements EntityStack {
     public EntityStackImpl(LivingEntity entity) {
         if (entity == null) return;
         if (!UltimateStacker.getInstance().getEntityStackManager().isStackedEntity(entity)) {
-            entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
-            this.amount = 1;
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+                PersistentDataContainer container = entity.getPersistentDataContainer();
+                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                    entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+                } else {
+                    entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
+                    this.amount = 1;
+                }
+            } else {
+                entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
+                this.amount = 1;
+            }
         } else {
-            //get the amount from the entity
-            this.amount = entity.getMetadata("US_AMOUNT").get(0).asInt();
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+                PersistentDataContainer container = entity.getPersistentDataContainer();
+                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                } else {
+                    this.amount = getMetaCount(entity);
+                }
+            } else {
+                this.amount = getMetaCount(entity);
+            }
         }
         this.hostEntity = entity;
+    }
+
+    private int getMetaCount(LivingEntity entity) {
+        if (entity.hasMetadata("US_AMOUNT")) {
+            return entity.getMetadata("US_AMOUNT").get(0).asInt();
+        } else {
+            return 1;
+        }
     }
 
     /**
@@ -60,8 +91,16 @@ public class EntityStackImpl implements EntityStack {
     public EntityStackImpl(LivingEntity entity, int amount) {
         if (entity == null) return;
         this.hostEntity = entity;
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
         this.amount = amount;
-        entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = entity.getPersistentDataContainer();
+            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+        } else {
+            entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        }
         updateNameTag();
     }
 
@@ -78,7 +117,12 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public void setAmount(int amount) {
         this.amount = amount;
-        this.hostEntity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = hostEntity.getPersistentDataContainer();
+            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+        } else {
+            hostEntity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        }
         updateNameTag();
     }
 

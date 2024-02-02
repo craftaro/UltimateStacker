@@ -19,6 +19,9 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
             "The speed in which a new stacks will be created.",
             "It is advised to keep this number low.");
 
+    public static final ConfigSetting INSTANT_STACKING = new ConfigSetting(config, "Main.Instant Stacking", false,
+            "Should entities stacked into existing stacks before they spawned?");
+
     public static final ConfigSetting DISABLED_WORLDS = new ConfigSetting(config, "Main.Disabled Worlds", Arrays.asList("World1", "World2", "World3"),
             "Worlds that stacking doesn't happen in.");
 
@@ -45,8 +48,10 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
             "The maximum amount of each entity type stack allowed in a chunk.");
 
     public static final ConfigSetting STACK_WHOLE_CHUNK = new ConfigSetting(config, "Entities.Stack Whole Chunk", false,
-            "Should all qualifying entities in each chunk be stacked?",
-            "This will override the stacking radius.");
+            "Should all qualifying entities in each chunk be stacked?");
+
+    public static final ConfigSetting STACK_WHOLE_CHUNK_RADIUS = new ConfigSetting(config, "Entities.Stack Whole Chunk Radius", 1,
+            "Radius in chunks every direction around the entity that will be stacked.", "0 means only the chunk the entity is in.");
 
     public static final ConfigSetting ENTITY_NAMETAGS = new ConfigSetting(config, "Entities.Holograms Enabled", true,
             "Should holograms be displayed above stacked entities?");

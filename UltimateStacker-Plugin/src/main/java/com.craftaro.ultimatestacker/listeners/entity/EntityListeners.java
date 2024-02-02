@@ -1,5 +1,6 @@
 package com.craftaro.ultimatestacker.listeners.entity;
 
+import com.craftaro.core.configuration.Config;
 import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
@@ -8,6 +9,7 @@ import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.settings.Settings;
+import com.craftaro.ultimatestacker.tasks.StackingTask;
 import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -38,9 +40,12 @@ import java.util.List;
 public class EntityListeners implements Listener {
 
     private final UltimateStacker plugin;
+    private int searchRadius = Settings.SEARCH_RADIUS.getInt() * 16; //SEARCH_RADIUS is in chunks, so multiply by 16 to get blocks
+    private Config mobsConfig;
 
     public EntityListeners(UltimateStacker plugin) {
         this.plugin = plugin;
+        mobsConfig = plugin.getMobFile();
     }
 
     @EventHandler
@@ -73,9 +78,7 @@ public class EntityListeners implements Listener {
         item.setAmount(Math.min(amount, item.getMaxStackSize()));
         if (amount > item.getMaxStackSize()) {
             StackedItem stackedItem = UltimateStackerApi.getStackedItemManager().getStackedItem(event.getEntity());
-            if (stackedItem != null) {
-                stackedItem.setAmount(amount - item.getMaxStackSize());
-            }
+            stackedItem.setAmount(amount - item.getMaxStackSize());
         }
         event.getEntity().setItemStack(item);
     }
@@ -102,7 +105,31 @@ public class EntityListeners implements Listener {
 
     @EventHandler
     public void onSpawn(CreatureSpawnEvent event) {
-        event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(plugin, event.getSpawnReason().name()));
+        String spawnReason = event.getSpawnReason().name();
+        if (plugin.isInstantStacking()) {
+            LivingEntity spawningEntity = event.getEntity();
+            EntityStackManager stackManager = plugin.getEntityStackManager();
+            if (stackManager.isStackedEntity(spawningEntity)) return; //We don't want to stack split entities or respawned stacks
+
+            List<LivingEntity> stackableFriends = plugin.getStackingTask().getSimilarEntitiesAroundEntity(spawningEntity, spawningEntity.getLocation());
+            if (stackableFriends.isEmpty()) {
+                event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(plugin, spawnReason));
+                return;
+            }
+
+            LivingEntity friendStack = stackableFriends.get(0);
+            if (stackManager.isStackedEntity(friendStack)) {
+                EntityStack stack = stackManager.getStackedEntity(friendStack);
+                //getSimilarEntitiesAroundEntity check for max stack size, we don't need to check again
+                stack.add(1);
+                event.setCancelled(true);
+            } else {
+                stackManager.createStackedEntity(friendStack, 2);
+            }
+            return;
+        }
+
+        event.getEntity().setMetadata("US_REASON", new FixedMetadataValue(plugin, spawnReason));
     }
 
     @EventHandler

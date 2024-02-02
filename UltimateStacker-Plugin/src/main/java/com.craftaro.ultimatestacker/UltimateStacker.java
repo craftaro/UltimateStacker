@@ -101,6 +101,7 @@ public class UltimateStacker extends SongodaPlugin {
     private StackingTask stackingTask;
     private UltimateStackerApi API;
     private SuperiorSkyblock2Hook superiorSkyblock2Hook;
+    private boolean instantStacking;
 
     public static UltimateStacker getInstance() {
         return INSTANCE;
@@ -212,6 +213,7 @@ public class UltimateStacker extends SongodaPlugin {
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13))
             pluginManager.registerEvents(new EntityCurrentListener(this), this);
 
+        this.instantStacking = Settings.STACK_ENTITIES.getBoolean() && Settings.INSTANT_STACKING.getBoolean();
         pluginManager.registerEvents(new EntityListeners(this), this);
         pluginManager.registerEvents(new ItemListeners(this), this);
 
@@ -262,7 +264,11 @@ public class UltimateStacker extends SongodaPlugin {
             }
         });
 
-        this.stackingTask = new StackingTask(this);
+        if (Settings.STACK_ENTITIES.getBoolean()) {
+            //Start stacking task
+            this.stackingTask = new StackingTask(this);
+        }
+        this.instantStacking = Settings.STACK_ENTITIES.getBoolean() && Settings.INSTANT_STACKING.getBoolean();
         final boolean useBlockHolo = Settings.BLOCK_HOLOGRAMS.getBoolean();
         this.dataManager.loadBatch(BlockStackImpl.class, "blocks").forEach((data) -> {
             BlockStack blockStack = (BlockStack) data;
@@ -301,8 +307,12 @@ public class UltimateStacker extends SongodaPlugin {
         this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
-        this.stackingTask.stop();
-        this.stackingTask = new StackingTask(this);
+        if (stackingTask != null) {
+            this.stackingTask.stop();
+        }
+        if (Settings.STACK_ENTITIES.getBoolean()) {
+            this.stackingTask = new StackingTask(this);
+        }
 
         this.mobFile.load();
         this.itemFile.load();
@@ -407,6 +417,10 @@ public class UltimateStacker extends SongodaPlugin {
 
     public SuperiorSkyblock2Hook getSuperiorSkyblock2Hook() {
         return superiorSkyblock2Hook;
+    }
+
+    public boolean isInstantStacking() {
+        return instantStacking;
     }
 
     //////// Convenient API //////////

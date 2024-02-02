@@ -1,6 +1,7 @@
 package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
+import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +18,24 @@ public class BreedListeners implements Listener {
 
     @EventHandler
     public void onBread(EntityBreedEvent event) {
+        //TODO: Fix breed. It removes a entity from the stack but not spawn a new one. (Splitting mechanic)
+        boolean isMotherStacked = plugin.getEntityStackManager().isStackedEntity(event.getMother());
+        boolean isFatherStacked = plugin.getEntityStackManager().isStackedEntity(event.getFather());
+
+        if (!isMotherStacked && !isFatherStacked) return;
+
+        if (isMotherStacked) {
+            EntityStack stack = plugin.getEntityStackManager().getStackedEntity(event.getMother());
+            if (stack.getAmount() <= 1) return;
+            stack.releaseHost();
+        }
+
+        if (isFatherStacked) {
+            EntityStack stack = plugin.getEntityStackManager().getStackedEntity(event.getFather());
+            if (stack.getAmount() <= 1) return;
+            stack.releaseHost();
+        }
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             event.getFather().removeMetadata("breedCooldown", plugin);
             event.getMother().removeMetadata("breedCooldown", plugin);

@@ -252,14 +252,35 @@ public class EntityStackImpl implements EntityStack {
 
     @Override
     public synchronized void releaseHost() {
+        //Remove the metadata from the entity if it's the last one
+//        if (getAmount() == 1) {
+//            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+//                PersistentDataContainer container = hostEntity.getPersistentDataContainer();
+//                container.remove(STACKED_ENTITY_KEY);
+//            } else {
+//                hostEntity.removeMetadata("US_AMOUNT", plugin);
+//            }
+//            hostEntity.setCustomName(null);
+//            hostEntity.setCustomNameVisible(false);
+//            return;
+//        }
+
         LivingEntity oldHost = hostEntity;
-        LivingEntity entity = takeOneAndSpawnEntity(hostEntity.getLocation());
-        if (getAmount() >= 0) {
-            plugin.getEntityStackManager().updateStack(oldHost, entity);
-            updateNameTag();
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = oldHost.getPersistentDataContainer();
+            container.remove(STACKED_ENTITY_KEY);
+            //Add new entry that the entity was split by player, not to stack it anymore
+            container.set(new NamespacedKey(plugin, "US_SPLIT_PLAYER"), PersistentDataType.BYTE, (byte) 1);
         } else {
-            destroy();
+            oldHost.removeMetadata("US_AMOUNT", plugin);
+            //Add new entry that the entity was split by player, not to stack it anymore
+            oldHost.setMetadata("US_SPLIT_PLAYER", new FixedMetadataValue(plugin, true));
         }
+
+        //Summon a new entity and update the stack and remove the metadata from the old entity
+        this.hostEntity = takeOneAndSpawnEntity(hostEntity.getLocation());
+        setAmount(amount-1);
+        updateNameTag();
     }
 
     @Override
@@ -273,6 +294,7 @@ public class EntityStackImpl implements EntityStack {
         if (hostEntity == null) {
             return;
         }
+
         hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
         hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));
     }

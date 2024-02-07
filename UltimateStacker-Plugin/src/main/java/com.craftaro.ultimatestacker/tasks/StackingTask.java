@@ -14,6 +14,7 @@ import com.craftaro.ultimatestacker.utils.CachedChunk;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.AbstractHorse;
@@ -43,6 +44,8 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,9 +95,11 @@ public class StackingTask extends TimerTask {
             onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
     private final Set<SWorld> loadedWorlds;
+    private final NamespacedKey playerSplitKey;
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
+        playerSplitKey = new NamespacedKey(plugin, "US_SPLIT_PLAYER");
         this.stackManager = plugin.getEntityStackManager();
         // Add loaded worlds.
         loadedWorlds = new HashSet<>();
@@ -182,6 +187,7 @@ public class StackingTask extends TimerTask {
     private boolean isEntityNotStackable(LivingEntity entity) {
         if (isMaxStack(entity)) return true;
 
+        if (isPersistentSplit(entity)) return true;
 
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
@@ -254,6 +260,10 @@ public class StackingTask extends TimerTask {
 
         // Loop through our similar stackable entities.
         for (LivingEntity friendlyEntity : stackableFriends) {
+
+            if (isPersistentSplit(friendlyEntity)) {
+                continue;
+            }
 
             // Process similar entities.
             EntityStack friendStack = stackManager.getStackedEntity(friendlyEntity);
@@ -663,6 +673,22 @@ public class StackingTask extends TimerTask {
         EntityStack stack = stackManager.getStackedEntity(livingEntity);
         if (stack == null) return false;
         return stack.getAmount() >= getEntityMaxStackSize(livingEntity);
+    }
+
+    private boolean isPersistentSplit(LivingEntity entity) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = entity.getPersistentDataContainer();
+            if (container.has(playerSplitKey, PersistentDataType.BYTE)) {
+                processed.add(entity.getUniqueId());
+                return true;
+            }
+        } else {
+            if (entity.hasMetadata("US_SPLIT_PLAYER")) {
+                processed.add(entity.getUniqueId());
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean canFly(LivingEntity entity) {

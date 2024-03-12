@@ -7,7 +7,7 @@
     <groupId>com.craftaro</groupId>
     <artifactId>UltimateStacker-Parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.1</version>
+    <version>3.1.2</version>
 
     <modules>
         <module>UltimateStacker-API</module>
@@ -19,7 +19,7 @@
     <url>https://craftaro.com/marketplace/product/16</url>
 
     <properties>
-        <craftaro.coreVersion>3.0.0-SNAPSHOT</craftaro.coreVersion>
+        <craftaro.coreVersion>3.0.1-SNAPSHOT</craftaro.coreVersion>
 
         <maven.compiler.release>8</maven.compiler.release>
         <maven.compiler.target>1.8</maven.compiler.target>

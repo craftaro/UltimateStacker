@@ -1,13 +1,17 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
+import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import uk.antiperson.stackmob.api.StackedEntity;
 
 import java.util.UUID;
@@ -15,9 +19,11 @@ import java.util.UUID;
 public class EntityStackManagerImpl implements EntityStackManager {
 
     private final UltimateStacker plugin;
+    private final NamespacedKey STACKED_ENTITY_KEY;
 
     public EntityStackManagerImpl(UltimateStacker plugin) {
         this.plugin = plugin;
+        this.STACKED_ENTITY_KEY = new NamespacedKey(plugin, "US_AMOUNT");
     }
 
     @Override
@@ -29,7 +35,13 @@ public class EntityStackManagerImpl implements EntityStackManager {
 
     @Override
     public boolean isStackedEntity(Entity entity) {
-        return entity.hasMetadata("US_AMOUNT");
+        if (entity.hasMetadata("US_AMOUNT")) {
+            return true;
+        }
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            return entity.getPersistentDataContainer().has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+        }
+        return false;
     }
 
     @Override

@@ -1,29 +1,39 @@
 package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.ultimatestacker.UltimateStacker;
-import org.bukkit.Bukkit;
+import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
+import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityBreedEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
 public class BreedListeners implements Listener {
 
     private final UltimateStacker plugin;
+    private final EntityStackManager entityStackManager;
 
     public BreedListeners(UltimateStacker plugin) {
         this.plugin = plugin;
+        this.entityStackManager = plugin.getEntityStackManager();
     }
 
     @EventHandler
     public void onBread(EntityBreedEvent event) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            event.getFather().removeMetadata("breedCooldown", plugin);
-            event.getMother().removeMetadata("breedCooldown", plugin);
-        }, 5 * 20 * 60);
-        event.getFather().setMetadata("breedCooldown", new FixedMetadataValue(plugin, true));
-        event.getFather().removeMetadata("inLove", plugin);
-        event.getMother().setMetadata("breedCooldown", new FixedMetadataValue(plugin, true));
-        event.getMother().removeMetadata("inLove", plugin);
+        EntityStack stackedMother = entityStackManager.getStackedEntity(event.getMother());
+        EntityStack stackedFather = entityStackManager.getStackedEntity(event.getFather());
+
+        plugin.getBreedingTask().addBreedingTicket(event.getMother(), event.getFather());
+
+        if (stackedMother != null) {
+            EntityStack stack = entityStackManager.getStackedEntity(event.getMother());
+            if (stack.getAmount() <= 1) return;
+            stack.releaseHost();
+        }
+
+        if (stackedFather != null) {
+            EntityStack stack = entityStackManager.getStackedEntity(event.getFather());
+            if (stack.getAmount() <= 1) return;
+            stack.releaseHost();
+        }
     }
 }

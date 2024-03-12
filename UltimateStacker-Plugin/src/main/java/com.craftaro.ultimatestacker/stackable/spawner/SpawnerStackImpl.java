@@ -84,7 +84,7 @@ public class SpawnerStackImpl implements SpawnerStack {
 
     @Override
     public int spawn() {
-        return spawn(-1, false);
+        return spawn(-1, Settings.NO_AI.getBoolean());
     }
 
     @Override

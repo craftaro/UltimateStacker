@@ -2,8 +2,8 @@ package com.craftaro.ultimatestacker.tasks;
 
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.hooks.WorldGuardHook;
-import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.world.SWorld;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
@@ -11,64 +11,24 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Cat;
-import org.bukkit.entity.ChestedHorse;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Ocelot;
-import org.bukkit.entity.Parrot;
-import org.bukkit.entity.Phantom;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.PufferFish;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.TropicalFish;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimerTask;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.craftaro.ultimatestacker.stackable.entity.Check.getChecks;
 
-public class StackingTask extends TimerTask {
+public class StackingTask extends BukkitRunnable {
 
     private final UltimateStacker plugin;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
     private final EntityStackManager stackManager;
+    private final BreedingTask breedingTask;
 
     private final ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
     private final List<UUID> processed = new ArrayList<>();
@@ -77,6 +37,7 @@ public class StackingTask extends TimerTask {
     private final int maxEntityStackSize = Settings.MAX_STACK_ENTITIES.getInt(),
             minEntityStackSize = Settings.MIN_STACK_ENTITIES.getInt(),
             searchRadius = Settings.SEARCH_RADIUS.getInt(),
+            chunkRadius = Settings.STACK_WHOLE_CHUNK_RADIUS.getInt(),
             maxPerTypeStacksPerChunk = Settings.MAX_PER_TYPE_STACKS_PER_CHUNK.getInt();
     private final List<String> disabledWorlds = Settings.DISABLED_WORLDS.getStringList(),
             stackReasons = Settings.STACK_REASONS.getStringList();
@@ -87,278 +48,259 @@ public class StackingTask extends TimerTask {
             onlyStackFromSpawners = Settings.ONLY_STACK_FROM_SPAWNERS.getBoolean(),
             onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
-    Set<SWorld> loadedWorlds = new HashSet<>();
+    private final Set<SWorld> loadedWorlds;
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
-        this.stackManager = plugin.getEntityStackManager();
+        stackManager = plugin.getEntityStackManager();
+        breedingTask = plugin.getBreedingTask();
+
         // Add loaded worlds.
-        for (World world : Bukkit.getWorlds())
+        loadedWorlds = new HashSet<>();
+        for (World world : Bukkit.getWorlds()) {
+            //Filter disabled worlds to avoid continuous checks in the stacking loop
+            if (isWorldDisabled(world)) continue;
             loadedWorlds.add(new SWorld(world));
+        }
 
-        // Start the stacking task.
-        //runTaskTimerAsynchronously(plugin, 0, Settings.STACK_SEARCH_TICK_SPEED.getInt());
-        executorService.scheduleAtFixedRate(this, 0, (Settings.STACK_SEARCH_TICK_SPEED.getInt()*50L), TimeUnit.MILLISECONDS);
-    }
-
-    public void stop() {
-        executorService.shutdown();
+        int tickRate = Settings.STACK_SEARCH_TICK_SPEED.getInt();
+        runTaskTimer(plugin, tickRate, tickRate);
     }
 
     @Override
     public void run() {
-        //make sure if the task running if any error occurs
+        //Make sure to continue the task if any exception occurs
         try {
-            // Should entities be stacked?
-            if (!Settings.STACK_ENTITIES.getBoolean()) return;
-
             // Loop through each world.
             for (SWorld sWorld : loadedWorlds) {
-                // If world is disabled then continue to the next world.
-                if (isWorldDisabled(sWorld.getWorld())) continue;
-
-                // Get the loaded entities from the current world and reverse them.
                 List<LivingEntity> entities;
-                try {
-                    entities = getLivingEntitiesSync(sWorld).get();
-                } catch (ExecutionException | InterruptedException ex) {
-                    ex.printStackTrace();
-                    continue;
+                // Get the loaded entities from the current world and reverse them.
+                entities = sWorld.getLivingEntities();
+
+                //Filter non-stackable entities to improve performance on main thread
+                entities.removeIf(this::isEntityNotStackable);
+
+                for (LivingEntity entity : entities) {
+                    // Check our WorldGuard flag.
+                    Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(entity.getLocation(), "mob-stacking") : null; //Does this work async?
+                    if (flag != null && !flag)
+                        entities.removeIf(entity1 -> entity1.getUniqueId().equals(entity.getUniqueId()));
                 }
-                Collections.reverse(entities);
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Loop through the entities.
-                    for (LivingEntity entity : entities) {
-                        // Make sure our entity has not already been processed.
-                        // Skip it if it has been.
-                        if (this.processed.contains(entity.getUniqueId())) continue;
+                // Loop through the entities.
+                for (LivingEntity entity : entities) {
+                    // Make sure our entity has not already been processed.
+                    // Skip it if it has been.
+                    if (processed.contains(entity.getUniqueId())) continue;
 
-                        // Check to see if entity is not stackable.
-                        if (!isEntityStackable(entity)) {
-                            continue;
-                        }
+                    // Get entity location to pass around as its faster this way.
+                    Location location = entity.getLocation();
 
-                        // Get entity location to pass around as its faster this way.
-                        Location location = entity.getLocation();
-
-                        // Process the entity.
-                        this.processEntity(entity, sWorld, location);
-                    }
-                });
+                    // Process the entity.
+                    processEntity(entity, location, entities);
+                }
             }
-            // Clear caches in preparation for the next run.
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Make sure we clear the processed list.
             this.processed.clear();
-        } catch (Exception ignored) {}
-    }
 
-    private Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
-        CompletableFuture<List<LivingEntity>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
-
-        return future;
-    }
-
-    private Future<Entity[]> getEntitiesInChunkSync(CachedChunk cachedChunk) {
-        CompletableFuture<Entity[]> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(this.plugin, () -> future.complete(cachedChunk.getEntities()));
-        return future;
+        }
     }
 
     public boolean isWorldDisabled(World world) {
         return disabledWorlds.stream().anyMatch(worldStr -> world.getName().equalsIgnoreCase(worldStr));
     }
 
-    private boolean isEntityStackable(Entity entity) {
+    //Returns true if the entity is not stackable, and it will be removed from the list
+    private boolean isEntityNotStackable(LivingEntity entity) {
+        if (isMaxStack(entity)) return true;
+
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
                 || entity instanceof HumanEntity
                 || entity instanceof ArmorStand
 
-                // Make sure the entity is not in love.
-                || entity.hasMetadata("inLove")
-                // Or in breeding cooldown.
-                || entity.hasMetadata("breedCooldown"))
-            return false;
+                // Make sure the entity is not in love or in the breeding queue.
+                || breedingTask.isInQueue(entity.getUniqueId()))
+            return true;
 
-        if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled")) {
-            return false;
-        }
+        if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled"))
+            return true;
 
-        // Allow spawn if stackreasons are set and match, or if from a spawner
+        // Allow spawn if stack reasons are set and match, or if from a spawner
         final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()
                 ? entity.getMetadata("US_REASON").get(0).asString() : null;
         List<String> stackReasons;
         if (onlyStackFromSpawners) {
             // If only stack from spawners is enabled, make sure the entity spawned from a spawner.
             if (!"SPAWNER".equals(spawnReason))
-                return false;
+                return true;
         } else if (!(stackReasons = this.stackReasons).isEmpty() && !stackReasons.contains(spawnReason)) {
             // Only stack if on the list of events to stack
-            return false;
+            return true;
         }
-
-        // Cast our entity to living entity.
-        LivingEntity livingEntity = (LivingEntity) entity;
 
         // If only stack on surface is enabled make sure the entity is on a surface then entity is stackable.
-        return !onlyStackOnSurface
-                || canFly(livingEntity)
-                || entity.getType().name().equals("SHULKER")
-
-                || (livingEntity.isOnGround()
-                || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13)
-                && livingEntity.isSwimming()));
-
+        //return !onlyStackOnSurface || canFly(entity) || entity.getType().name().equals("SHULKER") || ((entity).isOnGround() || (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && (entity).isSwimming()));
+        return onlyStackOnSurface && canFly(entity) && !entity.getType().name().equals("SHULKER") && !entity.isOnGround() && !(ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && (entity).isSwimming());
     }
 
-    private void processEntity(LivingEntity baseEntity, SWorld sWorld, Location location) {
-
-        // Check our WorldGuard flag.
-        Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(baseEntity.getLocation(), "mob-stacking") : null;
-        if (flag != null && !flag) {
-            return;
-        }
-
+    private void processEntity(LivingEntity baseEntity, Location location, List<LivingEntity> entities) {
         // Get the stack from the entity. It should be noted that this value will
         // be null if our entity is not a stack.
         EntityStack baseStack = plugin.getEntityStackManager().getStackedEntity(baseEntity);
 
         // Get the maximum stack size for this entity.
-        int maxEntityStackSize = getEntityStackSize(baseEntity);
+        int maxEntityStackSize = getEntityMaxStackSize(baseEntity);
 
         // Is this entity stacked?
         boolean isStack = baseStack != null;
 
-        if (isStack && baseStack.getAmount() == maxEntityStackSize) {
-            // If the stack is already at the max size then we can skip it.
-            processed.add(baseEntity.getUniqueId());
+        // The amount that is stackable.
+        int baseSize = isStack ? baseStack.getAmount() : 1;
+
+        // Attempt to split overstacked entities.
+        // If this is successful, we can return because the entity was processed
+        if (isStack && attemptSplit(baseStack, maxEntityStackSize)) {
             return;
         }
 
-        // The amount that is stackable.
-        int amountToStack = isStack ? baseStack.getAmount() : 1;
-
-        // Attempt to split our stack. If the split is successful then skip this entity.
-        if (isStack && attemptSplit(baseStack, baseEntity)) return;
-
-        // If this entity is named, a custom entity or disabled then skip it.
-        if (!isStack && (baseEntity.getCustomName() != null
-                && plugin.getCustomEntityManager().getCustomEntity(baseEntity) == null)
-                || !configurationSection.getBoolean("Mobs." + baseEntity.getType().name() + ".Enabled")) {
+        // If this entity is named or a custom entity skip it.
+        if (!isStack && (baseEntity.getCustomName() != null && plugin.getCustomEntityManager().getCustomEntity(baseEntity) != null)) {
             processed.add(baseEntity.getUniqueId());
             return;
         }
 
         // Get similar entities around our entity and make sure those entities are both compatible and stackable.
-        List<LivingEntity> stackableFriends = new LinkedList<>();
-        List<LivingEntity> list = getSimilarEntitiesAroundEntity(baseEntity, sWorld, location);
-        for (LivingEntity entity : list) {
-            // Check to see if entity is not stackable.
-            if (!isEntityStackable(entity))
-                continue;
-            // Add this entity to our stackable friends.
-            stackableFriends.add(entity);
-        }
+        List<LivingEntity> stackableFriends = getSimilarEntitiesAroundEntity(baseEntity, location);
+
+        //Total entities that can be stacked into the base entity
+        int maxStackable = maxEntityStackSize - baseSize;
+        int toStack = 0;
+        List<LivingEntity> remove = new ArrayList<>();
 
         // Loop through our similar stackable entities.
         for (LivingEntity friendlyEntity : stackableFriends) {
-            // Make sure the friendlyEntity has not already been processed.
-            if (this.processed.contains(friendlyEntity.getUniqueId())) continue;
 
-            // Get this entities friendStack.
+            if (!entities.contains(friendlyEntity))
+                continue;
+
+            // Process similar entities.
             EntityStack friendStack = stackManager.getStackedEntity(friendlyEntity);
             int amount = friendStack != null ? friendStack.getAmount() : 1;
-
-            // Check to see if this friendlyEntity is stacked and friendStack plus
-            // our amount to stack is not above our max friendStack size
-            // for this friendlyEntity.
-
-            boolean overstack = (amount + amountToStack) > maxEntityStackSize;
-
-            if (!overstack) {
-                stackManager.createStackedEntity(friendlyEntity, amount + amountToStack);
-                processed.add(baseEntity.getUniqueId());
-
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (baseEntity.isLeashed()) {
-                        baseEntity.getWorld().dropItemNaturally(baseEntity.getLocation(), XMaterial.LEAD.parseItem());
-                    }
-                    baseEntity.remove();
-                });
-                return;
+            if (toStack + amount <= maxStackable) {
+                toStack += amount;
+                remove.add(friendlyEntity);
+                continue;
             }
+            break; //We max, exit loop
+        }
+
+        //Nothing to stack
+        if (toStack == 0) {
+            return;
+        }
+
+        //Add to base stack and remove stacked friends
+        stackManager.createStackedEntity(baseEntity, baseSize + toStack);
+        processed.add(baseEntity.getUniqueId());
+
+        //Remove merged entities
+        //We in sync, so we can remove entities
+        for (LivingEntity entity : remove) {
+            processed.add(entity.getUniqueId());
+            entity.remove();
         }
     }
 
-    public boolean attemptSplit(EntityStack baseStack, LivingEntity livingEntity) {
+    /**
+     * This method splitting overstacked entities into new stacks.
+     * Must be called synchronously.
+     *
+     * @param baseStack          The base stack to check for splitting.
+     * @param maxEntityStackSize The maximum stack size for the entity. -1 if we need to calculate it.
+     * @return True if the split was successful, false otherwise.
+     */
+    public boolean attemptSplit(EntityStack baseStack, int maxEntityStackSize) {
+        LivingEntity hostEntity = baseStack.getHostEntity();
         int stackSize = baseStack.getAmount();
-        int maxEntityStackAmount = getEntityStackSize(livingEntity);
+        int maxEntityStackAmount = maxEntityStackSize == -1 ? getEntityMaxStackSize(hostEntity) : maxEntityStackSize;
 
         if (stackSize <= maxEntityStackAmount) return false;
 
         baseStack.setAmount(maxEntityStackAmount);
 
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            int finalStackSize = stackSize - maxEntityStackAmount;
-            do {
-                // Create a new stack, summon entity and add to stack.
-                LivingEntity newEntity = (LivingEntity) livingEntity.getWorld().spawnEntity(livingEntity.getLocation(), livingEntity.getType());
-                int toAdd = Math.min(finalStackSize, maxEntityStackAmount);
-                EntityStack newStack = stackManager.createStackedEntity(newEntity, toAdd);
-                processed.add(newEntity.getUniqueId());
-                finalStackSize -= maxEntityStackAmount;
-            } while (finalStackSize >= 0);
-        });
+        int finalStackSize = stackSize - maxEntityStackAmount;
+        do {
+            // Create a new stack, summon entity and add to stack.
+            LivingEntity newEntity = (LivingEntity) hostEntity.getWorld().spawnEntity(hostEntity.getLocation(), hostEntity.getType());
+            int toAdd = Math.min(finalStackSize, maxEntityStackAmount);
+            EntityStack newStack = stackManager.createStackedEntity(newEntity, toAdd);
+            processed.add(newEntity.getUniqueId());
+            finalStackSize -= maxEntityStackAmount;
+        } while (finalStackSize >= 0);
 
         //Mark it as processed.
-        processed.add(livingEntity.getUniqueId());
+        processed.add(hostEntity.getUniqueId());
         return true;
     }
 
-    private Set<CachedChunk> getNearbyChunks(SWorld sWorld, Location location, double radius, boolean singleChunk) {
-        //get current chunk
-        if (radius == -1) {
-            return new HashSet<>(Collections.singletonList(new CachedChunk(sWorld, location.getChunk().getX(), location.getChunk().getZ())));
+    private Set<CachedChunk> getNearbyChunks(SWorld sWorld, Location location) {
+        //Only stack entities in the same chunk
+        if (stackWholeChunk && chunkRadius == 0) {
+            return Collections.singleton(new CachedChunk(sWorld, location.getChunk().getX(), location.getChunk().getZ()));
         }
         World world = location.getWorld();
-        Set<CachedChunk> chunks = new HashSet<>();
-        if (world == null) return chunks;
+        if (world == null) return new HashSet<>();
 
         CachedChunk firstChunk = new CachedChunk(sWorld, location);
+        Set<CachedChunk> chunks = new TreeSet<>(Comparator.comparingInt(CachedChunk::getX).thenComparingInt(CachedChunk::getZ));
         chunks.add(firstChunk);
 
-        if (singleChunk) return chunks;
-
-        int minX = (int) Math.floor(((location.getX() - radius) - 2.0D) / 16.0D);
-        int maxX = (int) Math.floor(((location.getX() + radius) + 2.0D) / 16.0D);
-        int minZ = (int) Math.floor(((location.getZ() - radius) - 2.0D) / 16.0D);
-        int maxZ = (int) Math.floor(((location.getZ() + radius) + 2.0D) / 16.0D);
+        //Calculate chunk coordinates we need to check
+        int minX = (int) Math.floor((location.getX() - chunkRadius) / 16.0D);
+        int maxX = (int) Math.floor((location.getX() + chunkRadius) / 16.0D);
+        int minZ = (int) Math.floor((location.getZ() - chunkRadius) / 16.0D);
+        int maxZ = (int) Math.floor((location.getZ() + chunkRadius) / 16.0D);
 
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
-                if (firstChunk.getX() == x && firstChunk.getZ() == z) continue;
-                chunks.add(new CachedChunk(sWorld, x, z));
+                if (x == minX || x == maxX || z == minZ || z == maxZ) {
+                    chunks.add(new CachedChunk(sWorld, x, z));
+                }
             }
+        }
+
+        //Set a bedrock in the top left corner of the chunks
+        for (CachedChunk chunk : chunks) {
+            int x = chunk.getX() * 16;
+            int z = chunk.getZ() * 16;
+            world.getBlockAt(x, 319, z).setType(XMaterial.BEDROCK.parseMaterial());
         }
         return chunks;
     }
 
     /**
      * Get all entities around an entity within a radius which are similar to the entity.
+     *
      * @param entity The entity to get similar entities around.
-     * @param radius The radius to get entities around.
-     * @param singleChunk Whether to only get entities in the same chunk as the entity.
      * @return A list of similar entities around the entity.
      */
-    private List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity, double radius, boolean singleChunk) {
+    public List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity) {
+        if (!stackWholeChunk) {
+            return entity.getNearbyEntities(searchRadius / 2.0, searchRadius / 2.0, searchRadius / 2.0)
+                    .stream().filter(e -> e.getType() == entity.getType() && !isMaxStack((LivingEntity) e))
+                    .map(e -> (LivingEntity) e).collect(Collectors.toList());
+        }
         List<LivingEntity> entities = new ArrayList<>();
         try {
-            Set<CachedChunk> chunks = getNearbyChunks(new SWorld(entity.getWorld()), entity.getLocation(), radius, singleChunk);
+            Set<CachedChunk> chunks = getNearbyChunks(new SWorld(entity.getWorld()), entity.getLocation());
             for (CachedChunk chunk : chunks) {
                 Entity[] entityList = chunk.getEntities();
                 for (Entity e : entityList) {
-                    if (!processed.contains(e.getUniqueId()) && e.getType() == entity.getType() && e instanceof LivingEntity && e.isValid() && e.getLocation().distance(entity.getLocation()) <= radius) {
+                    if (e.getType() == entity.getType() && !isMaxStack((LivingEntity) e)) {
                         entities.add((LivingEntity) e);
                     }
                 }
@@ -370,10 +312,10 @@ public class StackingTask extends TimerTask {
         return entities;
     }
 
-    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, SWorld sWorld, Location location) {
+    public List<LivingEntity> getSimilarEntitiesAroundEntity(LivingEntity initialEntity, Location location) {
         try {
             // Create a list of all entities around the initial entity of the same type.
-            List<LivingEntity> entityList = new LinkedList<>(getFriendlyStacksNearby(initialEntity, searchRadius, stackWholeChunk));
+            List<LivingEntity> entityList = new ArrayList<>(getFriendlyStacksNearby(initialEntity));
 
             CustomEntity customEntity = plugin.getCustomEntityManager().getCustomEntity(initialEntity);
             if (customEntity != null)
@@ -616,6 +558,64 @@ public class StackingTask extends TimerTask {
                         entityList.removeIf(entity -> ((Phantom) entity).getSize() != phantom.getSize());
                         break;
                     }
+                    case AXOLOTL_VARIANT: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)
+                                || !(initialEntity instanceof Axolotl)) break;
+                        Axolotl axolotl = (Axolotl) initialEntity;
+                        entityList.removeIf(entity -> ((Axolotl) entity).getVariant() != axolotl.getVariant());
+                        break;
+                    }
+                    case GOAT_HAS_HORNS: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)
+                                || !(initialEntity instanceof Goat)) break;
+                        Goat goat = (Goat) initialEntity;
+                        boolean hasLeftHorn = goat.hasLeftHorn();
+                        boolean hasRightHorn = goat.hasRightHorn();
+                        entityList.removeIf(entity -> {
+                            Goat otherGoat = (Goat) entity;
+                            return otherGoat.hasLeftHorn() != hasLeftHorn || otherGoat.hasRightHorn() != hasRightHorn;
+                        });
+                        break;
+                    }
+                    case FROG_VARIANT: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Frog)) break;
+                        Frog frog = (Frog) initialEntity;
+                        entityList.removeIf(entity -> ((Frog) entity).getVariant() != frog.getVariant());
+                        break;
+                    }
+                    case TADPOLE_AGE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Tadpole)) break;
+                        Tadpole tadpole = (Tadpole) initialEntity;
+                        entityList.removeIf(entity -> ((Tadpole) entity).getAge() != tadpole.getAge());
+                        break;
+                    }
+                    case WARDEN_ANGER_LEVEL: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Warden)) break;
+                        Warden warden = (Warden) initialEntity;
+                        entityList.removeIf(entity -> ((Warden) entity).getAnger() != warden.getAnger());
+                        break;
+                    }
+                    case FOX_TYPE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)
+                                || !(initialEntity instanceof Fox)) break;
+                        Fox fox = (Fox) initialEntity;
+                        entityList.removeIf(entity -> ((Fox) entity).getFoxType() != fox.getFoxType());
+                        break;
+                    }
+                    case HOGLIN_IMMUNE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_16)
+                                || !(initialEntity instanceof Hoglin)) break;
+                        Hoglin hoglin = (Hoglin) initialEntity;
+                        if (hoglin.isImmuneToZombification()) {
+                            entityList.removeIf(entity -> !((Hoglin) entity).isImmuneToZombification());
+                        } else {
+                            entityList.removeIf(entity -> ((Hoglin) entity).isImmuneToZombification());
+                        }
+                        break;
+                    }
                 }
             }
 
@@ -641,16 +641,20 @@ public class StackingTask extends TimerTask {
                 || (equipment.getBoots() != null && equipment.getBoots().getType() != Material.AIR));
     }
 
-    private int getEntityStackSize(LivingEntity initialEntity) {
-        Integer max = entityStackSizes.get(initialEntity.getType());
-        if (max == null) {
-            max = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
-            if (max == -1) {
-                max = maxEntityStackSize;
+    private int getEntityMaxStackSize(LivingEntity initialEntity) {
+        return entityStackSizes.computeIfAbsent(initialEntity.getType(), type -> {
+            int maxStackSize = configurationSection.getInt("Mobs." + initialEntity.getType().name() + ".Max Stack Size");
+            if (maxStackSize == -1) {
+                maxStackSize = maxEntityStackSize;
             }
-            entityStackSizes.put(initialEntity.getType(), max);
-        }
-        return max;
+            return maxStackSize;
+        });
+    }
+
+    private boolean isMaxStack(LivingEntity livingEntity) {
+        EntityStack stack = stackManager.getStackedEntity(livingEntity);
+        if (stack == null) return false;
+        return stack.getAmount() >= getEntityMaxStackSize(livingEntity);
     }
 
     public boolean canFly(LivingEntity entity) {

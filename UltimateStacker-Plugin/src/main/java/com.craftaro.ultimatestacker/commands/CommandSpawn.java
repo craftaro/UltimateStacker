@@ -4,6 +4,7 @@ import com.craftaro.core.commands.AbstractCommand;
 import com.craftaro.core.utils.TextUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
+import com.craftaro.ultimatestacker.tasks.StackingTask;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -51,9 +52,12 @@ public class CommandSpawn extends AbstractCommand {
             }
             sender.sendMessage(TextUtils.formatText("&6" + list));
         } else {
-            LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getLocation(), type);
-            EntityStack stack = plugin.getEntityStackManager().createStackedEntity(entity, Integer.parseInt(args[1]));
-            plugin.getStackingTask().attemptSplit(stack, entity);
+            StackingTask stackingTask = plugin.getStackingTask();
+            if (stackingTask != null) {
+                LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(player.getLocation(), type);
+                EntityStack stack = plugin.getEntityStackManager().createStackedEntity(entity, Integer.parseInt(args[1]));
+                stackingTask.attemptSplit(stack, -1);
+            }
         }
 
         return ReturnType.SUCCESS;

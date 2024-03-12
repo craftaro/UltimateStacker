@@ -1,12 +1,10 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
-import com.craftaro.core.SongodaCore;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.lootables.loot.Drop;
 import com.craftaro.core.lootables.loot.DropUtils;
 import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.events.entity.EntityStackKillEvent;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -14,7 +12,7 @@ import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
@@ -22,10 +20,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -33,35 +31,73 @@ import java.util.UUID;
 public class EntityStackImpl implements EntityStack {
 
     private final UltimateStacker plugin = UltimateStacker.getInstance();
+    private final NamespacedKey STACKED_ENTITY_KEY = new NamespacedKey(plugin, "US_AMOUNT");
     private int amount;
     private LivingEntity hostEntity;
 
     /**
      * Gets an existing stack from an entity or creates a new one if it doesn't exist.
+     *
      * @param entity The entity to get the stack from.
      */
     public EntityStackImpl(LivingEntity entity) {
         if (entity == null) return;
         if (!UltimateStacker.getInstance().getEntityStackManager().isStackedEntity(entity)) {
-            entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
-            this.amount = 1;
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+                PersistentDataContainer container = entity.getPersistentDataContainer();
+                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                    entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+                } else {
+                    entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
+                    this.amount = 1;
+                }
+            } else {
+                entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
+                this.amount = 1;
+            }
         } else {
-            //get the amount from the entity
-            this.amount = entity.getMetadata("US_AMOUNT").get(0).asInt();
+            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+                PersistentDataContainer container = entity.getPersistentDataContainer();
+                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                } else {
+                    this.amount = getMetaCount(entity);
+                }
+            } else {
+                this.amount = getMetaCount(entity);
+            }
         }
         this.hostEntity = entity;
     }
 
+    private int getMetaCount(LivingEntity entity) {
+        if (entity.hasMetadata("US_AMOUNT")) {
+            return entity.getMetadata("US_AMOUNT").get(0).asInt();
+        } else {
+            return 1;
+        }
+    }
+
     /**
      * Creates a new stack or overrides an existing stack.
+     *
      * @param entity The entity to create the stack for.
      * @param amount The amount of entities in the stack.
      */
     public EntityStackImpl(LivingEntity entity, int amount) {
         if (entity == null) return;
         this.hostEntity = entity;
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than 0");
+        }
         this.amount = amount;
-        entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = entity.getPersistentDataContainer();
+            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+        } else {
+            entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        }
         updateNameTag();
     }
 
@@ -78,7 +114,12 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public void setAmount(int amount) {
         this.amount = amount;
-        this.hostEntity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = hostEntity.getPersistentDataContainer();
+            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+        } else {
+            hostEntity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
+        }
         updateNameTag();
     }
 
@@ -196,10 +237,10 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
         if (amount <= 0) return null;
+
         LivingEntity entity = (LivingEntity) Objects.requireNonNull(location.getWorld()).spawnEntity(location, hostEntity.getType());
-        if (Settings.NO_AI.getBoolean()) {
+        if (Settings.NO_AI.getBoolean())
             EntityUtils.setUnaware(entity);
-        }
         this.hostEntity = entity;
         setAmount(amount--);
         updateNameTag();
@@ -208,13 +249,27 @@ public class EntityStackImpl implements EntityStack {
 
     @Override
     public synchronized void releaseHost() {
-        LivingEntity oldHost = hostEntity;
-        LivingEntity entity = takeOneAndSpawnEntity(hostEntity.getLocation());
-        if (getAmount() >= 0) {
-            plugin.getEntityStackManager().updateStack(oldHost, entity);
-            updateNameTag();
+        wipeData();
+
+        //Summon a new entity, update the stack and remove the metadata from the old entity
+        this.hostEntity = takeOneAndSpawnEntity(hostEntity.getLocation());
+        if (amount == 2) {
+            wipeData();
         } else {
-            destroy();
+            setAmount(amount - 1);
+            updateNameTag();
+        }
+    }
+
+    private synchronized void wipeData() {
+        hostEntity.setCustomName(null);
+        hostEntity.setCustomNameVisible(false);
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = hostEntity.getPersistentDataContainer();
+            container.remove(STACKED_ENTITY_KEY);
+        } else {
+            hostEntity.removeMetadata("US_AMOUNT", plugin);
         }
     }
 
@@ -226,9 +281,9 @@ public class EntityStackImpl implements EntityStack {
     }
 
     public void updateNameTag() {
-        if (hostEntity == null) {
+        if (hostEntity == null)
             return;
-        }
+
         hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
         hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));
     }

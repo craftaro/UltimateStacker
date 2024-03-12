@@ -67,6 +67,7 @@ public class LootablesManager {
         //Apply SuperiorSkyblock2 mob-drops multiplier if present
         if (superiorSkyblock2Hook.isEnabled()) {
             for (Drop drop : toDrop) {
+                if (drop.getItemStack() == null) continue; //Maybe it is just exp
                 drop.getItemStack().setAmount(superiorSkyblock2Hook.getDropMultiplier(entity.getLocation()) * drop.getItemStack().getAmount());
             }
         }

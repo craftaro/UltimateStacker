@@ -22,8 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class StackedItemManagerImpl implements StackedItemManager {
 
-    private final static int MAX_INT = 1500000000;
-
     @Override
     public @NotNull StackedItem getStackedItem(Item item) {
         return new StackedItemImpl(item);
@@ -106,8 +104,8 @@ public class StackedItemManagerImpl implements StackedItemManager {
             }
         }
 
-        int maxItemStackSize = Settings.MAX_STACK_ITEMS.getInt();
-        if (maxItemStackSize > MAX_INT) maxItemStackSize = MAX_INT;
+        long maxItemStackSize = Settings.MAX_STACK_ITEMS.getLong();
+        if (maxItemStackSize > Integer.MAX_VALUE) maxItemStackSize = Integer.MAX_VALUE;
 
         ItemStack fromItemStack = from.getItemStack();
         ItemStack toItemStack = to.getItemStack();

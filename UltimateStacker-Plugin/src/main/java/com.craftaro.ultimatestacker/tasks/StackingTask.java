@@ -11,12 +11,13 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -85,7 +86,6 @@ public class StackingTask extends BukkitRunnable {
                     continue;
                 }
 
-
                 //Filter non-stackable entities to improve performance on main thread
                 entities.removeIf(this::isEntityNotStackable);
 
@@ -116,7 +116,6 @@ public class StackingTask extends BukkitRunnable {
         } finally {
             // Make sure we clear the processed list.
             this.processed.clear();
-
         }
     }
 

@@ -17,32 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Cat;
-import org.bukkit.entity.ChestedHorse;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Ocelot;
-import org.bukkit.entity.Parrot;
-import org.bukkit.entity.Phantom;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.PufferFish;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.entity.Sheep;
-import org.bukkit.entity.Skeleton;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.TropicalFish;
-import org.bukkit.entity.Villager;
-import org.bukkit.entity.Wolf;
-import org.bukkit.entity.Zombie;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -632,6 +607,64 @@ public class StackingTask extends TimerTask {
                                 || !(initialEntity instanceof Phantom)) break;
                         Phantom phantom = (Phantom) initialEntity;
                         entityList.removeIf(entity -> ((Phantom) entity).getSize() != phantom.getSize());
+                        break;
+                    }
+                    case AXOLOTL_VARIANT: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)
+                                || !(initialEntity instanceof Axolotl)) break;
+                        Axolotl axolotl = (Axolotl) initialEntity;
+                        entityList.removeIf(entity -> ((Axolotl) entity).getVariant() != axolotl.getVariant());
+                        break;
+                    }
+                    case GOAT_HAS_HORNS: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_17)
+                                || !(initialEntity instanceof Goat)) break;
+                        Goat goat = (Goat) initialEntity;
+                        boolean hasLeftHorn = goat.hasLeftHorn();
+                        boolean hasRightHorn = goat.hasRightHorn();
+                        entityList.removeIf(entity -> {
+                            Goat otherGoat = (Goat) entity;
+                            return otherGoat.hasLeftHorn() != hasLeftHorn || otherGoat.hasRightHorn() != hasRightHorn;
+                        });
+                        break;
+                    }
+                    case FROG_VARIANT: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Frog)) break;
+                        Frog frog = (Frog) initialEntity;
+                        entityList.removeIf(entity -> ((Frog) entity).getVariant() != frog.getVariant());
+                        break;
+                    }
+                    case TADPOLE_AGE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Tadpole)) break;
+                        Tadpole tadpole = (Tadpole) initialEntity;
+                        entityList.removeIf(entity -> ((Tadpole) entity).getAge() != tadpole.getAge());
+                        break;
+                    }
+                    case WARDEN_ANGER_LEVEL: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_19)
+                                || !(initialEntity instanceof Warden)) break;
+                        Warden warden = (Warden) initialEntity;
+                        entityList.removeIf(entity -> ((Warden) entity).getAnger() != warden.getAnger());
+                        break;
+                    }
+                    case FOX_TYPE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)
+                                || !(initialEntity instanceof Fox)) break;
+                        Fox fox = (Fox) initialEntity;
+                        entityList.removeIf(entity -> ((Fox) entity).getFoxType() != fox.getFoxType());
+                        break;
+                    }
+                    case HOGLIN_IMMUNE: {
+                        if (!ServerVersion.isServerVersionAtLeast(ServerVersion.V1_16)
+                                || !(initialEntity instanceof Hoglin)) break;
+                        Hoglin hoglin = (Hoglin) initialEntity;
+                        if (hoglin.isImmuneToZombification()) {
+                            entityList.removeIf(entity -> !((Hoglin) entity).isImmuneToZombification());
+                        } else {
+                            entityList.removeIf(entity -> ((Hoglin) entity).isImmuneToZombification());
+                        }
                         break;
                     }
                 }

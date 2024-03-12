@@ -39,8 +39,17 @@ public enum Check {
     TROPICALFISH_BODY_COLOR(true),
     TROPICALFISH_PATTERN_COLOR(true),
     PHANTOM_SIZE(true),
-    CAT_TYPE(false);
-
+    CAT_TYPE(false),
+    AXOLOTL_VARIANT(false),
+    AXOLOTL_PLAYING_DEAD(true),
+    GLOW_SQUID_DARK_TICKS(true),
+    GOAT_HAS_HORNS(false),
+    FROG_VARIANT(true),
+    TADPOLE_AGE(false),
+    WARDEN_ANGER_LEVEL(false),
+    SNIFFER_HAS_SEEDS(true),
+    FOX_TYPE(false),
+    HOGLIN_IMMUNE(true);
     private final boolean isEnabledByDefault;
     private final static Map<String, Check> checks = new HashMap();
 

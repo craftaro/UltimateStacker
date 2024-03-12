@@ -11,15 +11,19 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import static com.craftaro.ultimatestacker.stackable.entity.Check.getChecks;
@@ -64,7 +68,7 @@ public class StackingTask extends BukkitRunnable {
         }
 
         int tickRate = Settings.STACK_SEARCH_TICK_SPEED.getInt();
-        runTaskTimer(plugin, tickRate, tickRate);
+        runTaskTimerAsynchronously(plugin, tickRate, tickRate);
     }
 
     @Override
@@ -75,7 +79,12 @@ public class StackingTask extends BukkitRunnable {
             for (SWorld sWorld : loadedWorlds) {
                 List<LivingEntity> entities;
                 // Get the loaded entities from the current world and reverse them.
-                entities = sWorld.getLivingEntities();
+                try {
+                    entities = getLivingEntitiesSync(sWorld).get();
+                } catch (ExecutionException | InterruptedException ex) {
+                    ex.printStackTrace();
+                    continue;
+                }
 
                 //Filter non-stackable entities to improve performance on main thread
                 entities.removeIf(this::isEntityNotStackable);
@@ -87,26 +96,33 @@ public class StackingTask extends BukkitRunnable {
                         entities.removeIf(entity1 -> entity1.getUniqueId().equals(entity.getUniqueId()));
                 }
 
-                // Loop through the entities.
-                for (LivingEntity entity : entities) {
-                    // Make sure our entity has not already been processed.
-                    // Skip it if it has been.
-                    if (processed.contains(entity.getUniqueId())) continue;
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    // Loop through the entities.
+                    for (LivingEntity entity : entities) {
+                        // Make sure our entity has not already been processed.
+                        // Skip it if it has been.
+                        if (processed.contains(entity.getUniqueId())) continue;
 
-                    // Get entity location to pass around as its faster this way.
-                    Location location = entity.getLocation();
+                        // Get entity location to pass around as its faster this way.
+                        Location location = entity.getLocation();
 
-                    // Process the entity.
-                    processEntity(entity, location, entities);
-                }
+                        // Process the entity.
+                        processEntity(entity, location, entities);
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             // Make sure we clear the processed list.
             this.processed.clear();
-
         }
+    }
+
+    private Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
+        CompletableFuture<List<LivingEntity>> future = new CompletableFuture<>();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
+        return future;
     }
 
     public boolean isWorldDisabled(World world) {

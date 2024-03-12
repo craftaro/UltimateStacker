@@ -108,7 +108,11 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
             "\"HORSE_STYLE\", \"HORSE_CARRYING_CHEST\", \"HORSE_HAS_ARMOR\", \"HORSE_HAS_SADDLE\",",
             "\"HORSE_JUMP\", \"RABBIT_TYPE\", \"VILLAGER_PROFESSION\", \"LLAMA_COLOR\",",
             "\"LLAMA_STRENGTH\", \"PARROT_TYPE\", \"PUFFERFISH_STATE\", \"TROPICALFISH_PATTERN\",",
-            "\"TROPICALFISH_BODY_COLOR\", \"TROPICALFISH_PATTERN_COLOR\", \"PHANTOM_SIZE\", \"CAT_TYPE\".");
+            "\"TROPICALFISH_BODY_COLOR\", \"TROPICALFISH_PATTERN_COLOR\", \"PHANTOM_SIZE\", \"CAT_TYPE\"",
+            "\"AXOLOTL_VARIANT\", \"AXOLOTL_PLAYING_DEAD\", \"GLOW_SQUID_DARK_TICKS\", \"GOAT_HAS_HORNS\",",
+            "\"FROG_VARIANT\", \"TADPOLE_AGE\", \"WARDEN_ANGER_LEVEL\", \"SNIFFER_HAS_SEEDS\",",
+            "\"FOX_TYPE\", \"HOGLIN_IMMUNE\".");
+
 
     public static final ConfigSetting SPLIT_CHECKS = new ConfigSetting(config, "Entities.Split Checks", Arrays.asList(Split.values()).stream()
             .map(Split::name).collect(Collectors.toList()),

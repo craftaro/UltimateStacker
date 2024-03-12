@@ -1,7 +1,5 @@
 package com.craftaro.ultimatestacker.listeners;
 
-import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -58,12 +56,8 @@ public class InteractListeners implements Listener {
                     && !((Ageable) entity).isAdult()) {
                 return;
             }
-            entity.setMetadata("inLove", new FixedMetadataValue(plugin, true));
 
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                if (entity.isDead()) return;
-                entity.removeMetadata("inLove", plugin);
-            }, 20 * 20);
+            plugin.getBreedingTask().addInLoveTicket(entity);
         }
     }
 

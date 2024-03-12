@@ -10,12 +10,10 @@ import com.craftaro.core.dependency.Dependency;
 import com.craftaro.core.gui.GuiManager;
 import com.craftaro.core.hooks.EntityStackerManager;
 import com.craftaro.core.hooks.HologramManager;
-import com.craftaro.core.hooks.HookManager;
 import com.craftaro.core.hooks.ProtectionManager;
 import com.craftaro.core.hooks.WorldGuardHook;
-import com.craftaro.core.hooks.holograms.DecentHologramsHolograms;
-import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.utils.TextUtils;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStack;
 import com.craftaro.ultimatestacker.api.stack.block.BlockStackManager;
@@ -25,13 +23,7 @@ import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStack;
 import com.craftaro.ultimatestacker.api.stack.spawner.SpawnerStackManager;
 import com.craftaro.ultimatestacker.api.utils.Hologramable;
-import com.craftaro.ultimatestacker.commands.CommandConvert;
-import com.craftaro.ultimatestacker.commands.CommandGiveSpawner;
-import com.craftaro.ultimatestacker.commands.CommandLootables;
-import com.craftaro.ultimatestacker.commands.CommandReload;
-import com.craftaro.ultimatestacker.commands.CommandRemoveAll;
-import com.craftaro.ultimatestacker.commands.CommandSettings;
-import com.craftaro.ultimatestacker.commands.CommandSpawn;
+import com.craftaro.ultimatestacker.commands.*;
 import com.craftaro.ultimatestacker.database.migrations._1_InitialMigration;
 import com.craftaro.ultimatestacker.database.migrations._2_EntityStacks;
 import com.craftaro.ultimatestacker.database.migrations._3_BlockStacks;
@@ -39,15 +31,7 @@ import com.craftaro.ultimatestacker.database.migrations._6_RemoveStackedEntityTa
 import com.craftaro.ultimatestacker.hook.StackerHook;
 import com.craftaro.ultimatestacker.hook.hooks.JobsHook;
 import com.craftaro.ultimatestacker.hook.hooks.SuperiorSkyblock2Hook;
-import com.craftaro.ultimatestacker.listeners.BlockListeners;
-import com.craftaro.ultimatestacker.listeners.BreedListeners;
-import com.craftaro.ultimatestacker.listeners.ClearLagListeners;
-import com.craftaro.ultimatestacker.listeners.DeathListeners;
-import com.craftaro.ultimatestacker.listeners.InteractListeners;
-import com.craftaro.ultimatestacker.listeners.ShearListeners;
-import com.craftaro.ultimatestacker.listeners.SheepDyeListeners;
-import com.craftaro.ultimatestacker.listeners.SpawnerListeners;
-import com.craftaro.ultimatestacker.listeners.TameListeners;
+import com.craftaro.ultimatestacker.listeners.*;
 import com.craftaro.ultimatestacker.listeners.entity.EntityCurrentListener;
 import com.craftaro.ultimatestacker.listeners.entity.EntityListeners;
 import com.craftaro.ultimatestacker.listeners.item.ItemCurrentListener;
@@ -62,6 +46,7 @@ import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntityManager;
 import com.craftaro.ultimatestacker.stackable.item.StackedItemManagerImpl;
 import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackImpl;
 import com.craftaro.ultimatestacker.stackable.spawner.SpawnerStackManagerImpl;
+import com.craftaro.ultimatestacker.tasks.BreedingTask;
 import com.craftaro.ultimatestacker.tasks.StackingTask;
 import com.craftaro.ultimatestacker.utils.Async;
 import org.apache.commons.lang.WordUtils;
@@ -72,12 +57,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class UltimateStacker extends SongodaPlugin {
 
@@ -99,6 +79,7 @@ public class UltimateStacker extends SongodaPlugin {
     private CommandManager commandManager;
     private CustomEntityManager customEntityManager;
     private StackingTask stackingTask;
+    private BreedingTask breedingTask;
     private UltimateStackerApi API;
     private SuperiorSkyblock2Hook superiorSkyblock2Hook;
     private boolean instantStacking;
@@ -122,9 +103,8 @@ public class UltimateStacker extends SongodaPlugin {
 
     @Override
     public void onPluginDisable() {
-        if (this.stackingTask != null) {
-            this.stackingTask.stop();
-        }
+        if (this.stackingTask != null)
+            this.stackingTask.cancel();
         this.dataManager.saveBatchSync(this.spawnerStackManager.getStacksData());
         this.dataManager.saveBatchSync(this.blockStackManager.getStacksData());
         this.dataManager.shutdownNow();
@@ -154,7 +134,7 @@ public class UltimateStacker extends SongodaPlugin {
                         new CommandGiveSpawner(this),
                         new CommandSpawn(this),
                         new CommandLootables(this),
-                        new CommandConvert( guiManager)
+                        new CommandConvert(guiManager)
                 );
 
         PluginManager pluginManager = Bukkit.getPluginManager();
@@ -248,7 +228,7 @@ public class UltimateStacker extends SongodaPlugin {
     public void onDataLoad() {
         if (HologramManager.isEnabled())
             // Set the offset so that the holograms don't end up inside the blocks.
-            HologramManager.getHolograms().setPositionOffset(.5,.65,.5);
+            HologramManager.getHolograms().setPositionOffset(.5, .65, .5);
 
         // Load current data.
         final boolean useSpawnerHolo = Settings.SPAWNER_HOLOGRAMS.getBoolean();
@@ -264,10 +244,12 @@ public class UltimateStacker extends SongodaPlugin {
             }
         });
 
+        //Start stacking task
         if (Settings.STACK_ENTITIES.getBoolean()) {
-            //Start stacking task
+            this.breedingTask = new BreedingTask(this);
             this.stackingTask = new StackingTask(this);
         }
+
         this.instantStacking = Settings.STACK_ENTITIES.getBoolean() && Settings.INSTANT_STACKING.getBoolean();
         final boolean useBlockHolo = Settings.BLOCK_HOLOGRAMS.getBoolean();
         this.dataManager.loadBatch(BlockStackImpl.class, "blocks").forEach((data) -> {
@@ -275,9 +257,8 @@ public class UltimateStacker extends SongodaPlugin {
             this.blockStackManager.addBlock(blockStack);
             if (useBlockHolo) {
                 if (blockStack == null) return;
-                if (blockStack.getLocation().getWorld() != null) {
+                if (blockStack.getLocation().getWorld() != null)
                     updateHologram(blockStack);
-                }
             }
         });
     }
@@ -307,9 +288,9 @@ public class UltimateStacker extends SongodaPlugin {
         this.setLocale(getConfig().getString("System.Language Mode"), true);
         this.locale.reloadMessages();
 
-        if (stackingTask != null) {
-            this.stackingTask.stop();
-        }
+        if (stackingTask != null)
+            this.stackingTask.cancel();
+
         if (Settings.STACK_ENTITIES.getBoolean()) {
             this.stackingTask = new StackingTask(this);
         }
@@ -473,5 +454,9 @@ public class UltimateStacker extends SongodaPlugin {
 
         return !whitelist.isEmpty() && !whitelist.contains(combined)
                 || !blacklist.isEmpty() && blacklist.contains(combined);
+    }
+
+    public BreedingTask getBreedingTask() {
+        return breedingTask;
     }
 }

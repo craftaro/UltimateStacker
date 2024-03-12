@@ -77,12 +77,10 @@ public class DeathListeners implements Listener {
         List<Drop> drops = custom ? plugin.getLootablesManager().getDrops(event.getEntity())
                 : event.getDrops().stream().map(Drop::new).collect(Collectors.toList());
 
-        if (custom) {
-            for (ItemStack item : new ArrayList<>(event.getDrops())) {
+        if (custom)
+            for (ItemStack item : new ArrayList<>(event.getDrops()))
                 if (shouldDrop(event.getEntity(), item.getType()))
                     drops.add(new Drop(item));
-            }
-        }
 
         if (plugin.getCustomEntityManager().getCustomEntity(entity) == null) {
             //Run commands here, or it will be buggy

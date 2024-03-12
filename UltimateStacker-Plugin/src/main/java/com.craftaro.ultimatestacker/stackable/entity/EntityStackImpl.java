@@ -1,12 +1,10 @@
 package com.craftaro.ultimatestacker.stackable.entity;
 
-import com.craftaro.core.SongodaCore;
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.lootables.loot.Drop;
 import com.craftaro.core.lootables.loot.DropUtils;
 import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
-import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.events.entity.EntityStackKillEvent;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.settings.Settings;
@@ -14,7 +12,6 @@ import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
@@ -27,8 +24,6 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -42,6 +37,7 @@ public class EntityStackImpl implements EntityStack {
 
     /**
      * Gets an existing stack from an entity or creates a new one if it doesn't exist.
+     *
      * @param entity The entity to get the stack from.
      */
     public EntityStackImpl(LivingEntity entity) {
@@ -85,6 +81,7 @@ public class EntityStackImpl implements EntityStack {
 
     /**
      * Creates a new stack or overrides an existing stack.
+     *
      * @param entity The entity to create the stack for.
      * @param amount The amount of entities in the stack.
      */
@@ -240,10 +237,10 @@ public class EntityStackImpl implements EntityStack {
     @Override
     public synchronized LivingEntity takeOneAndSpawnEntity(Location location) {
         if (amount <= 0) return null;
+
         LivingEntity entity = (LivingEntity) Objects.requireNonNull(location.getWorld()).spawnEntity(location, hostEntity.getType());
-        if (Settings.NO_AI.getBoolean()) {
+        if (Settings.NO_AI.getBoolean())
             EntityUtils.setUnaware(entity);
-        }
         this.hostEntity = entity;
         setAmount(amount--);
         updateNameTag();
@@ -252,35 +249,28 @@ public class EntityStackImpl implements EntityStack {
 
     @Override
     public synchronized void releaseHost() {
-        //Remove the metadata from the entity if it's the last one
-//        if (getAmount() == 1) {
-//            if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
-//                PersistentDataContainer container = hostEntity.getPersistentDataContainer();
-//                container.remove(STACKED_ENTITY_KEY);
-//            } else {
-//                hostEntity.removeMetadata("US_AMOUNT", plugin);
-//            }
-//            hostEntity.setCustomName(null);
-//            hostEntity.setCustomNameVisible(false);
-//            return;
-//        }
+        wipeData();
 
-        LivingEntity oldHost = hostEntity;
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
-            PersistentDataContainer container = oldHost.getPersistentDataContainer();
-            container.remove(STACKED_ENTITY_KEY);
-            //Add new entry that the entity was split by player, not to stack it anymore
-            container.set(new NamespacedKey(plugin, "US_SPLIT_PLAYER"), PersistentDataType.BYTE, (byte) 1);
-        } else {
-            oldHost.removeMetadata("US_AMOUNT", plugin);
-            //Add new entry that the entity was split by player, not to stack it anymore
-            oldHost.setMetadata("US_SPLIT_PLAYER", new FixedMetadataValue(plugin, true));
-        }
-
-        //Summon a new entity and update the stack and remove the metadata from the old entity
+        //Summon a new entity, update the stack and remove the metadata from the old entity
         this.hostEntity = takeOneAndSpawnEntity(hostEntity.getLocation());
-        setAmount(amount-1);
-        updateNameTag();
+        if (amount == 2) {
+            wipeData();
+        } else {
+            setAmount(amount - 1);
+            updateNameTag();
+        }
+    }
+
+    private synchronized void wipeData() {
+        hostEntity.setCustomName(null);
+        hostEntity.setCustomNameVisible(false);
+
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            PersistentDataContainer container = hostEntity.getPersistentDataContainer();
+            container.remove(STACKED_ENTITY_KEY);
+        } else {
+            hostEntity.removeMetadata("US_AMOUNT", plugin);
+        }
     }
 
     @Override
@@ -291,9 +281,8 @@ public class EntityStackImpl implements EntityStack {
     }
 
     public void updateNameTag() {
-        if (hostEntity == null) {
+        if (hostEntity == null)
             return;
-        }
 
         hostEntity.setCustomNameVisible(!Settings.HOLOGRAMS_ON_LOOK_ENTITY.getBoolean());
         hostEntity.setCustomName(Methods.compileEntityName(hostEntity, getAmount()));

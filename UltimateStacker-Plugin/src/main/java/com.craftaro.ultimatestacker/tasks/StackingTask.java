@@ -2,8 +2,8 @@ package com.craftaro.ultimatestacker.tasks;
 
 import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.core.hooks.WorldGuardHook;
-import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.core.world.SWorld;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
@@ -11,45 +11,24 @@ import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.stackable.entity.Check;
 import com.craftaro.ultimatestacker.stackable.entity.custom.CustomEntity;
 import com.craftaro.ultimatestacker.utils.CachedChunk;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimerTask;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.craftaro.ultimatestacker.stackable.entity.Check.getChecks;
 
-public class StackingTask extends TimerTask {
+public class StackingTask extends BukkitRunnable {
 
     private final UltimateStacker plugin;
-    private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, "UltimateStacker-Stacking-Thread"));
-
     private final EntityStackManager stackManager;
+    private final BreedingTask breedingTask;
 
     private final ConfigurationSection configurationSection = UltimateStacker.getInstance().getMobFile();
     private final List<UUID> processed = new ArrayList<>();
@@ -70,12 +49,12 @@ public class StackingTask extends TimerTask {
             onlyStackOnSurface = Settings.ONLY_STACK_ON_SURFACE.getBoolean();
 
     private final Set<SWorld> loadedWorlds;
-    private final NamespacedKey playerSplitKey;
 
     public StackingTask(UltimateStacker plugin) {
         this.plugin = plugin;
-        playerSplitKey = new NamespacedKey(plugin, "US_SPLIT_PLAYER");
-        this.stackManager = plugin.getEntityStackManager();
+        stackManager = plugin.getEntityStackManager();
+        breedingTask = plugin.getBreedingTask();
+
         // Add loaded worlds.
         loadedWorlds = new HashSet<>();
         for (World world : Bukkit.getWorlds()) {
@@ -83,12 +62,9 @@ public class StackingTask extends TimerTask {
             if (isWorldDisabled(world)) continue;
             loadedWorlds.add(new SWorld(world));
         }
-        // Start the stacking task.
-        executorService.scheduleAtFixedRate(this, 0, (Settings.STACK_SEARCH_TICK_SPEED.getInt()*50L), TimeUnit.MILLISECONDS);
-    }
 
-    public void stop() {
-        executorService.shutdown();
+        int tickRate = Settings.STACK_SEARCH_TICK_SPEED.getInt();
+        runTaskTimer(plugin, tickRate, tickRate);
     }
 
     @Override
@@ -99,59 +75,38 @@ public class StackingTask extends TimerTask {
             for (SWorld sWorld : loadedWorlds) {
                 List<LivingEntity> entities;
                 // Get the loaded entities from the current world and reverse them.
-                try {
-                    entities = getLivingEntitiesSync(sWorld).get();
-                } catch (ExecutionException | InterruptedException ex) {
-                    ex.printStackTrace();
-                    continue;
-                }
+                entities = sWorld.getLivingEntities();
 
                 //Filter non-stackable entities to improve performance on main thread
                 entities.removeIf(this::isEntityNotStackable);
 
-
                 for (LivingEntity entity : entities) {
                     // Check our WorldGuard flag.
                     Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(entity.getLocation(), "mob-stacking") : null; //Does this work async?
-                    if (flag != null && !flag) {
+                    if (flag != null && !flag)
                         entities.removeIf(entity1 -> entity1.getUniqueId().equals(entity.getUniqueId()));
-                    }
                 }
 
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    // Loop through the entities.
-                    for (LivingEntity entity : entities) {
-                        // Make sure our entity has not already been processed.
-                        // Skip it if it has been.
-                        if (this.processed.contains(entity.getUniqueId())) continue;
+                // Loop through the entities.
+                for (LivingEntity entity : entities) {
+                    // Make sure our entity has not already been processed.
+                    // Skip it if it has been.
+                    if (processed.contains(entity.getUniqueId())) continue;
 
-                        // Get entity location to pass around as its faster this way.
-                        Location location = entity.getLocation();
+                    // Get entity location to pass around as its faster this way.
+                    Location location = entity.getLocation();
 
-                        // Process the entity.
-                        this.processEntity(entity, location);
-                    }
-                });
+                    // Process the entity.
+                    processEntity(entity, location, entities);
+                }
             }
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             // Make sure we clear the processed list.
             this.processed.clear();
 
         }
-    }
-
-    private Future<List<LivingEntity>> getLivingEntitiesSync(SWorld sWorld) {
-        CompletableFuture<List<LivingEntity>> future = new CompletableFuture<>();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this.plugin, () -> future.complete(sWorld.getLivingEntities()));
-        return future;
-    }
-
-    private Future<Entity[]> getEntitiesInChunkSync(CachedChunk cachedChunk) {
-        CompletableFuture<Entity[]> future = new CompletableFuture<>();
-        Bukkit.getScheduler().runTask(this.plugin, () -> future.complete(cachedChunk.getEntities()));
-        return future;
     }
 
     public boolean isWorldDisabled(World world) {
@@ -162,23 +117,17 @@ public class StackingTask extends TimerTask {
     private boolean isEntityNotStackable(LivingEntity entity) {
         if (isMaxStack(entity)) return true;
 
-        if (isPersistentSplit(entity)) return true;
-
         // Make sure we have the correct entity type and that it is valid.
         if (!entity.isValid()
                 || entity instanceof HumanEntity
                 || entity instanceof ArmorStand
 
-                // Make sure the entity is not in love.
-                || entity.hasMetadata("inLove")
-                // Or in breeding cooldown.
-                || entity.hasMetadata("breedCooldown")) {
+                // Make sure the entity is not in love or in the breeding queue.
+                || breedingTask.isInQueue(entity.getUniqueId()))
             return true;
-        }
 
-        if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled")) {
+        if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled"))
             return true;
-        }
 
         // Allow spawn if stack reasons are set and match, or if from a spawner
         final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()
@@ -186,9 +135,8 @@ public class StackingTask extends TimerTask {
         List<String> stackReasons;
         if (onlyStackFromSpawners) {
             // If only stack from spawners is enabled, make sure the entity spawned from a spawner.
-            if (!"SPAWNER".equals(spawnReason)) {
+            if (!"SPAWNER".equals(spawnReason))
                 return true;
-            }
         } else if (!(stackReasons = this.stackReasons).isEmpty() && !stackReasons.contains(spawnReason)) {
             // Only stack if on the list of events to stack
             return true;
@@ -199,7 +147,7 @@ public class StackingTask extends TimerTask {
         return onlyStackOnSurface && canFly(entity) && !entity.getType().name().equals("SHULKER") && !entity.isOnGround() && !(ServerVersion.isServerVersionAtLeast(ServerVersion.V1_13) && (entity).isSwimming());
     }
 
-    private void processEntity(LivingEntity baseEntity, Location location) {
+    private void processEntity(LivingEntity baseEntity, Location location, List<LivingEntity> entities) {
         // Get the stack from the entity. It should be noted that this value will
         // be null if our entity is not a stack.
         EntityStack baseStack = plugin.getEntityStackManager().getStackedEntity(baseEntity);
@@ -236,9 +184,8 @@ public class StackingTask extends TimerTask {
         // Loop through our similar stackable entities.
         for (LivingEntity friendlyEntity : stackableFriends) {
 
-            if (isPersistentSplit(friendlyEntity)) {
+            if (!entities.contains(friendlyEntity))
                 continue;
-            }
 
             // Process similar entities.
             EntityStack friendStack = stackManager.getStackedEntity(friendlyEntity);
@@ -271,7 +218,8 @@ public class StackingTask extends TimerTask {
     /**
      * This method splitting overstacked entities into new stacks.
      * Must be called synchronously.
-     * @param baseStack The base stack to check for splitting.
+     *
+     * @param baseStack          The base stack to check for splitting.
      * @param maxEntityStackSize The maximum stack size for the entity. -1 if we need to calculate it.
      * @return True if the split was successful, false otherwise.
      */
@@ -336,12 +284,13 @@ public class StackingTask extends TimerTask {
 
     /**
      * Get all entities around an entity within a radius which are similar to the entity.
+     *
      * @param entity The entity to get similar entities around.
      * @return A list of similar entities around the entity.
      */
     public List<LivingEntity> getFriendlyStacksNearby(LivingEntity entity) {
         if (!stackWholeChunk) {
-            return entity.getNearbyEntities(searchRadius/2.0, searchRadius/2.0, searchRadius/2.0)
+            return entity.getNearbyEntities(searchRadius / 2.0, searchRadius / 2.0, searchRadius / 2.0)
                     .stream().filter(e -> e.getType() == entity.getType() && !isMaxStack((LivingEntity) e))
                     .map(e -> (LivingEntity) e).collect(Collectors.toList());
         }
@@ -706,22 +655,6 @@ public class StackingTask extends TimerTask {
         EntityStack stack = stackManager.getStackedEntity(livingEntity);
         if (stack == null) return false;
         return stack.getAmount() >= getEntityMaxStackSize(livingEntity);
-    }
-
-    private boolean isPersistentSplit(LivingEntity entity) {
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
-            PersistentDataContainer container = entity.getPersistentDataContainer();
-            if (container.has(playerSplitKey, PersistentDataType.BYTE)) {
-                processed.add(entity.getUniqueId());
-                return true;
-            }
-        } else {
-            if (entity.hasMetadata("US_SPLIT_PLAYER")) {
-                processed.add(entity.getUniqueId());
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean canFly(LivingEntity entity) {

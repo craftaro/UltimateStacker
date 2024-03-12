@@ -19,7 +19,7 @@ public enum Check {
     SLIME_SIZE(true),
     PIG_SADDLE(true),
     SHEEP_SHEARED(true),
-    SHEEP_COLOR(false),
+    SHEEP_COLOR(true),
     SNOWMAN_DERPED(true),
     WOLF_COLLAR_COLOR(true),
     OCELOT_TYPE(false),

@@ -182,7 +182,7 @@ public class BlockListeners implements Listener {
             SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
             if (stack == null) return;
             if (player.isSneaking()) return;
-            if (player.hasPermission("ultimatestacker.spawner.nostack")) {
+            if (player.hasPermission("ultimatestacker.spawner.nostack") && !player.isOp()) {
                 event.setCancelled(false);
                 return;
             }

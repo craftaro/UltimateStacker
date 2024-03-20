@@ -261,7 +261,10 @@ public class BlockListeners implements Listener {
 
         CreatureSpawner cs = (CreatureSpawner) block.getState();
 
-        EntityType blockType = cs.getSpawnedType();
+        EntityType spawnedEntityType = cs.getSpawnedType();
+
+        //Empty spawners return null?? It is annotated as @NotNull
+        if (spawnedEntityType == null) return;
 
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInHand();
@@ -280,7 +283,7 @@ public class BlockListeners implements Listener {
             remove = true;
         }
 
-        SpawnerBreakEvent breakEvent = new SpawnerBreakEvent(player, block, blockType, amt);
+        SpawnerBreakEvent breakEvent = new SpawnerBreakEvent(player, block, spawnedEntityType, amt);
         Bukkit.getPluginManager().callEvent(breakEvent);
         if (breakEvent.isCancelled())
             return;
@@ -297,7 +300,7 @@ public class BlockListeners implements Listener {
         }
 
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch")) {
-            ItemStack spawner = Methods.getSpawnerItem(blockType, amt);
+            ItemStack spawner = Methods.getSpawnerItem(spawnedEntityType, amt);
             if (player.getInventory().firstEmpty() == -1 || !Settings.SPAWNERS_TO_INVENTORY.getBoolean())
                 block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), spawner);
             else

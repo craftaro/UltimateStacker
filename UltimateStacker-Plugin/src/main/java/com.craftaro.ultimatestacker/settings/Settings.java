@@ -239,6 +239,9 @@ public class Settings implements com.craftaro.ultimatestacker.api.Settings {
     public static final ConfigSetting SNEAK_FOR_STACK = new ConfigSetting(config, "Spawners.Sneak To Receive A Stacked Spawner", true,
             "Toggle ability to receive a stacked spawner when breaking a spawner while sneaking.");
 
+    public static final ConfigSetting SNEAK_TO_ADD_ALL = new ConfigSetting(config, "Spawners.Sneak To Add All", true,
+            "Should the player be able to add all spawners to the stack if they are sneaking?");
+
     public static final ConfigSetting SPAWNERS_DONT_EXPLODE = new ConfigSetting(config, "Spawners.Prevent Spawners From Exploding", false,
             "Should spawners not break when blown up?");
 

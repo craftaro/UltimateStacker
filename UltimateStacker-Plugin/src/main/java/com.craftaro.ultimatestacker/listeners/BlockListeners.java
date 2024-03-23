@@ -181,7 +181,41 @@ public class BlockListeners implements Listener {
         if (itemType == blockType) {
             SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
             if (stack == null) return;
-            if (player.isSneaking()) return;
+            if (player.isSneaking()) {
+                //Add all to stack from hand
+                if (Settings.SNEAK_TO_ADD_ALL.getBoolean()) {
+
+                    //Redo this logic, if we have 10 items in hand and each item is 5 stack size, we need to take into consideration that what happens if we can only add 2 stack total in a stack? We have to remove one extra item and add one spawner with 3 stack back
+                    int amountToAdd = Math.min(maxStackSize - stack.getAmount(), itemAmount * inHand.getAmount()); //Multiply by inHand.getAmount() to get the total amount of items in hand
+                    int remaining = itemAmount * inHand.getAmount() - amountToAdd; //Calculate the remaining amount of items in hand
+                    stack.setAmount(stack.getAmount() + amountToAdd);
+                    plugin.updateHologram(stack);
+                    plugin.getDataManager().save(stack);
+                    if (remaining % itemAmount == 0) { //We don't have to worry about leftovers
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            hand.takeItem(player, amountToAdd / itemAmount);
+                        }
+                    } else {
+                        int fullStacks = amountToAdd / itemAmount;
+                        int overflow = remaining % itemAmount;
+                        //remove fullstacks-1 and add back overflow as a new item stack
+                        if (player.getGameMode() != GameMode.CREATIVE) {
+                            if (overflow > 0) {
+                                hand.takeItem(player, fullStacks+1);
+                                ItemStack overflowItem = Methods.getSpawnerItem(blockType, overflow);
+                                if (player.getInventory().firstEmpty() == -1) {
+                                    block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), overflowItem);
+                                } else {
+                                    player.getInventory().addItem(overflowItem);
+                                }
+                            } else {
+                                hand.takeItem(player, fullStacks);
+                            }
+                        }
+                    }
+                }
+                return;
+            }
             if (player.hasPermission("ultimatestacker.spawner.nostack") && !player.isOp()) {
                 event.setCancelled(false);
                 return;
@@ -261,12 +295,16 @@ public class BlockListeners implements Listener {
 
         CreatureSpawner cs = (CreatureSpawner) block.getState();
 
-        EntityType blockType = cs.getSpawnedType();
+        EntityType spawnedEntityType = cs.getSpawnedType();
+
+        //Empty spawners return null?? It is annotated as @NotNull
+        if (spawnedEntityType == null) return;
 
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItemInHand();
 
         SpawnerStack stack = UltimateStackerApi.getSpawnerStackManager().getSpawner(block);
+        if (stack == null) return;
 
         event.setCancelled(true);
 
@@ -280,7 +318,7 @@ public class BlockListeners implements Listener {
             remove = true;
         }
 
-        SpawnerBreakEvent breakEvent = new SpawnerBreakEvent(player, block, blockType, amt);
+        SpawnerBreakEvent breakEvent = new SpawnerBreakEvent(player, block, spawnedEntityType, amt);
         Bukkit.getPluginManager().callEvent(breakEvent);
         if (breakEvent.isCancelled())
             return;
@@ -297,7 +335,7 @@ public class BlockListeners implements Listener {
         }
 
         if (player.hasPermission("ultimatestacker.spawner.nosilkdrop") || item.getEnchantments().containsKey(Enchantment.SILK_TOUCH) && player.hasPermission("ultimatestacker.spawner.silktouch")) {
-            ItemStack spawner = Methods.getSpawnerItem(blockType, amt);
+            ItemStack spawner = Methods.getSpawnerItem(spawnedEntityType, amt);
             if (player.getInventory().firstEmpty() == -1 || !Settings.SPAWNERS_TO_INVENTORY.getBoolean())
                 block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), spawner);
             else

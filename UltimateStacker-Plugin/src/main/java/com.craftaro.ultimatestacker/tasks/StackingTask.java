@@ -89,12 +89,15 @@ public class StackingTask extends BukkitRunnable {
                 //Filter non-stackable entities to improve performance on main thread
                 entities.removeIf(this::isEntityNotStackable);
 
-                for (LivingEntity entity : entities) {
+                List<LivingEntity> remove = new ArrayList<>();
+                for (LivingEntity entity : entities) { //Q: What can cause current modification exception here?
                     // Check our WorldGuard flag.
                     Boolean flag = WorldGuardHook.isEnabled() ? WorldGuardHook.getBooleanFlag(entity.getLocation(), "mob-stacking") : null; //Does this work async?
-                    if (flag != null && !flag)
-                        entities.removeIf(entity1 -> entity1.getUniqueId().equals(entity.getUniqueId()));
+                    if (flag != null && !flag) {
+                        remove.add(entity);
+                    }
                 }
+                entities.removeAll(remove);
 
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     // Loop through the entities.

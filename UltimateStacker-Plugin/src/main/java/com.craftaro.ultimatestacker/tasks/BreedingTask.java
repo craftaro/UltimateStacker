@@ -1,6 +1,6 @@
 package com.craftaro.ultimatestacker.tasks;
 
-import com.craftaro.core.task.TaskScheduler;
+import com.craftaro.core.thread.TaskScheduler;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import org.bukkit.entity.LivingEntity;
 

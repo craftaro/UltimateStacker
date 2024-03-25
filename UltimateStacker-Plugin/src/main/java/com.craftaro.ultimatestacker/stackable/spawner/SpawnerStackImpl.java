@@ -159,6 +159,9 @@ public class SpawnerStackImpl implements SpawnerStack {
             return null;
         }
         CreatureSpawner creatureSpawner = (CreatureSpawner) this.location.getBlock().getState();
+        if (creatureSpawner.getSpawnedType() == null) {
+            return null;
+        }
         return Methods.compileSpawnerName(creatureSpawner.getSpawnedType(), this.amount);
     }
 

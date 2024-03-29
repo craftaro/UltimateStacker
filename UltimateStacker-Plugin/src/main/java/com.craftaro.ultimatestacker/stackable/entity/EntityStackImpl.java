@@ -12,7 +12,6 @@ import com.craftaro.ultimatestacker.utils.Async;
 import com.craftaro.ultimatestacker.utils.Methods;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
@@ -31,7 +30,7 @@ import java.util.UUID;
 public class EntityStackImpl implements EntityStack {
 
     private final UltimateStacker plugin = UltimateStacker.getInstance();
-    private final NamespacedKey STACKED_ENTITY_KEY = new NamespacedKey(plugin, "US_AMOUNT");
+    private Object STACKED_ENTITY_KEY;
     private int amount;
     private LivingEntity hostEntity;
 
@@ -41,12 +40,14 @@ public class EntityStackImpl implements EntityStack {
      * @param entity The entity to get the stack from.
      */
     public EntityStackImpl(LivingEntity entity) {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
+            this.STACKED_ENTITY_KEY = new org.bukkit.NamespacedKey(plugin, "US_AMOUNT");
         if (entity == null) return;
         if (!UltimateStacker.getInstance().getEntityStackManager().isStackedEntity(entity)) {
             if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
                 PersistentDataContainer container = entity.getPersistentDataContainer();
-                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
-                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                if (container.has((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
                     entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
                 } else {
                     entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), 1));
@@ -59,8 +60,8 @@ public class EntityStackImpl implements EntityStack {
         } else {
             if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
                 PersistentDataContainer container = entity.getPersistentDataContainer();
-                if (container.has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
-                    this.amount = container.get(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+                if (container.has((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER)) {
+                    this.amount = container.get((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
                 } else {
                     this.amount = getMetaCount(entity);
                 }
@@ -94,7 +95,7 @@ public class EntityStackImpl implements EntityStack {
         this.amount = amount;
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             PersistentDataContainer container = entity.getPersistentDataContainer();
-            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+            container.set((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
         } else {
             entity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
         }
@@ -116,7 +117,7 @@ public class EntityStackImpl implements EntityStack {
         this.amount = amount;
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             PersistentDataContainer container = hostEntity.getPersistentDataContainer();
-            container.set(STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
+            container.set((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER, amount);
         } else {
             hostEntity.setMetadata("US_AMOUNT", new FixedMetadataValue(UltimateStacker.getInstance(), amount));
         }
@@ -267,7 +268,7 @@ public class EntityStackImpl implements EntityStack {
 
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
             PersistentDataContainer container = hostEntity.getPersistentDataContainer();
-            container.remove(STACKED_ENTITY_KEY);
+            container.remove((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY);
         } else {
             hostEntity.removeMetadata("US_AMOUNT", plugin);
         }

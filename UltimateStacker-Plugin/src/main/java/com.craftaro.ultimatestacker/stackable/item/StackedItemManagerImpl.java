@@ -1,6 +1,5 @@
 package com.craftaro.ultimatestacker.stackable.item;
 
-import com.craftaro.core.compatibility.ServerVersion;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.events.entity.StackedItemSpawnEvent;
 import com.craftaro.ultimatestacker.api.stack.item.ItemMergeCallback;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class StackedItemManagerImpl implements StackedItemManager {
 

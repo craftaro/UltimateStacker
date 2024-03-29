@@ -5,25 +5,23 @@ import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStack;
 import com.craftaro.ultimatestacker.api.stack.entity.EntityStackManager;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import uk.antiperson.stackmob.api.StackedEntity;
 
 import java.util.UUID;
 
 public class EntityStackManagerImpl implements EntityStackManager {
 
     private final UltimateStacker plugin;
-    private final NamespacedKey STACKED_ENTITY_KEY;
+    private Object STACKED_ENTITY_KEY;
 
     public EntityStackManagerImpl(UltimateStacker plugin) {
         this.plugin = plugin;
-        this.STACKED_ENTITY_KEY = new NamespacedKey(plugin, "US_AMOUNT");
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
+            this.STACKED_ENTITY_KEY = new org.bukkit.NamespacedKey(plugin, "US_AMOUNT");
     }
 
     @Override
@@ -39,7 +37,7 @@ public class EntityStackManagerImpl implements EntityStackManager {
             return true;
         }
         if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
-            return entity.getPersistentDataContainer().has(STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
+            return entity.getPersistentDataContainer().has((org.bukkit.NamespacedKey) STACKED_ENTITY_KEY, PersistentDataType.INTEGER);
         }
         return false;
     }
@@ -88,7 +86,7 @@ public class EntityStackManagerImpl implements EntityStackManager {
     public EntityStack transferStack(LivingEntity oldEntity, LivingEntity newEntity, boolean takeOne) {
         EntityStack stack = getStackedEntity(oldEntity);
         if (stack == null) return null;
-        EntityStack newStack = new EntityStackImpl(newEntity, takeOne ? stack.getAmount()-1 : stack.getAmount());
+        EntityStack newStack = new EntityStackImpl(newEntity, takeOne ? stack.getAmount() - 1 : stack.getAmount());
         newStack.updateNameTag();
         stack.destroy();
         return newStack;
@@ -98,7 +96,7 @@ public class EntityStackManagerImpl implements EntityStackManager {
     public EntityStack updateStack(LivingEntity oldEntity, LivingEntity newEntity) {
         EntityStack stack = getStackedEntity(oldEntity);
         if (stack == null) return null;
-        int amount = stack.getAmount()-1;
+        int amount = stack.getAmount() - 1;
         stack.destroy();
         if (amount == 0 && newEntity != null) {
             newEntity.remove();

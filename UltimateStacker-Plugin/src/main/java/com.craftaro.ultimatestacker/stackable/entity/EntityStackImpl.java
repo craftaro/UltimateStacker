@@ -30,9 +30,15 @@ import java.util.UUID;
 public class EntityStackImpl implements EntityStack {
 
     private final UltimateStacker plugin = UltimateStacker.getInstance();
-    private Object STACKED_ENTITY_KEY;
+    private static Object STACKED_ENTITY_KEY;
     private int amount;
     private LivingEntity hostEntity;
+
+    static {
+        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {
+            STACKED_ENTITY_KEY = new org.bukkit.NamespacedKey(UltimateStacker.getInstance(), "US_AMOUNT");
+        }
+    }
 
     /**
      * Gets an existing stack from an entity or creates a new one if it doesn't exist.
@@ -40,8 +46,6 @@ public class EntityStackImpl implements EntityStack {
      * @param entity The entity to get the stack from.
      */
     public EntityStackImpl(LivingEntity entity) {
-        if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14))
-            this.STACKED_ENTITY_KEY = new org.bukkit.NamespacedKey(plugin, "US_AMOUNT");
         if (entity == null) return;
         if (!UltimateStacker.getInstance().getEntityStackManager().isStackedEntity(entity)) {
             if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_14)) {

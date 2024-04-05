@@ -124,7 +124,7 @@ public class BlockListeners implements Listener {
                             player.getWorld().dropItemNaturally(block.getLocation(), stack.getMaterial().parseItem());
                         }
                     }
-                    if (stack.getAmount() == 0) {
+                    if (stack.getAmount() == 1) {
                         //Remove stack
                         stack.destroy();
                         return;

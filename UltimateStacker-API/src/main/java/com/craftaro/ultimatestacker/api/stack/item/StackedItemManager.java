@@ -3,6 +3,7 @@ package com.craftaro.ultimatestacker.api.stack.item;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,6 +20,8 @@ public interface StackedItemManager {
      * @return The StackedItem for the given Item
      */
     @NotNull StackedItem getStackedItem(Item item);
+
+    @Nullable StackedItem createStack(ItemStack item, Location location, int amount, LivingEntity killed);
 
     /**
      * Create a new StackedItem for the given item

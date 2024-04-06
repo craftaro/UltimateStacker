@@ -1,6 +1,8 @@
 package com.craftaro.ultimatestacker.listeners.item;
 
-import com.craftaro.core.nms.NmsManager;
+import com.craftaro.core.nms.Nms;
+import com.craftaro.core.nms.world.WorldCore;
+import com.craftaro.core.world.SWorld;
 import com.craftaro.third_party.org.apache.commons.lang3.StringUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
@@ -8,6 +10,7 @@ import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItemManager;
 import com.craftaro.ultimatestacker.settings.Settings;
 import com.craftaro.ultimatestacker.utils.Methods;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.event.EventHandler;
@@ -52,7 +55,7 @@ public class ItemListeners implements Listener {
         Methods.updateInventory(event.getItem(), event.getInventory());
         if (event.getInventory().getHolder() instanceof BlockState) {
             Block invHolder = ((BlockState) event.getInventory().getHolder()).getBlock();
-            NmsManager.getWorld().updateAdjacentComparators(invHolder);
+            Nms.getImplementations().getWorld().updateAdjacentComparators(invHolder);
         }
     }
 
@@ -64,13 +67,15 @@ public class ItemListeners implements Listener {
         if (disabledWorlds.stream().anyMatch(worldStr -> event.getEntity().getWorld().getName().equalsIgnoreCase(worldStr)))
             return;
 
+        if (UltimateStackerApi.getStackedItemManager().isStackedItem(event.getEntity())) return;
+
         ItemStack itemStack = event.getEntity().getItemStack();
 
         if (itemStack.hasItemMeta() && itemStack.getItemMeta().hasDisplayName() &&
                 StringUtils.substring(itemStack.getItemMeta().getDisplayName(), 0, 3).equals("***")) {
             return; //Compatibility with Shop instance: https://www.spigotmc.org/resources/shop-a-simple-intuitive-shop-instance.9628/
         }
-        
+
         UltimateStackerApi.getStackedItemManager().createStack(event.getEntity(), itemStack.getAmount());
     }
 }

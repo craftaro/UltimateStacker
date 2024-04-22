@@ -21,6 +21,14 @@ public interface StackedItemManager {
      */
     @NotNull StackedItem getStackedItem(Item item);
 
+    /**
+     * Create a new StackedItem for the given ItemStack
+     * @param item The ItemStack to create the stack for
+     * @param location The location to spawn the stack
+     * @param amount The amount of items in the stack
+     * @param killed The entity that is dropping the item
+     * @return The StackedItem for the given Item or null if it could not be created
+     */
     @Nullable StackedItem createStack(ItemStack item, Location location, int amount, LivingEntity killed);
 
     /**

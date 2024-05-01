@@ -101,7 +101,7 @@
 
         <repository>
             <id>songoda-public</id>
-            <url>https://repo.craftaro.com/repository/public/</url>
+            <url>https://repo.songoda.com/repository/public/</url>
         </repository>
 
         <repository>

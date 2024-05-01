@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Called before we spawn a stacked items
  */
@@ -20,6 +23,7 @@ public class StackedItemSpawnEvent extends Event implements Cancellable {
     private ItemStack itemStack;
     private long amount;
     private boolean cancelled = false;
+    private Map<String, Object> extraData = new HashMap<>();
 
     /**
      * Constructor
@@ -32,6 +36,32 @@ public class StackedItemSpawnEvent extends Event implements Cancellable {
         this.item = item;
         this.itemStack = itemStack;
         this.amount = amount;
+    }
+
+    public StackedItemSpawnEvent(@Nullable Item item, @NotNull ItemStack itemStack, long amount, @NotNull Map<String, Object> extraData) {
+        this.item = item;
+        this.itemStack = itemStack;
+        this.amount = amount;
+        this.extraData = extraData;
+    }
+
+    /**
+     * Get extra data related to the event
+     *
+     * @return extra data
+     */
+    public @NotNull Map<String, Object> getExtraData() {
+        return extraData;
+    }
+
+    /**
+     * Set the extra data for the event
+     *
+     * @param key   Key
+     * @param value Value
+     */
+    public void addExtraData(String key, Object value) {
+        this.extraData.put(key, value);
     }
 
     /**

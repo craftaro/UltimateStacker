@@ -11,7 +11,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +38,22 @@ public class StackedItemManagerImpl implements StackedItemManager {
 
         Item dropped = world.dropItem(location, item);
         if (dropped.getItemStack().getType() == Material.AIR) return null;
+        return new StackedItemImpl(dropped, amount);
+    }
+
+    @Override
+    public @Nullable StackedItem createStack(ItemStack item, Location location, int amount, LivingEntity killed) {
+        if (item.getType() == Material.AIR) return null;
+        if (killed == null) return createStack(item, location, amount);
+        World world = location.getWorld();
+        if (world == null) return null;
+        StackedItemSpawnEvent event = new StackedItemSpawnEvent(null, item, amount);
+        if (killed.hasMetadata("EFA-TAGGED")) {
+            event.addExtraData("EFA-TAGGED", killed.getMetadata("EFA-TAGGED").get(0).value());
+        }
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) return null;
+        Item dropped = world.dropItem(location, item);
         return new StackedItemImpl(dropped, amount);
     }
 

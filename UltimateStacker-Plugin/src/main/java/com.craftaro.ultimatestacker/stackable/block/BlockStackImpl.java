@@ -23,7 +23,7 @@ public class BlockStackImpl implements BlockStack {
     // The id that identifies this stack in the database.
     private int id;
 
-    private int amount = 1;
+    private int amount = 2;
     private XMaterial material;
     private Location location;
 
@@ -79,7 +79,7 @@ public class BlockStackImpl implements BlockStack {
 
     @Override
     public void setAmount(int amount) {
-        if (amount < 1) {
+        if (amount == 1) {
             destroy();
             return;
         }

@@ -108,8 +108,8 @@ public class BlockListeners implements Listener {
                         //Remove all items from stack
                         int amountToRemove = Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount());
                         ItemStack removed = stack.getMaterial().parseItem();
-                        removed.setAmount(amountToRemove);
-                        stack.take(amountToRemove);
+                        removed.setAmount(amountToRemove-1);
+                        stack.take(amountToRemove-1);
                         if (Settings.ADD_TO_INVENTORY.getBoolean()) {
                             player.getInventory().addItem(removed);
                         } else {
@@ -124,7 +124,7 @@ public class BlockListeners implements Listener {
                             player.getWorld().dropItemNaturally(block.getLocation(), stack.getMaterial().parseItem());
                         }
                     }
-                    if (stack.getAmount() == 1) {
+                    if (stack.getAmount() <= 1) {
                         //Remove stack
                         stack.destroy();
                         return;

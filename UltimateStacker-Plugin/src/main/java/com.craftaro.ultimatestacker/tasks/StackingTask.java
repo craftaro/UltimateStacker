@@ -148,6 +148,10 @@ public class StackingTask extends BukkitRunnable {
         if (!configurationSection.getBoolean("Mobs." + entity.getType().name() + ".Enabled"))
             return true;
 
+        //Check nametag or custom entity
+        if ((!stackManager.isStackedEntity(entity) && entity.getCustomName() != null) || plugin.getCustomEntityManager().getCustomEntity(entity) != null)
+            return true;
+
         // Allow spawn if stack reasons are set and match, or if from a spawner
         final String spawnReason = entity.hasMetadata("US_REASON") && !entity.getMetadata("US_REASON").isEmpty()
                 ? entity.getMetadata("US_REASON").get(0).asString() : null;
@@ -183,12 +187,6 @@ public class StackingTask extends BukkitRunnable {
         // Attempt to split overstacked entities.
         // If this is successful, we can return because the entity was processed
         if (isStack && attemptSplit(baseStack, maxEntityStackSize)) {
-            return;
-        }
-
-        // If this entity is named or a custom entity skip it.
-        if (!isStack && (baseEntity.getCustomName() != null && plugin.getCustomEntityManager().getCustomEntity(baseEntity) != null)) {
-            processed.add(baseEntity.getUniqueId());
             return;
         }
 

@@ -2,10 +2,8 @@ package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.core.compatibility.CompatibleHand;
 import com.craftaro.core.compatibility.ServerVersion;
-import com.craftaro.core.nms.Nms;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTCompound;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTEntity;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBT;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.iface.ReadableNBT;
 import com.craftaro.core.utils.EntityUtils;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
@@ -108,7 +106,7 @@ public class SpawnerListeners implements Listener {
 
         if (!Settings.EGGS_CONVERT_SPAWNERS.getBoolean()
                 || (event.getItem().hasItemMeta() && event.getItem().getItemMeta().hasDisplayName()
-                && !new NBTItem(event.getItem()).hasKey("UC"))) {
+                && !NBT.readNbt(event.getItem()).hasTag("UC"))) {
             return;
         }
 
@@ -126,8 +124,7 @@ public class SpawnerListeners implements Listener {
                     .replace("MOOSHROOM", "MUSHROOM_COW")
                     .replace("ZOMBIE_PIGMAN", "PIG_ZOMBIE"));
         else if (ServerVersion.isServerVersionAtLeast(ServerVersion.V1_12)) {
-            Nms.getImplementations().getNbt().of(event.getItem()).toString();
-            NBTCompound entityTag = new NBTItem(event.getItem()).getCompound("EntityTag");
+            ReadableNBT entityTag = NBT.readNbt(event.getItem()).getCompound("EntityTag");
             if (entityTag != null) {
                 entityType = EntityType.fromName(entityTag.getString("id"));
             } else {

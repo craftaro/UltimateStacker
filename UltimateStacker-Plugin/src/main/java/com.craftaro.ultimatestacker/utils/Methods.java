@@ -1,8 +1,8 @@
 package com.craftaro.ultimatestacker.utils;
 
-import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBT;
 import com.craftaro.core.utils.TextUtils;
+import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.stack.item.StackedItem;
@@ -104,9 +104,10 @@ public class Methods {
         ((BlockStateMeta) meta).setBlockState(cs);
         item.setItemMeta(meta);
 
-        NBTItem nbtItem = new NBTItem(item);
-        nbtItem.setInteger("spawner_stack_size", amount);
-        return nbtItem.getItem();
+        NBT.modify(item, readableItemNBT -> {
+            readableItemNBT.setInteger("spawner_stack_size", amount);
+        });
+        return item;
     }
 
     public static boolean isInt(String number) {

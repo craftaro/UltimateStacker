@@ -2,8 +2,9 @@ package com.craftaro.ultimatestacker.listeners;
 
 import com.craftaro.core.compatibility.CompatibleHand;
 import com.craftaro.core.hooks.ProtectionManager;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBT;
+import com.craftaro.core.third_party.de.tr7zw.nbtapi.iface.ReadableNBT;
 import com.craftaro.third_party.com.cryptomorin.xseries.XMaterial;
-import com.craftaro.core.third_party.de.tr7zw.nbtapi.NBTItem;
 import com.craftaro.ultimatestacker.UltimateStacker;
 import com.craftaro.ultimatestacker.api.UltimateStackerApi;
 import com.craftaro.ultimatestacker.api.events.spawner.SpawnerBreakEvent;
@@ -69,7 +70,7 @@ public class BlockListeners implements Listener {
         if (Settings.STACK_BLOCKS.getBoolean()
                 && Settings.STACKABLE_BLOCKS.getStringList().contains(block.getType().name()) //Is block stackable
                 && !block.getType().equals(XMaterial.SPAWNER.parseMaterial()) //Don't stack spawners here
-            ) {
+        ) {
 
             Optional<XMaterial> xBlockType = XMaterial.matchXMaterial(block.getType().name());
             if (!xBlockType.isPresent()) return;
@@ -84,9 +85,9 @@ public class BlockListeners implements Listener {
             if (isStacked) {
                 event.setCancelled(true);
                 //Add to stack
-                if (clickAction == Action.RIGHT_CLICK_BLOCK  && !player.hasPermission("ultimatestacker.block.nostack")) {
+                if (clickAction == Action.RIGHT_CLICK_BLOCK && !player.hasPermission("ultimatestacker.block.nostack")) {
                     if (inHand.getType().equals(Material.AIR)) return;
-                    if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
+                    if (!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
                     //Add all held items to stack
                     if (Settings.ALWAYS_ADD_ALL.getBoolean() || isSneaking) {
                         stack.add(inHandAmount);
@@ -108,8 +109,8 @@ public class BlockListeners implements Listener {
                         //Remove all items from stack
                         int amountToRemove = Math.min(Settings.MAX_REMOVEABLE.getInt(), stack.getAmount());
                         ItemStack removed = stack.getMaterial().parseItem();
-                        removed.setAmount(amountToRemove-1);
-                        stack.take(amountToRemove-1);
+                        removed.setAmount(amountToRemove - 1);
+                        stack.take(amountToRemove - 1);
                         if (Settings.ADD_TO_INVENTORY.getBoolean()) {
                             player.getInventory().addItem(removed);
                         } else {
@@ -138,7 +139,7 @@ public class BlockListeners implements Listener {
                 if (isSneaking || player.hasPermission("ultimatestacker.block.nostack")) return;
                 //Check if player clicked the same type as the clicked block
                 if (inHand.getType().equals(Material.AIR)) return;
-                if(!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
+                if (!blockType.equals(XMaterial.matchXMaterial(inHand))) return;
                 if (clickAction != Action.RIGHT_CLICK_BLOCK) return;
                 //Create new stack
                 event.setCancelled(true);
@@ -201,7 +202,7 @@ public class BlockListeners implements Listener {
                         //remove fullstacks-1 and add back overflow as a new item stack
                         if (player.getGameMode() != GameMode.CREATIVE) {
                             if (overflow > 0) {
-                                hand.takeItem(player, fullStacks+1);
+                                hand.takeItem(player, fullStacks + 1);
                                 ItemStack overflowItem = Methods.getSpawnerItem(blockType, overflow);
                                 if (player.getInventory().firstEmpty() == -1) {
                                     block.getWorld().dropItemNaturally(block.getLocation().add(.5, 0, .5), overflowItem);
@@ -345,9 +346,10 @@ public class BlockListeners implements Listener {
     }
 
     private int getSpawnerAmount(ItemStack item) {
-        NBTItem nbtItem = new NBTItem(item);
-        if (nbtItem.hasKey("spawner_stack_size"))
+        ReadableNBT nbtItem = NBT.readNbt(item);
+        if (nbtItem.hasTag("spawner_stack_size")) {
             return nbtItem.getInteger("spawner_stack_size");
+        }
 
         if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return 1;
         if (item.getItemMeta().getDisplayName().contains(":")) {
